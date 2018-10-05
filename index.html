@@ -69,6 +69,57 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-一切都是对象" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/10/05/一切都是对象/" class="article-date">
+  <time datetime="2018-10-05T02:40:48.000Z" itemprop="datePublished">2018-10-05</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/学习心得/">学习心得</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/10/05/一切都是对象/">一切都是对象</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="用引用操作对象"><a href="#用引用操作对象" class="headerlink" title="用引用操作对象"></a>用引用操作对象</h2><p>&emsp;&emsp;每种语言都有自己的操作内存元素的方式，有时候，程序员必须注意将要处理的数据类型是什么。你是直接操作元素，还是用某种基于特殊语法的间间接表示（例如C和C++里的指针）来操作对象<br>&emsp;&emsp;所有的一切在java这里得到了简化，一切都被视为对象，因此可采用单一固定的语法，尽管一切都看作对象，但操作的标识符实际上是对象的一个“引用”（reference）。</p>
+<h2 id="必须由你创建所有对象"><a href="#必须由你创建所有对象" class="headerlink" title="必须由你创建所有对象"></a>必须由你创建所有对象</h2><h3 id="存储到什么地方"><a href="#存储到什么地方" class="headerlink" title="存储到什么地方"></a>存储到什么地方</h3><p>程序运行的时候，对象是怎么进行放置安排的呢？特别是内存时怎样分配的呢？有五个不同的地方可以存储数据  </p>
+<ol>
+<li>寄存器。这是最快的存储区，因为它位于不同于其他存储区的地方——处理器内部，但是寄存器的数量有限，所以寄存器根据需求进行分配，你不能直接控制，也不能在程序中感觉到寄存器存在的任何迹象（一方面，C和C++允许你向编译器建议寄存器的分配方式）  </li>
+<li>堆栈：位于通用RAM(随机访问存储器)中，但通过堆栈指针可以从处理器那里获得直接支持，堆栈指针若向下移动，则分配新的内存，若向上移动，则释放那些内存，这是一种快速有效的分配存储方法，创建程序时，Java系统必须知道存储在堆栈内所有的确切生命周期，以便上下移动堆栈指针，这一约束限制了程序的灵活性，所以虽然某些java数据存储在堆栈中——特别是对象引用，但是java对象并不存储于其中  </li>
+<li>堆，一种通用的内存池（也位于RAM区），用于存放所有的java对象，堆不同于堆栈的好处是：编译器不需要知道存储的数据在堆中存活多少时间，因此，在堆中分配有很大的灵活性  </li>
+<li>常量存储：常量值通常直接存放在程序代码内部，这样做是安全的，因为它们永远不会被改变，有时，在嵌入式系统中，常量本身和其他部分分割离开，所以在这种情况下，可以选择将其存放在ROM（只读存储器）中  </li>
+<li>非RAM存储。如果数据完全存活于程序之外，那么它可以不受程序的任何控制，在程序没有运行时也可以存在，其中两个基本的例子时流对象和持久化对象  <h3 id="特例：基本类型"><a href="#特例：基本类型" class="headerlink" title="特例：基本类型"></a>特例：基本类型</h3>&emsp;&emsp;咋程序设计中经常用到一系列类型，它们需要特殊对待，可以把它们想象成“基本”类型<br>之所以特殊对待，是因为new将对象存储在“堆”里，故用new创建一个对象——特别是小的，简单的变量，往往不是很有效，因此，对于这些类型，java采取与C和C++相同的方法，也就是说，不用new来创建对象，而是创建一个并非是引用的“自动”变量，这个变量直接存储“值”，并置于堆栈中，因此更加高效<br>&emsp;&emsp;java要确定每种基本类型所占存储空间的大小，它们的大小并不像其他大多数语言那样随机器架构的变化而变化，所以java所编写的程序比其他语言更具有可移植性<br>基本类型|包装器<br>——–|——<br>这样的啊|看到了吗</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/10/05/一切都是对象/" data-id="cjmvsur2x0012xcrz4lq7nxwz" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-对象导论" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2018/10/04/对象导论/" class="article-date">
@@ -122,7 +173,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/04/对象导论/" data-id="cjmv0u64g001ik0rzxht73xeo" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/04/对象导论/" data-id="cjmvsur2t0010xcrzfo7gf284" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
@@ -164,7 +215,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/04/Node-js参考网站/" data-id="cjmv0u62c000ik0rzvslun4wc" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/04/Node-js参考网站/" data-id="cjmvsur1w000fxcrzr96ecdqe" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Node-js/">Node.js</a></li></ul>
@@ -206,7 +257,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/04/JavaScript参考网站/" data-id="cjmv0u61v000ak0rzr2cy6uxu" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/04/JavaScript参考网站/" data-id="cjmvsur1b0006xcrz9e0nq8kv" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JavaScript/">JavaScript</a></li></ul>
@@ -248,7 +299,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/04/CSS参考网站/" data-id="cjmv0u61i0004k0rzyhtxtbtj" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/04/CSS参考网站/" data-id="cjmvsur0l0000xcrzk92rh9t4" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CSS/">CSS</a></li></ul>
@@ -290,7 +341,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/04/HTML5参考网站/" data-id="cjmv0u61l0005k0rzknjwspgx" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/04/HTML5参考网站/" data-id="cjmvsur180005xcrzgf5y9nw5" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/HTML5/">HTML5</a></li></ul>
@@ -332,7 +383,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/04/JVM参考网站/" data-id="cjmv0u61o0006k0rzunefh567" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/04/JVM参考网站/" data-id="cjmvsur360018xcrz3gbblcgd" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JVM/">JVM</a></li></ul>
@@ -374,7 +425,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/04/Docker参考网站/" data-id="cjmv0u60x0000k0rzwb3sicly" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/04/Docker参考网站/" data-id="cjmvsur150004xcrz590k6t5q" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Docker/">Docker</a></li></ul>
@@ -416,7 +467,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/04/Linux操作系统参考网站/" data-id="cjmv0u61z000bk0rz3iarkgs0" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/04/Linux操作系统参考网站/" data-id="cjmvsur1l000axcrz548dap5w" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li></ul>
@@ -458,52 +509,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/04/Oracle参考网站/" data-id="cjmv0u62j000lk0rzc04j55im" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/04/Oracle参考网站/" data-id="cjmvsur21000ixcrz8oyfn1s4" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Oracle/">Oracle</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-Maven参考网站" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2018/10/04/Maven参考网站/" class="article-date">
-  <time datetime="2018-10-04T03:41:28.000Z" itemprop="datePublished">2018-10-04</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/学习心得/">学习心得</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/10/04/Maven参考网站/">Maven参考网站</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/04/Maven参考网站/" data-id="cjmv0u627000fk0rzlalxek1a" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Maven/">Maven</a></li></ul>
 
     </footer>
   </div>
@@ -569,6 +578,10 @@
       <ul>
         
           <li>
+            <a href="/2018/10/05/一切都是对象/">一切都是对象</a>
+          </li>
+        
+          <li>
             <a href="/2018/10/04/对象导论/">对象导论</a>
           </li>
         
@@ -582,10 +595,6 @@
         
           <li>
             <a href="/2018/10/04/CSS参考网站/">CSS参考网站</a>
-          </li>
-        
-          <li>
-            <a href="/2018/10/04/HTML5参考网站/">HTML5参考网站</a>
           </li>
         
       </ul>
