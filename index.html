@@ -69,6 +69,154 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-访问权限控制" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/10/06/访问权限控制/" class="article-date">
+  <time datetime="2018-10-06T06:39:23.000Z" itemprop="datePublished">2018-10-06</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/学习心得/">学习心得</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/10/06/访问权限控制/">访问权限控制</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
+<p>访问控制（或隐藏具体实现）与“最初的实现并不恰当”有关  </p>
+</blockquote>
+<p>几乎所有的代码某些部分经过一段时间再回头看，可能会发现有更好的方式来去实现相同的功能，这正是重构的原动力之一，重构或者重写代码，以使得它更可读，更易理解，更具有可维护性<br>&emsp;&emsp;但是，在这种修改和完善代码的愿望下，也存在着巨大的压力，通常总会有一些消费者（客户端程序员）需要你的代码在某些方面不变，由此产生了面向对象设计中需要考虑的一个基本问题：“如何把变动的事物与保持不变的事物区分开来”<br>这一目标可以通过约定达成，例如，类库的开发者必须保证不得删除任何现有的方法，因为那样会破坏客户端程序员的代码，但是，与之相反的情况更加棘手，在域（数据成员）存在的情况下，类库开发者要怎么知道究竟都有哪些已经被客户端程序员所调用了呢？<br>&emsp;&emsp;为了解决这一问题，java提供了访问权限修饰符，以供类库开发人员指明了哪些是可用的，哪些是不可用的<br>&emsp;&emsp;不过，构件类库的概念已经对于谁有权取用该类库构件的控制问题还是不完善的，其中仍然存在着如何将构件捆绑到一个内聚的类库单元中的问题，对于这一点，java用关键字package加以控制，而访问权限修饰词会因类是存在于一个相同的包还是存在于一个单独的包而受到影响，所以要理解理解访问权限修饰符的全部含义，要先学习如何将类库构件置于包中  </p>
+<h2 id="包：库单元"><a href="#包：库单元" class="headerlink" title="包：库单元"></a>包：库单元</h2><p>&emsp;&emsp;由于名字之间的潜在冲突，在java中对名称空间进行完全控制并为每个类创建唯一的标识符组合就成为了非常重要的事情<br>&emsp;&emsp;当编写一个java源代码文件时，此文件通常被称为编译单元（有时也被称为转译单元），每个编译单元都必须要有一个后缀名.java，而在编译单元内则可以有一个public类，该类的名称必须要与源文件名称相同，否则编译器就不会接受，如果在编译单元之中还有额外的类的话，那么包之外的世界是无法看见这些类的，这是因为他们不是public类，而且他们主要是用来为主public类提供支持的  </p>
+<h3 id="代码组织"><a href="#代码组织" class="headerlink" title="代码组织"></a>代码组织</h3><p>&emsp;&emsp;当编译一个java文件时，在java文件中的每一个类都会有一个输出文件，而输出文件的名称与.java文件的名称相同，只是多了后缀名.class,因此少量的编译.java文件，就会得到大量的.class文件<br>&emsp;&emsp;java可运行程序时一组可以打包并压缩为一个java文档文件（Jar，使用java的jar文档生成器）的.class文件，java解释器负责这些文件的查找，装载和解释<br>&emsp;&emsp;类库实际上是一组类文件，其中每个文件都有一个public类，以及任意数量的非public类，因此每一个文件都有一个构件，如果希望这些构件（每一个都有它们自己的独立的.java和.class文件）从属同一个群组，就可以使用关键字package<br>    package access;<br>&emsp;&emsp;这表明你在声明该编译单元是名为access的类库的一部分，或者换种说法，你正在声明该编译单元中的public类名称位于access名称的保护伞下，任何想要使用该名称的人都必须使用该类库构件的全名或者使用import关键  </p>
+<h3 id="创建独一无二的包名"><a href="#创建独一无二的包名" class="headerlink" title="创建独一无二的包名"></a>创建独一无二的包名</h3><p>&emsp;&emsp;其实一个包从未真正将被打包的东西包装成一个单一的文件，并且一个包可以由许多.class文件构成，也就是说，我们只是定义了类是在哪个命名空间下，通过命名空间和类名唯一地标识这个类，那么情况有点复杂，当我们的程序在运行的时候，应该去哪里找到某个特定类的定义信息（就是.class文件）呢？<br>&emsp;&emsp;为了避免这种情况的发生，一种合乎逻辑的做法就是将特定包内的所有.class文件都置于一个目录下，也就是说，利用操作系统的层次化的文件结构来解决这个问题<br>&emsp;&emsp;将所有文件收入一个子目录还可以解决另外两个问题：创建独一无二的名称已经怎么查找有可能隐藏于目录结构中的某处的类<br>第一个问题是，通过域名反写的形式创建独一无二的类<br>第二个问题是：把package名称分解为你机器上的一个目录，所以java程序运行并需要加载.class文件的时候，它就可以确定.class文件在目录上所处的目录<br>&emsp;&emsp;java解释器的运行过程如下：首先，找到环境变量CLASSPATH，CLASSPATH包含一个或多个目录，用作查找.class文件的根目录，从根目录开始，解释器将包名解析成目录，得到的目录与CLASSPATH中的各个不同的项相连接，解释器就在这些目录下查找与你所要创建的类名称相关的.class文件，所要我们要想使用某个类库，一定要在将类库放在CLASSPATH变量中指定的目录的任意一个，或者也可以将类库的当前目录添加到CLASSPATH变量中，JAR文件有些许变化，必须要在类路径中将JAR文件的实际名称写清楚，而不仅仅只是指出它所在的目录  </p>
+<h2 id="java访问权限修饰符"><a href="#java访问权限修饰符" class="headerlink" title="java访问权限修饰符"></a>java访问权限修饰符</h2><table>
+<thead>
+<tr>
+<th>权限修饰词</th>
+<th>权限说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>public</td>
+<td>允许任意的类对其修饰的成员访问</td>
+</tr>
+<tr>
+<td>private</td>
+<td>只有包含该成员的类才能对其访问</td>
+</tr>
+<tr>
+<td>protected</td>
+<td>只有派生类和同包的类才能对其进行访问</td>
+</tr>
+<tr>
+<td>默认包访问权限</td>
+<td>只有同一个类库下的类才能对其访问  </td>
+</tr>
+</tbody>
+</table>
+<p>&emsp;&emsp;我想对访问权限多说一些，对于初学者对访问权限并不是很清楚，即使是工作多年的java工程师对访问权限控制也没有很清晰的认识，即使认知如此，好像也不太影响完成项目的任务，可是我还是想把这些事情讲清楚说明白些<br>&emsp;&emsp;我们都知道java是门面向对象的语言，以面向对象的思维编程很符合人类的思维习惯，可是我们应该清楚的是，java之所以有面向对象的特性,要感谢编译器，我们之前描述方法的执行往往是说发送消息给对象，这是面向对象的说法，真正的过程应该是对这个对象的数据执行方法定义的程序，具有过程，比较复杂，这里牵扯到cpu和内存，指令之间的关系，不过我们只需要知道对对象数据进行操作就足够理解权限控制的含义了，由此我们也知道，同一个类型的所有对象的方法代码只有一份，放在方法区，每个对象都有自己独有的数据放在堆中，方法代码和数据分离，理解下面四个问题，就能明白访问权限控制的全部含义</p>
+<ol>
+<li>什么是“权限”？ </li>
+<li>权限是限制谁的？   </li>
+<li>权限可以修饰哪些元素？</li>
+<li>访问权限修饰符是给谁用的<br>&emsp;&emsp;“权限”中文的含义很简单，就是权力的限制，直接讲就是可以做什么<br>&emsp;&emsp;权限是限制其他类的，对于被访问修饰符修饰的元素来说，其他的类对于它来讲，只有三个身份，分别是其他的类，同类库的类，派生的类，对于这三种身份，不同的权限修饰符给与他们的访问权限不同，举例来说，对于protected修饰的元素来说，其他类型的类不能对其访问，同类库和派生类可以对其访问<br>&emsp;&emsp;访问权限修饰符可以修饰哪些元素，类，域和方法<br>&emsp;&emsp;访问权限修饰符是给编译器使用的，编译过程保证了互相调用的正确性，访问权限会被编译器编译进类的字节码文件（.class文件）中，以供编译器编译新代码时作为权限检查的信息来使用<br>&emsp;&emsp;在讲一些小的细节吧，如果A能访问B,B能够访问C,但是A不能访问C,那么A可以“调用”C中的方法吗？答案是不可以，C中的方法能否被访问，要查看调用它的类对于它的权限，但是A却可以通过B来调用C,我喜欢称为委托，也就是说方法的调用是两个类之间的事情，有点绕，但是很有意思<h2 id="接口和实现"><a href="#接口和实现" class="headerlink" title="接口和实现"></a>接口和实现</h2>&emsp;&emsp;访问权限的控制常被称为具体实现的隐藏，把数据和方法包装进类中，以及具体实现的隐藏，常共同被称作时封装，其结果是一个同时用于特征和行为的数据类型<br>&emsp;&emsp;出于两个很重要的原因，访问权限控制的边界划在了数据类型的内部，第一个原因时要设定客户端程序员可以使用和不可以使用的界限，这个原因直接引出了第二个原因，实现接口和实现的分离  <h2 id="类的访问权限"><a href="#类的访问权限" class="headerlink" title="类的访问权限"></a>类的访问权限</h2>&emsp;&emsp;在java中，权限控制符也可以用于确定库中的哪些类对于库的使用者是可用的，如果希望某个客户端程序员能够使用这个类，就使用public来定义这个类，这样做甚至可以控制客户端程序员能否创建一个该类的对象<br>&emsp;&emsp;这里有一些限制  </li>
+<li>每个编译单元（.java文件）都只能有一个public类，这表示，每个编译单元只能有一个公共接口  </li>
+<li>public类必须完全与含有编译单元的文件名相匹配  </li>
+<li>虽然不是很常用，但编译单元内完全不带public类也是可能的，在这种情况下，可以随意对文件命名，但是不建议<br>&emsp;&emsp;还有需要注意的是：类的定义一定不能是private或者protected的，只能是public或者不加任何修饰符的包访问权限</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/10/06/访问权限控制/" data-id="cjmxpz741001bzorz48vg8wft" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-初始化与清理" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/10/05/初始化与清理/" class="article-date">
+  <time datetime="2018-10-05T15:57:28.000Z" itemprop="datePublished">2018-10-05</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/学习心得/">学习心得</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/10/05/初始化与清理/">初始化与清理</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
+<p>随着计算机革命的发展，“不安全”的编程方式已逐渐成为编程代价高昂的主要原因<br>&emsp;&emsp;初始化和清理（cleanup）正是涉及安全的两个问题，许多C程序的错误都源于程序员忘了初始化变量，特别是在使用程序时，如果用户不知道如何初始化库的构件（或者是用户必须要初始化的其他东西）更是如此，清理也是一个特殊问题，当使用一个元素时，它对你不会有什么影响了，所有很容易把它忘掉，这样一来，这个元素占用的资源得不到释放  </p>
+</blockquote>
+<h2 id="用构造器确保初始化"><a href="#用构造器确保初始化" class="headerlink" title="用构造器确保初始化"></a>用构造器确保初始化</h2><p>&emsp;&emsp;假想为每个类都定义一个初始化方法，命名为intialize()好了，所以你在向对象发送消息之前，为了确保对象被恰当地初始化了，你应该先主动去调用这个initialize()方法，可是如果你忘了怎么办呢？如果我们咋创建对象的时候能够自动进行对象的初始化工作就好了，这样就确保了我们创建的对象一定被正确地初始化了<br>&emsp;&emsp;接下来的问题是如何命名这个初始化方法，有两个问题  </p>
+<ol>
+<li>所取的任何名字都可能会与方法名冲突</li>
+<li>调用构造器是编译器的责任，编译器应该要调用这一个方法<br>我们的解决的方法很简单，构造器的名称和类名相同，这是一种约定，即解决了和方法名字的冲突问题，又解决了编译器识别的问题，构建哪个类的对象就调用那个类的与方法名相同的构造函数  <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> Rock();</span><br></pre></td></tr></table></figure>
+&emsp;&emsp;上述创建对象的过程可以被拆解成两步，第一步，为对象分配内存空间，第二步，调用相对应的构造函数，理论上讲，“初始化”和“创建”是彼此独立的，然而在java代码中你找不到两者之间的界限，也看不到对构造的显式调用，java将“初始化”和“创建”捆绑在了一起，两者不能分离<br>&emsp;&emsp;构造函数是一种特殊的函数，说特殊，是因为它在对象创建的过程中就被自动调用了，而且只能被调用一次，且构造函数的代码中没有返回值，这与void不同，其实构造函数被调用之后会返回新对象的一个引用，只是我们在构造函数中不写返回类型，这是一种规定，你只需遵守就行了<h2 id="方法重载"><a href="#方法重载" class="headerlink" title="方法重载"></a>方法重载</h2>&emsp;&emsp;大多数程序设计语言要求为每个方法（在有些语言中经常成为函数）都提供一个独一无二的标识符，在java（和C++）里，构造器是强制重载方法名的一个很重要的一个原因，既然构造器的方法名由类名决定，那就只能有一个构造器，可是如果我想以多种方式来创建一个对象时该怎么办呢？为了让方法名相同而参数不同的构造器同时存在，必须要用到方法的重载  <h3 id="区分方法重载"><a href="#区分方法重载" class="headerlink" title="区分方法重载"></a>区分方法重载</h3>要是有几个方法都要相同的方法，java如何知道你指的是哪个方法呢？其实规则很简单，每个重载的方法都必须要有一个独一无二的参数类型列表，注意返回值类型不作为方法重载的依据，因为如果我们只是利用方法的副作用而不使用方法的返回值的话，编译器还是没办法判断应该调用哪一个方法例如<br> void say(){};<br> String say(){};<br> a.say();<br>&emsp;&emsp;这样你能判断a调用的是哪个方法吗？不能，所有为了避免java的困扰，返回值类型不能作为方法重载的依据<h3 id="涉及基本类型的重载"><a href="#涉及基本类型的重载" class="headerlink" title="涉及基本类型的重载"></a>涉及基本类型的重载</h3>&emsp;&emsp;基本类型的重载是，先找那些方法的参数类型最符合自己类型的方法，如果找不到以此向上提升，注意，有一个特殊，如基本类型为char，先找参数类型为char的方法，若找不到，则直接提升到int类型<h2 id="this关键字"><a href="#this关键字" class="headerlink" title="this关键字"></a>this关键字</h2>&emsp;&emsp;我觉得《Thinking in java》的作者Bruce Eckel对方法调用解释的很清楚，我们看下他是如何解释代码调用的：<br>&emsp;&emsp;如果有同一个类型的两个对象a,b，如何让才能这两个对象都能调用peel()方法呢？<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Banana</span></span>&#123; <span class="function"><span class="keyword">void</span> <span class="title">peel</span><span class="params">(<span class="keyword">int</span> i)</span></span>&#123;<span class="comment">/* */</span>&#125;&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BananaPeel</span></span>&#123;</span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">   Banana a=<span class="keyword">new</span> Banana(),b=<span class="keyword">new</span> Banana();</span><br><span class="line">   a.peel(<span class="number">1</span>);</span><br><span class="line">   b.peel(<span class="number">2</span>); </span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+&emsp;&emsp;如果只有一个peel()方法，它如何知道是被a还是被b调用呢？<br>&emsp;&emsp;为了能用简单，面向对象的语法编写代码——即“发送消息给对象”，编译器做了一些某后工作，它暗自把“操作对象的引用”作为第一个参数传递给peel()，所以上述两个方法的调用就变成了这样：<br> Banana.peel(a,1);<br> Banana.peel(b,2);<br>&emsp;&emsp;这是内部表示，我们并不能这样写代码，上面这行的意思时，执行Banana类中定义的peel()方法，方法的参数是a,1,这才是代码底层做的事情，不过为了满足我们面向对象的思维，我们使用a.peel()这种形式，而其他的事情，编译器帮我们摆平<br>&emsp;&emsp;如何在方法内部获得对当前对象的引用？由于这个引用是编译器“偷偷”地帮我们加的，所以没有标识符可用，但是为此有一个专门的关键字this,this关键字只能在方法内部使用，表示“调用方法的那个对象”<br>&emsp;&emsp;this关键字的用法：</li>
+<li>可以将当前对象传递给其他方法使用</li>
+<li>在构造器调用构造器时使用<h3 id="static的含义"><a href="#static的含义" class="headerlink" title="static的含义"></a>static的含义</h3>&emsp;&emsp;了解this关键字之后，就能全面理解static(静态)方法的含义了，static方法就是没有this的方法，在static方法的内部不能调用非静态方法，因为那些非静态类的方法都需要this类型的参数，而static方法并不能提供给它们，反过来，非静态类的方法是可以调用静态方法的<br>&emsp;&emsp;有些人认为static方法不是“面向对象的”，因为它的确具有全局函数的语义，使用static方法时，由于不存在this，所有不是通过“向对象发送消息”的方式执行的，这种说法还是有些道理的，所有，如果你的代码中存在大量的static方法，就该重新考虑自己的程序了  <h2 id="清理：终结处理和垃圾回收"><a href="#清理：终结处理和垃圾回收" class="headerlink" title="清理：终结处理和垃圾回收"></a>清理：终结处理和垃圾回收</h2><h2 id="成员初始化"><a href="#成员初始化" class="headerlink" title="成员初始化"></a>成员初始化</h2>&emsp;&emsp;java尽力保证，所有的变量在使用之前都能得到适当的初始化，对于方法的局部变量，java以编译时错误的形式来贯彻这项保证·<h2 id="构造器初始化"><a href="#构造器初始化" class="headerlink" title="构造器初始化"></a>构造器初始化</h2>&emsp;&emsp;可以用构造器来初始化，在运行时刻，可以调用方法或执行某些动作来确认该值，这为编程带来了更大的灵活性，但是要记住，无法阻止自动初始化的进行，它将在构造器被调用之前发生<h3 id="初始化的顺序"><a href="#初始化的顺序" class="headerlink" title="初始化的顺序"></a>初始化的顺序</h3>&emsp;&emsp;在类的内部，变量定义的顺序决定了初始化的顺序，即使变量定义散布于方法定义之间，它们仍然会在任何方法（包括构造器）之前得到初始化<h3 id="静态数据的初始化"><a href="#静态数据的初始化" class="headerlink" title="静态数据的初始化"></a>静态数据的初始化</h3>无论创建多少个对象，静态数据都只占一份存储区域，static关键字不能应用于局部变量，因此它只能作用于域，如果一个域时静态的基本类型域，且也没有对它进行初始化，那么它就会获得基本类型的标准初值，如果它是一个对象，那么它的默认值就是null<br>&emsp;&emsp;静态初始化只有在必要的时刻才会进行，什么是必要时刻？就是一切触发包含静态成员类的加载的行为都是必要时刻<br>&emsp;&emsp;初始化的顺序是先静态变量（如果它们尚未因前面的对象创建过程而被初始化的话，记住静态初始化只会进行一次，那就是在类第一次被加载的时刻）<br>，而后时非静态变量<br>&emsp;&emsp;总结一下对象的创建过程，假设一个Dog类  </li>
+<li>即使没有显式地使用static关键字，构造器实际上也是静态方法，因此，当首次创建Dog对象时（构造器可以看成静态方法），或者Dog类的静态方法被调用时，解释器必须查找类路径，以定位Dog.class文件</li>
+<li>然后载入Dog.class,创建一个Class对象，有关静态初始化的所有动作都会被执行，因此，静态初始化只在Class对象首次加载的时候进行一次</li>
+<li>当用new Dog()创建对象的时候，首先将在堆上为Dog对象分配足够的内存空间</li>
+<li>这块存储空间会被清零，这就自动地将Dog对象中的所有类型数据都设成默认值</li>
+<li>执行所有出现在字段定义初的初始化</li>
+<li>执行构造器  <h3 id="显示的静态初始化"><a href="#显示的静态初始化" class="headerlink" title="显示的静态初始化"></a>显示的静态初始化</h3>&emsp;&emsp;java允许将多个静态初始化动作组织成一个特殊的“静态子句”，有时也叫做静态块，静态块先其他的静态成员一样，也是在类被首次加载的时候被执行一次  <h3 id="非静态实例初始化"><a href="#非静态实例初始化" class="headerlink" title="非静态实例初始化"></a>非静态实例初始化</h3>&emsp;&emsp;非静态实例初始化很像静态块，只是在代码块前面没有static关键字，这种语法对于支持“匿名内部类”的初始化时必须的，但是它也可以使你保证无论使用那个构造器，某些操作都会发生，而且是在构造器执行之前执行  <h2 id="数组初始化"><a href="#数组初始化" class="headerlink" title="数组初始化"></a>数组初始化</h2>&emsp;&emsp;数组只是相同类型的，用一个标识符名称封装到一起的一个对象序列或基本类型数据序列，记住，数组也是对象，在java中除了基本类型 一起皆对象，数据可以通过方括号下标操作符[]来定义和使用，要定义一个数组，只需要在类型名后面加上一对中括号即可<br> int[] a;<br> int a[];<br>&emsp;&emsp;两种格式都一样，我更喜欢第一种方式，上述两种方式都只是让我们拥有一个引用，并且指出了这个引用所代表的数据类型，随便说一句，java是强类型语言，标识符前面的类型往往是为了类型检查的需要<br>&emsp;&emsp;数组类型主要分为两种，一种是基本数据类型数值，一种时引用类型数值，基本数据类型数组内部持有着基本数据类型的值，而引用类型数值元素是引用，如图：</li>
+</ol>
+<p>&emsp;&emsp;所有数组（无论它们的元素时对象还是引用）都有一个固定成员，可以通过它获知数组内包含了多少元素，但不能对其修改，这个成员就是length,数值索引从0开始</p>
+<h3 id="可变参数列表"><a href="#可变参数列表" class="headerlink" title="可变参数列表"></a>可变参数列表</h3><pre><code>void variableList(String... args);
+</code></pre><p>&emsp;&emsp;上述语法就是从在java SE5新添加的可变参数列表的特性，有了可变参数，就不用显式地编写数组语法了<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">argsList</span><span class="params">(String[] args)</span></span>;</span><br></pre></td></tr></table></figure>，当你指定参数时，编译器实际上会为你去填充数组，你获取的仍旧是一个数组</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/10/05/初始化与清理/" data-id="cjmxpz73n0015zorz8un6dh5u" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-一切都是对象" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2018/10/05/一切都是对象/" class="article-date">
@@ -102,13 +250,105 @@
 <li>堆栈：位于通用RAM(随机访问存储器)中，但通过堆栈指针可以从处理器那里获得直接支持，堆栈指针若向下移动，则分配新的内存，若向上移动，则释放那些内存，这是一种快速有效的分配存储方法，创建程序时，Java系统必须知道存储在堆栈内所有的确切生命周期，以便上下移动堆栈指针，这一约束限制了程序的灵活性，所以虽然某些java数据存储在堆栈中——特别是对象引用，但是java对象并不存储于其中  </li>
 <li>堆，一种通用的内存池（也位于RAM区），用于存放所有的java对象，堆不同于堆栈的好处是：编译器不需要知道存储的数据在堆中存活多少时间，因此，在堆中分配有很大的灵活性  </li>
 <li>常量存储：常量值通常直接存放在程序代码内部，这样做是安全的，因为它们永远不会被改变，有时，在嵌入式系统中，常量本身和其他部分分割离开，所以在这种情况下，可以选择将其存放在ROM（只读存储器）中  </li>
-<li>非RAM存储。如果数据完全存活于程序之外，那么它可以不受程序的任何控制，在程序没有运行时也可以存在，其中两个基本的例子时流对象和持久化对象  <h3 id="特例：基本类型"><a href="#特例：基本类型" class="headerlink" title="特例：基本类型"></a>特例：基本类型</h3>&emsp;&emsp;咋程序设计中经常用到一系列类型，它们需要特殊对待，可以把它们想象成“基本”类型<br>之所以特殊对待，是因为new将对象存储在“堆”里，故用new创建一个对象——特别是小的，简单的变量，往往不是很有效，因此，对于这些类型，java采取与C和C++相同的方法，也就是说，不用new来创建对象，而是创建一个并非是引用的“自动”变量，这个变量直接存储“值”，并置于堆栈中，因此更加高效<br>&emsp;&emsp;java要确定每种基本类型所占存储空间的大小，它们的大小并不像其他大多数语言那样随机器架构的变化而变化，所以java所编写的程序比其他语言更具有可移植性<br>基本类型|包装器<br>——–|——<br>这样的啊|看到了吗</li>
+<li>非RAM存储。如果数据完全存活于程序之外，那么它可以不受程序的任何控制，在程序没有运行时也可以存在，其中两个基本的例子时流对象和持久化对象  </li>
 </ol>
+<h3 id="特例：基本类型"><a href="#特例：基本类型" class="headerlink" title="特例：基本类型"></a>特例：基本类型</h3><p>&emsp;&emsp;在程序设计中经常用到一系列类型，它们需要特殊对待，可以把它们想象成“基本”类型<br>之所以特殊对待，是因为new将对象存储在“堆”里，故用new创建一个对象——特别是小的，简单的变量，往往不是很有效，因此，对于这些类型，java采取与C和C++相同的方法，也就是说，不用new来创建对象，而是创建一个并非是引用的“自动”变量，这个变量直接存储“值”，并置于堆栈中，因此更加高效<br>&emsp;&emsp;java要确定每种基本类型所占存储空间的大小，它们的大小并不像其他大多数语言那样随机器架构的变化而变化，所以java所编写的程序比其他语言更具有可移植性  </p>
+<h3 id="高精度数字"><a href="#高精度数字" class="headerlink" title="高精度数字"></a>高精度数字</h3><p>&emsp;&emsp;java提供了两个用于高精度计算的类：BigInteger和BigDecimal,可以将它们看成是包装器类，但是它们并没有相应的基本类型，它们都支持任意精度的数字，其实很好理解，因为它们的数据类型使得它们可以接受更多的位来表示数值  </p>
+<h3 id="java中的数组"><a href="#java中的数组" class="headerlink" title="java中的数组"></a>java中的数组</h3><p>&emsp;&emsp;几乎所有的程序设计语言都支持数组，在C和C++中使用数组时危险的，因为它们的数组就是内存块，如果一个程序要访问其自身内存块之外的数组，或在数组初始化前使用内存，将产生难以预料的后果<br>&emsp;&emsp;java的一个主要目标之一就是安全性，java确保数组会被初始化，而且不能在它的范围外被访问，这种范围检查，是以每个数组上少量的内存开销及运行时的范围检查为代价的，但由此换来的是安全性和效率的提高  </p>
+<h2 id="永远不需要销毁对象"><a href="#永远不需要销毁对象" class="headerlink" title="永远不需要销毁对象"></a>永远不需要销毁对象</h2><h3 id="作用域"><a href="#作用域" class="headerlink" title="作用域"></a>作用域</h3><p>&emsp;&emsp;大多数过程型语言都有作用域(scope)的概念,作用域决定了在其内定义的变量名的可见性和生命周期</p>
+<h3 id="对象的作用域"><a href="#对象的作用域" class="headerlink" title="对象的作用域"></a>对象的作用域</h3><p>&emsp;&emsp;java对象不具备和基本数据类型一样的生命周期，当new创建一个java对象时，它可以存活于作用域之外<br>&emsp;&emsp;如果java让对象一直存在，那么靠什么才能防止这些对象填满内存空间，进而阻塞你的程序呢？这正是C++里可能会发生的问题，这也是java的神奇之处，java有一个垃圾回收器，用来监视用new创建的所有对象，并辨别那些不会再被引用的对象。随后，释放这些对象的内存空间，以便供其他新的对象使用</p>
+<h2 id="创建新的数据类型：类"><a href="#创建新的数据类型：类" class="headerlink" title="创建新的数据类型：类"></a>创建新的数据类型：类</h2><p>&emsp;&emsp;如果一切都是对象，那么是什么决定了某一类对象的外观和行为呢？换句话说，是什么确定了对象的类型</p>
+<h3 id="字段和方法"><a href="#字段和方法" class="headerlink" title="字段和方法"></a>字段和方法</h3><p>&emsp;&emsp;一旦定义了一个类（在java中你所做的全部工作就是定义类，产生那些类的对象，以及发送消息给这些对象）就可以在类中设置两种类型的元素，字段（有时称做数据成员）和方法（有时称作函数成员）  </p>
+<h3 id="基本成员默认值"><a href="#基本成员默认值" class="headerlink" title="基本成员默认值"></a>基本成员默认值</h3><p><table><tr><th>基本类型</th><th>默认值</th></tr><tr><td>boolean</td><td>fasle</td></tr><tr><td>char</td><td>‘\u0000’(null)</td></tr><tr><td>byte</td><td>(byte)0</td></tr><tr><td>short</td><td>(short)0</td></tr><tr><td>int</td><td>0</td></tr><tr><td>long</td><td>0L</td></tr><tr><td>float</td><td>0.0f</td></tr><tr><td>double</td><td>0.0d</td></tr></table></p>
+<h2 id="方法，参数和返回值"><a href="#方法，参数和返回值" class="headerlink" title="方法，参数和返回值"></a>方法，参数和返回值</h2><p>&emsp;&emsp;返回类型描述的是在调用方法之后从方法返回的值，参数列表给出了要传递个方法的信息的类型和名称，方法名和参数列表（它们合起来被称为“方法签名”），唯一地标识出某个方法</p>
+<h2 id="java程序"><a href="#java程序" class="headerlink" title="java程序"></a>java程序</h2><h3 id="名字的可见性"><a href="#名字的可见性" class="headerlink" title="名字的可见性"></a>名字的可见性</h3><p>&emsp;&emsp;名字管理对任何程序设计语言都是一个重要的问题，如果在程序的某个模块里使用了一个名字，而其他人在这个程序的另一个模块里也使用了相同的名字，那么怎么区分这两个名字并防止二者互相冲突<br>&emsp;&emsp;java采用了一种全新的方法来避免上述的问题。为了给每一个类库生成不会与其他名字混淆的名字，java设计者希望程序员反过来使用自己的internet域名</p>
+<h3 id="运用其他构件"><a href="#运用其他构件" class="headerlink" title="运用其他构件"></a>运用其他构件</h3><p>&emsp;&emsp;如果想在自己的程序使用预先定义好的类，那么编译器就必须知道怎么定位它们，当然这个类可能就在发生调用的那个<strong>源文件</strong>中，在这种情况下，就可以直接使用这个类<br>&emsp;&emsp;如果那个类位于其他文件中呢？又会怎样？编译器没有那么聪明知道你要使用的类应该在哪里查找，所以你要明确地告诉编译器你想要的类是什么，import指示编译器导入一个包，也就是一个类库</p>
+<h3 id="static关键字"><a href="#static关键字" class="headerlink" title="static关键字"></a>static关键字</h3><p>&emsp;&emsp;通常来说，当创建类时，就是在描述那个类的对象的外观和行为，除非用new创建那个类的对象，否则，实际上并未获得任何对象，执行new来创建对象时，数据存储空间才被分配，其方法才供外部调用<br>&emsp;&emsp;有两种情况是上述方法无法解决的  </p>
+<ol>
+<li>只想为某特定域分配单一存储空间，而不去考虑究竟要创建多少对象吗，甚至根本就不创建对象</li>
+<li>希望某个方法不与包含它的类的任何对象关联在一起，也就是说，寄生不创建对象，也能调用这个方法<br>&emsp;&emsp;通过static关键字可以满足这两方面的要求，有些面向对象的语言采用类数据和类方法两个术语，代表那些数据和方法是作为整个类，而不是类的某个特定对象而存在的<br>&emsp;&emsp;尽管当static作用在某个字段时，肯定会改变数据创建的方式（因为一个static字段对每一个类来说都只是一份存储空间，而非static字段则是每个对象有一个存储空间），但是如果static作用于方法上，差别就没有那么大   <h3 id="编译和运行"><a href="#编译和运行" class="headerlink" title="编译和运行"></a>编译和运行</h3>&emsp;&emsp;要编译，运行一个程序，首先必须要有一个java开发环境，目前，有相当多的第三方厂商提供开发环境，我们当前使用的是SUN免费提供的JDK（java Developer’s Kit）开发环境为例<br>&emsp;&emsp;安装好JDK之后，还要设定好路径信息，以确保计算机能够找到javac和java这两个文件  </li>
+</ol>
+<h2 id="注释和嵌入式文档"><a href="#注释和嵌入式文档" class="headerlink" title="注释和嵌入式文档"></a>注释和嵌入式文档</h2><p>先来看一下注释，在java中有三种方式的注释  </p>
+<ol>
+<li>单行注释 //</li>
+<li>多行注释 /**/</li>
+<li>文档注释 /<strong>  </strong>/   <h3 id="注释文档"><a href="#注释文档" class="headerlink" title="注释文档"></a>注释文档</h3>&emsp;&emsp;文档撰写的最大问题，大概就是对文档的维护了，如果文档与代码是分离的，修改代码时，同时也要修改相应的文档，相当的麻烦啊，解决办法很简单，就是将代码和文档“链接”起来，为了达到这个目的，最简单的方法就是将所有的东西都放在同一个文件内，为了实现这个目的，就必须使用一种特使的注释语法来标记文档，此外还需要一个能够提取文档信息的工具<br>&emsp;&emsp;javadoc就是这样的一个工具，它是jdk安装的一部分，它采用了java编译器的某些技术，查找程序内特殊注释标签，它不仅解析由这些标签标记的信息，也将毗邻的类名或方法名提取出来，因此，我们可以用最少的工作量，生成相当好的程序文档，生成的文档是HTML格式<br>&emsp;&emsp;需要注意的是，能够生成文档的工具不止javadoc，使用时应该要遵守对应工具的语法规则，不过，如果没有什么特别的需求，javadoc已经很好了<h3 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h3>使用javadoc的方式有两种   </li>
+</ol>
+<ol>
+<li>一种是HTML,可在文档注释中直接写HTML，并没有什么特殊的，只是要注意不要在嵌入式HTML重使用标题标签，因为javadoc会插入自己的标题，而你的标题可能会同它们冲突  </li>
+<li>一种是使用注释标签下面是这些标签的一些示例</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>标签</th>
+<th>语法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>@see</td>
+<td>@see classname<br>@see classname<br>@see fully-qualfied-classname#method-nam</td>
+<td>会在生成的文档中添加一个具有超链接的“see also”</td>
+</tr>
+<tr>
+<td>{@link package.class#member label}</td>
+<td></td>
+<td>该标签与@see及其类似，只是它用于行内，并且文档使用“label”作为超链接文本而不是“see also”</td>
+</tr>
+<tr>
+<td>{@docRoot}</td>
+<td></td>
+<td>该标签产生到文档根目录的相对路径，用于文档树页面的显式超链接</td>
+</tr>
+<tr>
+<td>{@inheritDoc}</td>
+<td></td>
+<td>该标签从当前这个类的最直接的基类中继承相关文档到当前的文档注释</td>
+</tr>
+<tr>
+<td>@version</td>
+<td>@version version-information</td>
+<td>版本信息</td>
+</tr>
+<tr>
+<td>@author</td>
+<td>@author author-information</td>
+<td>作者信息</td>
+</tr>
+<tr>
+<td>@since</td>
+<td></td>
+<td>允许你指定程序代码最早使用的版本，可以在HTML,java文档中看到它被用来指定所用的JDK版本的情况</td>
+</tr>
+<tr>
+<td>@param</td>
+<td>@param param-name discripton</td>
+<td>可以多次使用这个标签，大约每个参数都有一个这样的标签</td>
+</tr>
+<tr>
+<td>@return</td>
+<td>return description</td>
+<td>用来描述返回值的含义</td>
+</tr>
+<tr>
+<td>@throws</td>
+<td>@throws fully-qualified-class-name descripton</td>
+<td>可以多次使用，异常的全限定名和引发异常的原因</td>
+</tr>
+<tr>
+<td>@deprecated</td>
+<td></td>
+<td>该标签用于指出一些旧特性已由改进的新特性所取代，建议用户不要再使用这些旧特性</td>
+</tr>
+</tbody>
+</table>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/05/一切都是对象/" data-id="cjmvsur2x0012xcrz4lq7nxwz" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/05/一切都是对象/" data-id="cjmxpz73i0012zorzry0wofzk" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
@@ -173,7 +413,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/04/对象导论/" data-id="cjmvsur2t0010xcrzfo7gf284" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/04/对象导论/" data-id="cjmxpz73r0018zorz8p5zoe3a" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
@@ -215,7 +455,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/04/Node-js参考网站/" data-id="cjmvsur1w000fxcrzr96ecdqe" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/04/Node-js参考网站/" data-id="cjmxpz729000bzorzea6p50jt" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Node-js/">Node.js</a></li></ul>
@@ -257,7 +497,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/04/JavaScript参考网站/" data-id="cjmvsur1b0006xcrz9e0nq8kv" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/04/JavaScript参考网站/" data-id="cjmxpz725000azorzfnnvmeim" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JavaScript/">JavaScript</a></li></ul>
@@ -299,7 +539,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/04/CSS参考网站/" data-id="cjmvsur0l0000xcrzk92rh9t4" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/04/CSS参考网站/" data-id="cjmxpz70z0000zorze21y301s" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CSS/">CSS</a></li></ul>
@@ -341,7 +581,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/04/HTML5参考网站/" data-id="cjmvsur180005xcrzgf5y9nw5" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/04/HTML5参考网站/" data-id="cjmxpz746001ezorzokct4r8v" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/HTML5/">HTML5</a></li></ul>
@@ -383,7 +623,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/04/JVM参考网站/" data-id="cjmvsur360018xcrz3gbblcgd" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/04/JVM参考网站/" data-id="cjmxpz71r0005zorz2k3cdz0i" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JVM/">JVM</a></li></ul>
@@ -425,94 +665,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/04/Docker参考网站/" data-id="cjmvsur150004xcrz590k6t5q" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/04/Docker参考网站/" data-id="cjmxpz71n0004zorz65nhver0" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Docker/">Docker</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-Linux操作系统参考网站" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2018/10/04/Linux操作系统参考网站/" class="article-date">
-  <time datetime="2018-10-04T03:42:24.000Z" itemprop="datePublished">2018-10-04</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/学习心得/">学习心得</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/10/04/Linux操作系统参考网站/">Linux操作系统参考网站</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/04/Linux操作系统参考网站/" data-id="cjmvsur1l000axcrz548dap5w" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-Oracle参考网站" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2018/10/04/Oracle参考网站/" class="article-date">
-  <time datetime="2018-10-04T03:42:00.000Z" itemprop="datePublished">2018-10-04</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/学习心得/">学习心得</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/10/04/Oracle参考网站/">Oracle参考网站</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/04/Oracle参考网站/" data-id="cjmvsur21000ixcrz8oyfn1s4" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Oracle/">Oracle</a></li></ul>
 
     </footer>
   </div>
@@ -578,6 +734,14 @@
       <ul>
         
           <li>
+            <a href="/2018/10/06/访问权限控制/">访问权限控制</a>
+          </li>
+        
+          <li>
+            <a href="/2018/10/05/初始化与清理/">初始化与清理</a>
+          </li>
+        
+          <li>
             <a href="/2018/10/05/一切都是对象/">一切都是对象</a>
           </li>
         
@@ -587,14 +751,6 @@
         
           <li>
             <a href="/2018/10/04/Node-js参考网站/">Node.js参考网站</a>
-          </li>
-        
-          <li>
-            <a href="/2018/10/04/JavaScript参考网站/">JavaScript参考网站</a>
-          </li>
-        
-          <li>
-            <a href="/2018/10/04/CSS参考网站/">CSS参考网站</a>
           </li>
         
       </ul>
