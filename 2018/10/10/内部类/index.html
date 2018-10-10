@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>内部类 | 代海峰</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="前言&amp;emsp;&amp;emsp;可以将一个类的定义放在另一个类的定义内部，这就是内部类&amp;emsp;&amp;emsp;内部类是一种非常有用的特性，因为它允许你把一些逻辑相关的类组织在一起，并控制内部类的可视性，然而必须要了解，内部类与组合是完全不同的概念，这一点很重要&amp;emsp;&amp;emsp;在最初，内部类看起来就像是一种代码隐藏机制，将类置于其他类的内部，但是，你将会了解到，内部类远不止如此，它了解外围类，并">
+<meta name="keywords" content="Java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="内部类">
+<meta property="og:url" content="http://yoursite.com/2018/10/10/内部类/index.html">
+<meta property="og:site_name" content="代海峰">
+<meta property="og:description" content="前言&amp;emsp;&amp;emsp;可以将一个类的定义放在另一个类的定义内部，这就是内部类&amp;emsp;&amp;emsp;内部类是一种非常有用的特性，因为它允许你把一些逻辑相关的类组织在一起，并控制内部类的可视性，然而必须要了解，内部类与组合是完全不同的概念，这一点很重要&amp;emsp;&amp;emsp;在最初，内部类看起来就像是一种代码隐藏机制，将类置于其他类的内部，但是，你将会了解到，内部类远不止如此，它了解外围类，并">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-10-10T08:55:36.772Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="内部类">
+<meta name="twitter:description" content="前言&amp;emsp;&amp;emsp;可以将一个类的定义放在另一个类的定义内部，这就是内部类&amp;emsp;&amp;emsp;内部类是一种非常有用的特性，因为它允许你把一些逻辑相关的类组织在一起，并控制内部类的可视性，然而必须要了解，内部类与组合是完全不同的概念，这一点很重要&amp;emsp;&amp;emsp;在最初，内部类看起来就像是一种代码隐藏机制，将类置于其他类的内部，但是，你将会了解到，内部类远不止如此，它了解外围类，并">
+  
+    <link rel="alternate" href="/atom.xml" title="代海峰" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">代海峰</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">个人博客</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-内部类" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/10/10/内部类/" class="article-date">
+  <time datetime="2018-10-10T03:44:31.000Z" itemprop="datePublished">2018-10-10</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/学习心得/">学习心得</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      内部类
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>&emsp;&emsp;<strong>可以将一个类的定义放在另一个类的定义内部，这就是内部类</strong><br>&emsp;&emsp;内部类是一种非常有用的特性，因为它允许你把一些逻辑相关的类组织在一起，并控制内部类的可视性，然而必须要了解，内部类与组合是完全不同的概念，这一点很重要<br>&emsp;&emsp;在最初，内部类看起来就像是一种代码隐藏机制，将类置于其他类的内部，但是，你将会了解到，内部类远不止如此，它了解外围类，并能与之通信，而且你用内部类写出的代码更加优雅而清晰，尽管并不总是如此  </p>
+<h2 id="创建内部类"><a href="#创建内部类" class="headerlink" title="创建内部类"></a>创建内部类</h2><p>&emsp;&emsp;创建内部类的方法很简单，就是将类的定义置于外围类的内部<br>&emsp;&emsp;更典型的情况是，外部类将有一个方法，该方法返回一个指向内部类的引用，就像下面看到<code>to()</code>的<code>contens()</code>和一样<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">public class Parcel1 &#123;</span><br><span class="line">  class Contents&#123;</span><br><span class="line">      private int i =11;</span><br><span class="line">      public int value()&#123;return i;&#125;</span><br><span class="line">  &#125;</span><br><span class="line">    class Destination&#123;</span><br><span class="line">      private String label;</span><br><span class="line">      Destination(String label)&#123;</span><br><span class="line">          this.label=label;</span><br><span class="line">      &#125;</span><br><span class="line">      String readLable()&#123;return label;&#125;</span><br><span class="line">  &#125;</span><br><span class="line">  public Destination to(String s)&#123;</span><br><span class="line">      return new Destination(s);</span><br><span class="line">  &#125;</span><br><span class="line">  public Contents conents()&#123;</span><br><span class="line">      return new Contents();</span><br><span class="line">  &#125;</span><br><span class="line">  public void ship(String dest)&#123;</span><br><span class="line">      Contents c=conents();</span><br><span class="line">      Destination d=to(&quot;dest&quot;);</span><br><span class="line">      System.out.print(d.readLable());</span><br><span class="line">  &#125;</span><br><span class="line">  public static void main(String[] args)&#123;</span><br><span class="line">      Parcel1 p=new Parcel1();</span><br><span class="line">      p.ship(&quot;Tasmania&quot;);</span><br><span class="line">      Parcel1 q=new Parcel1();</span><br><span class="line">      Parcel1.Destination d=q.to(&quot;Borneo&quot;);</span><br><span class="line">      Parcel1.Contents c = q.conents();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="链接到外部类"><a href="#链接到外部类" class="headerlink" title="链接到外部类"></a>链接到外部类</h2><p>&emsp;&emsp;到目前为止，内部类似乎还是一种名字隐藏和组织代码的模式，这些很有用，但还不是最引人注目的，它还有其他的用途，<strong>当生成一个内部类的对象时，此对象与制造它的外围类对象（enclosing object）之间就有了一种联系，所以它能访问其外围类的所有成员，而不需要任何特殊条件</strong>，此外，内部类还拥有外围类所有元素的访问权，内部类可以访问其外围类的的方法和字段，就像自己拥有它们似的<br>&emsp;&emsp;内部类自动拥有对其外围类所有成员的访问权，这是怎么做到的呢？当某个对象创建一个内部类对象的时候，此内部类对象必定会秘密捕获一个指向那个外围类对象的引用，然后，在你访问此外围类的成员时，就是用那个引用来选择外围类的成员，幸运的是，编译器会帮我们处理所有的细节，但你现在可以看到：内部类的对象只能在其外围类的对象相关联的情况下才能被创建（就像你应该看到的，在内部类是非static类时），构建内部类对象时，需要一个指向其外围类对象的引用</p>
+<h2 id="使用-this和-new"><a href="#使用-this和-new" class="headerlink" title="使用.this和.new"></a>使用.this和.new</h2><p>&emsp;&emsp;<strong>如果你需要生成外部类对象的引用，可以使用外部类的名字后面紧跟原点和this</strong>，这样产生的引用自动地具有正确的类型，这一点在编译期就被知晓并受到检查，因此没有任何运行时开销<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public class Dothis &#123;</span><br><span class="line">    void f()&#123;System.out.print(&quot;Dothis.f()&quot;);&#125;</span><br><span class="line">    public class Inner&#123;</span><br><span class="line">        public Dothis outer()&#123;</span><br><span class="line">            return Dothis.this;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    public Inner inner()&#123;</span><br><span class="line">        return new Inner();</span><br><span class="line">    &#125;</span><br><span class="line">    public static void main(String[] args)&#123;</span><br><span class="line">        Dothis dt=new Dothis();</span><br><span class="line">        Dothis.Inner dti=dt.inner();</span><br><span class="line">        dti.outer().f();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;有时你想要告知某些其他对象，去创建其某个内部类的对象，要实现此目的，你必须在new表达式中提供对其他外部类对象的引用，这就需要使用<code>.new</code>语法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public class DotNew &#123;</span><br><span class="line">    public class Inner&#123;&#125;</span><br><span class="line">    public static void main(String[] args)&#123;</span><br><span class="line">        DotNew dotNew=new DotNew();</span><br><span class="line">        DotNew.Inner di=dotNew.new Inner();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&amp;emsp；要想创建内部类的对象，你不能按照你想象的方式，去引用外部类的名字DotNew,而是<strong>必须使用外部类的对象来创建内部类对象</strong>，像上面<code>newDot.new Inner()</code>那样,这也解决了内部类名字作用域的问题<br>&emsp;&amp;emsp；<strong>在拥有外部类对象之前是不能创建内部类对象的</strong>，这是因为内部类对象暗暗连接到它的外部类对象上，但是，如果你创建的是嵌套类（静态内部类），那么就不需要对外部类对象的引用  </p>
+<h2 id="内部类和向上转型"><a href="#内部类和向上转型" class="headerlink" title="内部类和向上转型"></a>内部类和向上转型</h2><p>&emsp;&amp;emsp；当将内部类向上转型为其基类，尤其是转型为一个接口的时候，内部类就有了用武之地（从实现了某个接口的对象，得到对接口的引用，与向上转型为这个对象的基类，实际上效果是一样的），<strong>这是因为此内部类——某个接口的实现——能够完全不可见，并且不可用</strong>。所得到只是指向基类或则接口的引用，所以能够很方便地隐藏实现细节<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">package xyz.egbertday;</span><br><span class="line">interface Destination&#123;</span><br><span class="line">    String readLabel(String s);</span><br><span class="line">&#125;</span><br><span class="line">interface Contents&#123;</span><br><span class="line">    int value();</span><br><span class="line">&#125;</span><br><span class="line">class Parcel&#123;</span><br><span class="line">    private class PContents implements Contents&#123;</span><br><span class="line">        private int i;</span><br><span class="line">        public int value()&#123;return i;&#125;</span><br><span class="line">    &#125;</span><br><span class="line">    protected class PDestination implements Destination&#123;</span><br><span class="line">        private String label;</span><br><span class="line">        public PDestination(String toWhere)&#123;</span><br><span class="line">            label=toWhere;</span><br><span class="line">        &#125;</span><br><span class="line">        public String readLabel(String s)&#123;return s;&#125;;</span><br><span class="line">    &#125;</span><br><span class="line">    public Destination destination(String s)&#123;</span><br><span class="line">        return new PDestination(s);</span><br><span class="line">    &#125;</span><br><span class="line">    public Contents contents()&#123;</span><br><span class="line">        return new PContents();</span><br><span class="line">    &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    public class TestParcel &#123;</span><br><span class="line">    public static void main(String[] args)&#123;</span><br><span class="line">        Parcel parcel=new Parcel();</span><br><span class="line">        Contents c=parcel.contents();</span><br><span class="line">        //向下转型为私有的内部类也是不可以的</span><br><span class="line">        //Parcel.PContents pc=parcel.contents();</span><br><span class="line">        Destination d= parcel.destination(&quot;tasmania&quot;);</span><br><span class="line">        //illegal --can&apos;t access private class</span><br><span class="line">        //Parcel.PContents ps=parcel.new PContents();</span><br><span class="line">        Parcel.PDestination pd=parcel.new PDestination(&quot;同包可访问&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;在上面的例子中，内部类PContents是private,所以除了Parcel，没人能够访问它，PDestination是protected的，所以只有Parcel及其子类，还有同包的类能够访问它，这意味着如果客户端程序员想要了解或访问这些成员，那是要受到限制的，实际上，甚至不能向下转型成private内部类（或是protect内部类，除非是继承自它的子类），因为不能访问其名称，就像上面看到的那样，也是，private内部类给类的设计者提供了一种途径，通过这种方式可以完全阻止任何依赖于类型的编码，并且完全隐藏了实现的细节，此外，从客户端程序员的角度来看，由于不嫩访问任何新增的，原本不属于公共接口的方法，所有扩展接口是没有价值的（也就是说我们对于private内部类，我们只能通过可访问的其向上转型的基类或者接口来访问这个内部类，因为同基类接口访问，任何通过内部类添加的新的方法都是无意义的）。这也给java编译器提供了生成更高效代码的机会<br>&emsp;&emsp;总结如下，对内部类的访问权限修饰同样有效，我们仅能对那些有权限访问的内部类进行访问，例如private内部类，我们无法访问（除了包含它的外部类），对于protected内部类，我们只能在外围类的子类或者同包类能访问，但是如果我们对内部类基类的接口具有访问权的时候，内部类还提供了一种机制，通过外围类的方法获得内部类的向上转型的引用，我们就可以对这个引用的接口进行访问，由此得到一个副作用是，通过向上转型的接口访问时对于那些在内部类中新添加的方法，我们是无法调用的</p>
+<h2 id="在方法和作用域内的内部类"><a href="#在方法和作用域内的内部类" class="headerlink" title="在方法和作用域内的内部类"></a>在方法和作用域内的内部类</h2><p>&emsp;&emsp;我们还可以在方法里面或者在任意的作用域内定义内部类，这么做有两个理由：</p>
+<h2 id="匿名内部类"><a href="#匿名内部类" class="headerlink" title="匿名内部类"></a>匿名内部类</h2><h2 id="嵌套内部类"><a href="#嵌套内部类" class="headerlink" title="嵌套内部类"></a>嵌套内部类</h2><h2 id="为什么需要内部类"><a href="#为什么需要内部类" class="headerlink" title="为什么需要内部类"></a>为什么需要内部类</h2><h2 id="内部类的继承"><a href="#内部类的继承" class="headerlink" title="内部类的继承"></a>内部类的继承</h2><h2 id="局部内部类"><a href="#局部内部类" class="headerlink" title="局部内部类"></a>局部内部类</h2><h2 id="内部类标识符"><a href="#内部类标识符" class="headerlink" title="内部类标识符"></a>内部类标识符</h2>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/10/10/内部类/" data-id="cjn2z9zhs00124krzsfhtavf0" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2018/10/09/接口/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">接口</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/学习心得/">学习心得</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSS/">CSS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTML5/">HTML5</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Node-js/">Node.js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Oracle/">Oracle</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring-MVC/">Spring MVC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring-boot/">Spring boot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring-cloud/">Spring cloud</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/CSS/" style="font-size: 10px;">CSS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Git/" style="font-size: 10px;">Git</a> <a href="/tags/HTML5/" style="font-size: 10px;">HTML5</a> <a href="/tags/JVM/" style="font-size: 10px;">JVM</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/JavaScript/" style="font-size: 10px;">JavaScript</a> <a href="/tags/Linux/" style="font-size: 10px;">Linux</a> <a href="/tags/Maven/" style="font-size: 10px;">Maven</a> <a href="/tags/Node-js/" style="font-size: 10px;">Node.js</a> <a href="/tags/Oracle/" style="font-size: 10px;">Oracle</a> <a href="/tags/Spring/" style="font-size: 10px;">Spring</a> <a href="/tags/Spring-MVC/" style="font-size: 10px;">Spring MVC</a> <a href="/tags/Spring-boot/" style="font-size: 10px;">Spring boot</a> <a href="/tags/Spring-cloud/" style="font-size: 10px;">Spring cloud</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/10/10/内部类/">内部类</a>
+          </li>
+        
+          <li>
+            <a href="/2018/10/09/接口/">接口</a>
+          </li>
+        
+          <li>
+            <a href="/2018/10/09/多态/">多态</a>
+          </li>
+        
+          <li>
+            <a href="/2018/10/07/复用类/">复用类</a>
+          </li>
+        
+          <li>
+            <a href="/2018/10/06/访问权限控制/">访问权限控制</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 EgbertDay<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
