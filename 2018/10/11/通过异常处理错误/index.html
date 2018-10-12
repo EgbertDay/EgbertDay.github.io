@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>通过异常处理错误 | 代海峰</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="前言&amp;emsp;&amp;emsp;java的理念是：结构不佳的代码不能运行&amp;emsp;&amp;emsp;发现错误最好的时期是在编译阶段，也就是在你试图运行程序之前，然而，编译期间并不能找出所有的错误，余下的错误必须要在运行期间解决，这就需要错误源能够通过某种方式，将恰当的信息传递给某个对象——该接收者知道如何正确处理这个问题&amp;emsp;&amp;emsp;改进的错误恢复机制是提供代码健壮性的最强有力的方式，错误恢复在">
+<meta name="keywords" content="Java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="通过异常处理错误">
+<meta property="og:url" content="http://yoursite.com/2018/10/11/通过异常处理错误/index.html">
+<meta property="og:site_name" content="代海峰">
+<meta property="og:description" content="前言&amp;emsp;&amp;emsp;java的理念是：结构不佳的代码不能运行&amp;emsp;&amp;emsp;发现错误最好的时期是在编译阶段，也就是在你试图运行程序之前，然而，编译期间并不能找出所有的错误，余下的错误必须要在运行期间解决，这就需要错误源能够通过某种方式，将恰当的信息传递给某个对象——该接收者知道如何正确处理这个问题&amp;emsp;&amp;emsp;改进的错误恢复机制是提供代码健壮性的最强有力的方式，错误恢复在">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-10-11T11:11:58.096Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="通过异常处理错误">
+<meta name="twitter:description" content="前言&amp;emsp;&amp;emsp;java的理念是：结构不佳的代码不能运行&amp;emsp;&amp;emsp;发现错误最好的时期是在编译阶段，也就是在你试图运行程序之前，然而，编译期间并不能找出所有的错误，余下的错误必须要在运行期间解决，这就需要错误源能够通过某种方式，将恰当的信息传递给某个对象——该接收者知道如何正确处理这个问题&amp;emsp;&amp;emsp;改进的错误恢复机制是提供代码健壮性的最强有力的方式，错误恢复在">
+  
+    <link rel="alternate" href="/atom.xml" title="代海峰" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">代海峰</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">个人博客</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-通过异常处理错误" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/10/11/通过异常处理错误/" class="article-date">
+  <time datetime="2018-10-11T07:57:21.000Z" itemprop="datePublished">2018-10-11</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/学习心得/">学习心得</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      通过异常处理错误
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>&emsp;&emsp;java的理念是：结构不佳的代码不能运行<br>&emsp;&emsp;发现错误最好的时期是在编译阶段，也就是在你试图运行程序之前，然而，编译期间并不能找出所有的错误，余下的错误必须要在运行期间解决，这就需要错误源能够通过某种方式，将恰当的信息传递给某个对象——该接收者知道如何正确处理这个问题<br>&emsp;&emsp;改进的错误恢复机制是提供代码健壮性的最强有力的方式，错误恢复在我们所编写的每一个程序都是基本的元素，java使用异常来提供一直的错误报告模型，<strong>使得构件能与客户端代码可靠地沟通问题</strong>  </p>
+<h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p>&emsp;&emsp;C以及早期的语言常常具有多种错误处理模式，这些模式往往建立在约定俗成的基础之上，而这不属于语言的一部分，通常会返回某个特殊值或者设置某个标志，并且假定接收者将对这个返回值或者标志进行检查，以判断是否发生错误，但，随着时间的推移，人们发现很多的程序员更倾向于忽略对这些返回值和标志的检查，因为他们总是在想“这是别人的问题，不关我的事”，这对于构建大型的，健壮性，可维护的程序而言，这种错误处理机制已经成为阻碍<br>&emsp;&emsp;解决的办法是，用强制规定的形式来消除错误处理过程中随心所欲的因素<br>&emsp;&emsp;“异常”这个词有“我对此感到意外”的意思，问题出现了，你也许不清楚该如何处理，当你确实不该置之不理，你要停下来，看看是不是有别人或在别的地方，能够处理这个问题，只要是在当前环境中还没有足够的信息来解决这个问题，就将这个问题提交到一个更高的环境中，在这里将作出正确的决定<br>&emsp;&emsp;使用异常所带来的一个好处是，它往往能够降低错误处理代码的复杂度，如果不使用异常，那么就必须检查特定的错误，并在程序中的许多地方去处理它，而如果使用异常，那就不必再方法调用处进行检查，因为<strong>异常机制保证能够捕获这个错误</strong>，并且，只在一个地方处理错误，即所谓的异常处理程序中，这样不仅节省代码，而且把描述在<strong>正常情况下“执行过程中做什么事”的代码和“出了问题怎么办”的代码相分离</strong></p>
+<h2 id="基本异常"><a href="#基本异常" class="headerlink" title="基本异常"></a>基本异常</h2><p>&emsp;&emsp;异常清晰（exceptional condition）是指阻止当前方法或作用域继续执行的问题，把异常情形与普通问题相区分很重要，普通问题是指，在当前环境下能够得到足够的信息，总能处理这个错误，而对异常情形，就不能继续下去了，因为当前环境下无法获得必要的信息来解决这个问题<br>&emsp;&emsp;当抛出异常后，有几件事会相继发生，甚至，同java中其他对象的创建一样，将使用new在堆上创建异常对象，然后，当前的执行路径（既不能继续下去了）被终止，并且从当前的环境中弹出异常对象的引用，此时，异常处理机制接管程序，并开始寻找一个恰当的地方继续执行程序，这个恰当的地方就是异常处理程序，它的任务是将程序从错误状态恢复<br>&emsp;&emsp;异常最重要的方面之一就是如果发生问题，它们将不允许程序沿着其正常的路径继续走下去  </p>
+<h3 id="异常参数"><a href="#异常参数" class="headerlink" title="异常参数"></a>异常参数</h3><p>&emsp;&emsp;与使用java中的其他对象一样，我们总是用new在堆上创建异常对象，这也伴随着存储空间的分配和构造器的调用，所有的异常类都有两个构造器，一个是默认构造器，另一个是接收字符串作为参数，以便能够把相关信息放入到异常对象的构造器<br>&emsp;&emsp;关键字throw将产生很有趣的结果，一个是新生成的异常对象的引用通过throw关键字传递到更大的环境，另一个效果是通过抛出异常的方式退出方法或作用域 此外还能抛出任意类型的Throwable对象，它是异常类型的根类</p>
+<h2 id="捕获异常"><a href="#捕获异常" class="headerlink" title="捕获异常"></a>捕获异常</h2><h3 id="监控区域"><a href="#监控区域" class="headerlink" title="监控区域"></a>监控区域</h3><p>&emsp;&emsp;<strong>如果在方法的内部抛出了异常（或者在方法调用的其他方式抛出了异常），这个方法将在抛出异常的过程中结束，如果不希望方法就此结束，可以在方法内部设置一个特殊的块来捕获异常</strong>  </p>
+<h3 id="异常处理程序"><a href="#异常处理程序" class="headerlink" title="异常处理程序"></a>异常处理程序</h3><p>&emsp;&emsp;抛出的异常必须在某个地方得到处理，这个地点就是异常处理程序，而且针对每一个要捕获的异常准备相应的异常处理程序  </p>
+<h3 id="终止与恢复"><a href="#终止与恢复" class="headerlink" title="终止与恢复"></a>终止与恢复</h3><p>&emsp;&emsp;异常处理理论有两种基本模型，java支持终止模型，在这种模型中，将假设错误非常关键，以至于无法回到错误发生的地方继续执行，一旦异常被抛出，就表明错误无法挽回，也不能回来继续执行<br>&emsp;&emsp;另一种是恢复模型，意思是异常处理程序的工作是修正错误，然后尝试调用出问题的方法，并认为第二次能成功，java也可实现这种错误处理，将异常处理程序一个while循环中吗，直到程序执行成功<br>&emsp;&emsp;虽然恢复模型很吸引人，但是这种错误恢复机制的代码非常难以编写，而且你真的了解错误的所有方方面面吗？所以后来大部分的语言选择转向程序终止模型  </p>
+<h2 id="创建自定义异常"><a href="#创建自定义异常" class="headerlink" title="创建自定义异常"></a>创建自定义异常</h2><p>&emsp;&emsp;java提供的异常体系不可能预见所有的希望加以报告的错误，所以可以自己定义异常类来表示程序中可能会遇到的特定问题<br>&emsp;&emsp;要定义自己的异常类，必须从已有的异常类继承，最好是意思相近的，其实无所谓，异常最重要的是类名，建立新的异常类最简单的方式就是让编译器为你产生默认的构造器</p>
+<h2 id="异常说明"><a href="#异常说明" class="headerlink" title="异常说明"></a>异常说明</h2><p>&emsp;&emsp;<strong>java鼓励人们把方法可能会抛出的异常告知使用此方法的客户端程序员</strong>，这是种优雅的做法，它使得调用者能确切地知道应该写什么代码借用捕获所有的异常，java提供了相应的语法（并强制这个语法）使得你能以礼貌的方式告知客户端程序员某个方法可能会抛出的异常，然后客户端程序员会进行相应的处理，这就是异常说明，它属于方法声明的一部分，紧跟在形式参数列表之后 <code>void f()throws TooBig,TooSmall{}</code><br>&emsp;&emsp;如果代码方法产生了异常却没有对此说明，编译器会发现这错误并提醒你，那么处理这个异常，要么声明这个方法将会抛出异常<br>&emsp;&emsp;这种在编译器就被强制检测的异常被称为<code>被检查的异常</code></p>
+<h2 id="捕获所有的异常"><a href="#捕获所有的异常" class="headerlink" title="捕获所有的异常"></a>捕获所有的异常</h2><p>&emsp;&emsp;可以只写一个异常来捕获所有类型的异常，通过捕获异常类型的基类Exception可以做到这一点,因为Exception是与编程有关的所有异常类的基类，所有它不会包含太多的信息，可以调用它从其基类Throwable继承来的方法<br>&emsp;&emsp;String getMessage()<br>&emsp;&emsp;String getLocalizedMessage()<br>&emsp;&emsp;或用本地语言表示的详细信息<br>&emsp;&emsp;String toString()<br>&emsp;&emsp;void printStackTrace()<br>&emsp;&emsp;void printStackTrace(PrintStream)<br>&emsp;&emsp;void printStackTrace(java.io.PrintWriter)<br>&emsp;&emsp;打印Throwable和Throwable的<code>调用栈轨迹</code>，调用栈显式了“把你带到异常抛出地点”的方法调用序列，其中第一个版本输出到标准错误，后两个版本允许选择要输出的流<br>&emsp;&emsp;Throwable fillStackTrace()<br>&emsp;&emsp;<strong>用于在Throwable对象的内部记录栈帧的当前转态，这在程序重新抛出错误或者异常时很有用</strong><br>&emsp;&emsp;此外还可以使用继承自Object的方法，比如getClass()返回Class类型对象，可以获得更多关于这个异常对象的信息</p>
+<h3 id="栈轨迹"><a href="#栈轨迹" class="headerlink" title="栈轨迹"></a>栈轨迹</h3><p>&emsp;&emsp;<code>printStrackTrace()</code>方法所提供的信息可以通过<code>StackTraceElement getStackTrace()</code>方法来直接访问，这个方法将<strong>返回一个由栈轨迹中的元素所组成的数组，其中每一个元素都表示栈中的一祯，元素0是栈顶元素，并且是调用序列中的最后一个方法调用（这个Throwable被创建和抛出之处）</strong>数组中的最后一个元素和栈底是调用序列中的第一个方法调用</p>
+<h3 id="重新抛出异常"><a href="#重新抛出异常" class="headerlink" title="重新抛出异常"></a>重新抛出异常</h3><p>&emsp;&emsp;重抛异常会把异常抛给上一级环境中的异常处理程序，此外，异常的所有信息都会得以保持，所以上一级环境中捕获此异常的处理程序通过通过这个异常对象得到所有的信息<br>&emsp;&emsp;如果只是将当前的异常对象重新抛出，那么printStackTrace()方法显示的将是原来异常抛出的调用栈信息，而非重新抛出点的信息，要想更新这个信息，<strong>可以调用fillInStackTrace()方法，这个方法将返回一个Throwable对象，它是通过把当前调用栈信息填入原来那个异常对象而建立的,因此调用fillinStackTrace()的那一行就成了异常的新发地</strong><br>&emsp;&emsp;有可能在捕获异常之后抛出另一种异常，那么这么做，得到的效果就类似与使用finInStackTrace(),有关原来异常发生地点的信息就会丢失剩下的是与新的抛出点有关的信息</p>
+<h3 id="异常链"><a href="#异常链" class="headerlink" title="异常链"></a>异常链</h3><p>&emsp;&emsp;常常会想要在捕获一种异常之后抛出另一种异常，并且希望把原始异常的信息保存下来，这被称为异常链，现在所有的Throwable的子类在构造器中都可以接受一个cause(因由)对象作为参数，这个cause就用来表示原始异常，<strong>这样通过把原始异常传递给新的异常，使得即使在当前创建并抛出新的异常，也能够通过这个异常链追踪到异常最初发生的位置</strong><br>&emsp;&emsp;语法: <code>throw new NewException(CauseException)</code></p>
+<h2 id="java标准异常"><a href="#java标准异常" class="headerlink" title="java标准异常"></a>java标准异常</h2><p>&emsp;&emsp;Throwable这个类被用来表示任何可以作为异常抛出的类。Throwable对象，可以分为两种类型（指从Throwable继承中得到的类型），Error用来表示编译时和系统错误（除特殊情况，一般你不用关心），Exception是可以抛出的异常，在java类库，用户方法以及运行时故障中都可能抛出这个Exception异常，所有java程序员关心的异常类型通常是Exception  </p>
+<h3 id="特例-RuntimeExcepton"><a href="#特例-RuntimeExcepton" class="headerlink" title="特例 RuntimeExcepton"></a>特例 RuntimeExcepton</h3><p>&emsp;&emsp;属于运行时的异常类型有很多，它们会自动被java虚拟机抛出，所有不必在异常说明中吧它们列出来，这些异常都是从RuntimeException类继承而来的，不需要再异常说明中声明的异常也被称为“不受检查的异常”，尽管通常不用捕获RuntimeException异常，但还是可以在代码中抛出RuntimeException异常<br>&emsp;&emsp;如果不主动捕获这种类型的异常会发生什么事情呢？因为编译器没有在这个问题上对遗产说明进行强制检查，RuntimeException类型的异常也许会穿越所有的执行过程直达main()方法，而不会被捕获</p>
+<h2 id="使用finally进行清理"><a href="#使用finally进行清理" class="headerlink" title="使用finally进行清理"></a>使用finally进行清理</h2><p>&emsp;&emsp;对于一些代码，你可能希望，无论try块中的异常是否抛出，它们都能得到执行，<strong>这通常适用于内存回收之外的情况</strong>（因为内存回收由垃圾回收器完成），为了达到这个效果，可以在try块之后加上finally子句</p>
+<h3 id="finally用来做什么"><a href="#finally用来做什么" class="headerlink" title="finally用来做什么"></a>finally用来做什么</h3><p>&emsp;&emsp;finally非常重要，它能使程序员保证，无论try块里发生什么，内存总能得到释放，但java有垃圾回收机制，所以内存释放不再是问题<br>&emsp;&emsp;<strong>当把除内存之外的资源恢复到它们的初始转态时，就要用到finally子句</strong>，这种需要清理的资源包括，已经打开的文件或网络连接，在屏幕上画的图形，甚至是外部世界的某个开关  </p>
+<h3 id="缺憾：异常丢失"><a href="#缺憾：异常丢失" class="headerlink" title="缺憾：异常丢失"></a>缺憾：异常丢失</h3><p>&emsp;&emsp;遗憾的是，java的异常实现也有瑕疵，异常通常作为程序出错的标志，绝不应该被忽视，但是还是有可能被轻易忽视，用某些特殊方法的finally放肆使用子句，就会发生这种情况，这种情况的方式吗，一般是在finally子句抛出新的遗产替换了正常方法中抛出的异常，这是相当严重的缺陷</p>
+<h2 id="异常的限制"><a href="#异常的限制" class="headerlink" title="异常的限制"></a>异常的限制</h2><p>&emsp;&emsp;当覆盖方法的时候只能抛出在基类方法的异常说明里列的那些异常，这个限制很有用，因为这意味着，当基类方法使用的代码应用到派生类对象的时候，一样能够工作，异常也不例外，这样的规则在java随处可见，比如，派生类覆盖基类的方法，访问权限一定不能比基类的要小，这些规则都保证了，能调用基类的方法就一定可以调用导出类的方法这个原则</p>
+<h2 id="构造器"><a href="#构造器" class="headerlink" title="构造器"></a>构造器</h2><p>&emsp;&emsp;如果异常发生了，所有的东西都能被正确清理吗？因为涉及到构造器，问题就出现了，构造器会把对象设置成安全的初始转态，但是还会有别的动作，比如打开一个文件，这样的动作只有在对象使用完毕并且用户调用了特殊的清理方法之后才能的已清理，如果构造器内抛出了异常，这些清理行为也许就不能正常工作了，这意味着编写构造器时要格外小心，其实我们很少会遇到这也的问题，我们遵循的一条原则就是用尽量简单的方法构建对象</p>
+<h2 id="异常匹配"><a href="#异常匹配" class="headerlink" title="异常匹配"></a>异常匹配</h2><p>异常处理系统会按照代码书写的书信找出“最近”的处理程序，找到匹配的处理程序之后，就认为异常得到了处理，就不在继续查找了查找的时候并不要去抛出的异常同处理程序声明的异常完全匹配，派生类的对象也可以匹配其基类的处理程序，所有一个原则是将更加特定的异常类型放在最前面</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/10/11/通过异常处理错误/" data-id="cjn5yaagf002ij4rz78tg4g00" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/10/11/字符串/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          字符串
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/10/10/持有对象/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">持有对象</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/学习心得/">学习心得</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSS/">CSS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTML5/">HTML5</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Node-js/">Node.js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Oracle/">Oracle</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring-MVC/">Spring MVC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring-boot/">Spring boot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring-cloud/">Spring cloud</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/CSS/" style="font-size: 10px;">CSS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Git/" style="font-size: 10px;">Git</a> <a href="/tags/HTML5/" style="font-size: 10px;">HTML5</a> <a href="/tags/JVM/" style="font-size: 10px;">JVM</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/JavaScript/" style="font-size: 10px;">JavaScript</a> <a href="/tags/Linux/" style="font-size: 10px;">Linux</a> <a href="/tags/Maven/" style="font-size: 10px;">Maven</a> <a href="/tags/Node-js/" style="font-size: 10px;">Node.js</a> <a href="/tags/Oracle/" style="font-size: 10px;">Oracle</a> <a href="/tags/Spring/" style="font-size: 10px;">Spring</a> <a href="/tags/Spring-MVC/" style="font-size: 10px;">Spring MVC</a> <a href="/tags/Spring-boot/" style="font-size: 10px;">Spring boot</a> <a href="/tags/Spring-cloud/" style="font-size: 10px;">Spring cloud</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/10/12/类型信息/">类型信息</a>
+          </li>
+        
+          <li>
+            <a href="/2018/10/11/字符串/">字符串</a>
+          </li>
+        
+          <li>
+            <a href="/2018/10/11/通过异常处理错误/">通过异常处理错误</a>
+          </li>
+        
+          <li>
+            <a href="/2018/10/10/持有对象/">持有对象</a>
+          </li>
+        
+          <li>
+            <a href="/2018/10/10/内部类/">内部类</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 EgbertDay<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
