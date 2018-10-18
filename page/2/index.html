@@ -69,6 +69,72 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-初始化与清理" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/10/05/初始化与清理/" class="article-date">
+  <time datetime="2018-10-05T15:57:28.000Z" itemprop="datePublished">2018-10-05</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/学习心得/">学习心得</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/10/05/初始化与清理/">初始化与清理</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
+<p>随着计算机革命的发展，“不安全”的编程方式已逐渐成为编程代价高昂的主要原因<br>&emsp;&emsp;初始化和清理（cleanup）正是涉及安全的两个问题，许多C程序的错误都源于程序员忘了初始化变量，特别是在使用程序时，如果用户不知道如何初始化库的构件（或者是用户必须要初始化的其他东西）更是如此，清理也是一个特殊问题，当使用一个元素时，它对你不会有什么影响了，所有很容易把它忘掉，这样一来，这个元素占用的资源得不到释放  </p>
+</blockquote>
+<h2 id="用构造器确保初始化"><a href="#用构造器确保初始化" class="headerlink" title="用构造器确保初始化"></a>用构造器确保初始化</h2><p>&emsp;&emsp;假想为每个类都定义一个初始化方法，命名为<code>intialize()</code>好了，所以你在向对象发送消息之前，为了确保对象被恰当地初始化了，你应该先主动去调用这个<code>initialize()</code>方法，可是如果你忘了怎么办呢？如果我们咋创建对象的时候能够自动进行对象的初始化工作就好了，这样就确保了我们创建的对象一定被正确地初始化了<br>&emsp;&emsp;接下来的问题是如何命名这个初始化方法，有两个问题  </p>
+<ol>
+<li>所取的任何名字都可能会与方法名冲突</li>
+<li>调用构造器是编译器的责任，编译器应该要调用这一个方法<br>我们的解决的方法很简单，构造器的名称和类名相同，这是一种约定，即解决了和方法名字的冲突问题，又解决了编译器识别的问题，构建哪个类的对象就调用那个类的与方法名相同的构造函数  <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> Rock();</span><br></pre></td></tr></table></figure>
+&emsp;&emsp;上述创建对象的过程可以被拆解成两步，第一步，为对象分配内存空间，第二步，调用相对应的构造函数，理论上讲，“初始化”和“创建”是彼此独立的，然而在java代码中你找不到两者之间的界限，也看不到对构造的显式调用，java将“初始化”和“创建”捆绑在了一起，两者不能分离<br>&emsp;&emsp;构造函数是一种特殊的函数，说特殊，是因为它在对象创建的过程中就被自动调用了，而且只能被调用一次，且构造函数的代码中没有返回值，这与void不同，其实构造函数被调用之后会返回新对象的一个引用，只是我们在构造函数中不写返回类型，这是一种规定，你只需遵守就行了<h2 id="方法重载"><a href="#方法重载" class="headerlink" title="方法重载"></a>方法重载</h2>&emsp;&emsp;大多数程序设计语言要求为每个方法（在有些语言中经常成为函数）都提供一个独一无二的标识符，在java（和C++）里，构造器是强制重载方法名的一个很重要的一个原因，既然构造器的方法名由类名决定，那就只能有一个构造器，可是如果我想以多种方式来创建一个对象时该怎么办呢？为了让方法名相同而参数不同的构造器同时存在，必须要用到方法的重载  <h3 id="区分方法重载"><a href="#区分方法重载" class="headerlink" title="区分方法重载"></a>区分方法重载</h3>要是有几个方法都要相同的方法，java如何知道你指的是哪个方法呢？其实规则很简单，每个重载的方法都必须要有一个独一无二的参数类型列表，注意返回值类型不作为方法重载的依据，因为如果我们只是利用方法的副作用而不使用方法的返回值的话，编译器还是没办法判断应该调用哪一个方法例如<br> void say(){};<br> String say(){};<br> a.say();<br>&emsp;&emsp;这样你能判断a调用的是哪个方法吗？不能，所有为了避免java的困扰，返回值类型不能作为方法重载的依据<h3 id="涉及基本类型的重载"><a href="#涉及基本类型的重载" class="headerlink" title="涉及基本类型的重载"></a>涉及基本类型的重载</h3>&emsp;&emsp;基本类型的重载是，先找那些方法的参数类型最符合自己类型的方法，如果找不到以此向上提升，注意，有一个特殊，如基本类型为char，先找参数类型为char的方法，若找不到，则直接提升到int类型<h2 id="this关键字"><a href="#this关键字" class="headerlink" title="this关键字"></a>this关键字</h2>&emsp;&emsp;我觉得《Thinking in java》的作者Bruce Eckel对方法调用解释的很清楚，我们看下他是如何解释代码调用的：<br>&emsp;&emsp;如果有同一个类型的两个对象a,b，如何让才能这两个对象都能调用peel()方法呢？<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">class Banana&#123; void peel(int i)&#123;/* */&#125;&#125;</span><br><span class="line">public class BananaPeel&#123;</span><br><span class="line">   public static void main(String[] args)&#123;</span><br><span class="line">   Banana a=new Banana(),b=new Banana();</span><br><span class="line">   a.peel(1);</span><br><span class="line">   b.peel(2); </span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>&emsp;&emsp;如果只有一个peel()方法，它如何知道是被a还是被b调用呢？<br>&emsp;&emsp;为了能用简单，面向对象的语法编写代码——即“发送消息给对象”，编译器做了一些某后工作，它暗自把“操作对象的引用”作为第一个参数传递给peel()，所以上述两个方法的调用就变成了这样：<br>    Banana.peel(a,1);<br>    Banana.peel(b,2);<br>&emsp;&emsp;这是内部表示，我们并不能这样写代码，上面这行的意思时，执行Banana类中定义的<code>peel()</code>方法，方法的参数是a,1,这才是代码底层做的事情，不过为了满足我们面向对象的思维，我们使用<code>a.peel()</code>这种形式，而其他的事情，编译器帮我们摆平<br>&emsp;&emsp;如何在方法内部获得对当前对象的引用？由于这个引用是编译器“偷偷”地帮我们加的，所以没有标识符可用，但是为此有一个专门的关键字this,this关键字只能在方法内部使用，表示“调用方法的那个对象”<br>&emsp;&emsp;this关键字的用法：</p>
+<ol>
+<li>可以将当前对象传递给其他方法使用</li>
+<li>在构造器调用构造器时使用<h3 id="static的含义"><a href="#static的含义" class="headerlink" title="static的含义"></a>static的含义</h3>&emsp;&emsp;了解this关键字之后，就能全面理解static(静态)方法的含义了，static方法就是没有this的方法，在static方法的内部不能调用非静态方法，因为那些非静态类的方法都需要this类型的参数，而static方法并不能提供给它们，反过来，非静态类的方法是可以调用静态方法的<br>&emsp;&emsp;有些人认为static方法不是“面向对象的”，因为它的确具有全局函数的语义，使用static方法时，由于不存在this，所有不是通过“向对象发送消息”的方式执行的，这种说法还是有些道理的，所有，如果你的代码中存在大量的static方法，就该重新考虑自己的程序了  <h2 id="清理：终结处理和垃圾回收"><a href="#清理：终结处理和垃圾回收" class="headerlink" title="清理：终结处理和垃圾回收"></a>清理：终结处理和垃圾回收</h2><h2 id="成员初始化"><a href="#成员初始化" class="headerlink" title="成员初始化"></a>成员初始化</h2>&emsp;&emsp;java尽力保证，所有的变量在使用之前都能得到适当的初始化，对于方法的局部变量，java以编译时错误的形式来贯彻这项保证·<h2 id="构造器初始化"><a href="#构造器初始化" class="headerlink" title="构造器初始化"></a>构造器初始化</h2>&emsp;&emsp;可以用构造器来初始化，在运行时刻，可以调用方法或执行某些动作来确认该值，这为编程带来了更大的灵活性，但是要记住，无法阻止自动初始化的进行，它将在构造器被调用之前发生<h3 id="初始化的顺序"><a href="#初始化的顺序" class="headerlink" title="初始化的顺序"></a>初始化的顺序</h3>&emsp;&emsp;在类的内部，变量定义的顺序决定了初始化的顺序，即使变量定义散布于方法定义之间，它们仍然会在任何方法（包括构造器）之前得到初始化<h3 id="静态数据的初始化"><a href="#静态数据的初始化" class="headerlink" title="静态数据的初始化"></a>静态数据的初始化</h3>无论创建多少个对象，静态数据都只占一份存储区域，static关键字不能应用于局部变量，因此它只能作用于域，如果一个域时静态的基本类型域，且也没有对它进行初始化，那么它就会获得基本类型的标准初值，如果它是一个对象，那么它的默认值就是null<br>&emsp;&emsp;静态初始化只有在必要的时刻才会进行，什么是必要时刻？就是一切触发包含静态成员类的加载的行为都是必要时刻<br>&emsp;&emsp;初始化的顺序是先静态变量（如果它们尚未因前面的对象创建过程而被初始化的话，记住静态初始化只会进行一次，那就是在类第一次被加载的时刻）<br>，而后时非静态变量<br>&emsp;&emsp;总结一下对象的创建过程，假设一个Dog类  </li>
+<li>即使没有显式地使用static关键字，构造器实际上也是静态方法，因此，当首次创建Dog对象时（构造器可以看成静态方法），或者Dog类的静态方法被调用时，解释器必须查找类路径，以定位Dog.class文件</li>
+<li>然后载入Dog.class,创建一个Class对象，有关静态初始化的所有动作都会被执行，因此，静态初始化只在Class对象首次加载的时候进行一次</li>
+<li>当用new Dog()创建对象的时候，首先将在堆上为Dog对象分配足够的内存空间</li>
+<li>这块存储空间会被清零，这就自动地将Dog对象中的所有类型数据都设成默认值</li>
+<li>执行所有出现在字段定义初的初始化</li>
+<li>执行构造器  <h3 id="显示的静态初始化"><a href="#显示的静态初始化" class="headerlink" title="显示的静态初始化"></a>显示的静态初始化</h3>&emsp;&emsp;java允许将多个静态初始化动作组织成一个特殊的“静态子句”，有时也叫做静态块，静态块先其他的静态成员一样，也是在类被首次加载的时候被执行一次  <h3 id="非静态实例初始化"><a href="#非静态实例初始化" class="headerlink" title="非静态实例初始化"></a>非静态实例初始化</h3>&emsp;&emsp;非静态实例初始化很像静态块，只是在代码块前面没有static关键字，这种语法对于支持“匿名内部类”的初始化时必须的，但是它也可以使你保证无论使用那个构造器，某些操作都会发生，而且是在构造器执行之前执行  <h2 id="数组初始化"><a href="#数组初始化" class="headerlink" title="数组初始化"></a>数组初始化</h2>&emsp;&emsp;数组只是相同类型的，用一个标识符名称封装到一起的一个对象序列或基本类型数据序列，记住，数组也是对象，在java中除了基本类型 一起皆对象，数据可以通过方括号下标操作符<code>[]</code>来定义和使用，要定义一个数组，只需要在类型名后面加上一对中括号即可<br> int[] a;<br> int a[];<br>&emsp;&emsp;两种格式都一样，我更喜欢第一种方式，上述两种方式都只是让我们拥有一个引用，并且指出了这个引用所代表的数据类型，随便说一句，java是强类型语言，标识符前面的类型往往是为了类型检查的需要<br>&emsp;&emsp;数组类型主要分为两种，一种是基本数据类型数值，一种时引用类型数值，基本数据类型数组内部持有着基本数据类型的值，而引用类型数值元素是引用，如图：</li>
+</ol>
+<p>&emsp;&emsp;所有数组（无论它们的元素时对象还是引用）都有一个固定成员，可以通过它获知数组内包含了多少元素，但不能对其修改，这个成员就是length,数值索引从0开始</p>
+<h3 id="可变参数列表"><a href="#可变参数列表" class="headerlink" title="可变参数列表"></a>可变参数列表</h3><pre><code>void variableList(String... args);
+</code></pre><p>&emsp;&emsp;上述语法就是从在java SE5新添加的可变参数列表的特性，有了可变参数，就不用显式地编写数组语法了<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">argsList</span><span class="params">(String[] args)</span></span>;</span><br></pre></td></tr></table></figure>，当你指定参数时，编译器实际上会为你去填充数组，你获取的仍旧是一个数组</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/10/05/初始化与清理/" data-id="cjneufacc001bwgrzuud21lh6" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-一切都是对象" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2018/10/05/一切都是对象/" class="article-date">
@@ -200,7 +266,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/05/一切都是对象/" data-id="cjn5yaaf8001vj4rz3ei836m0" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/05/一切都是对象/" data-id="cjneufaby0015wgrzh7yq7jys" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
@@ -265,7 +331,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/04/对象导论/" data-id="cjn5yaaf3001tj4rznrwizepn" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/04/对象导论/" data-id="cjneufad2001mwgrz2orevkkp" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
@@ -307,7 +373,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/04/Node-js参考网站/" data-id="cjn5yaaba000fj4rz1v1efel1" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/04/Node-js参考网站/" data-id="cjneufaa4000fwgrzs9621jox" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Node-js/">Node.js</a></li></ul>
@@ -349,7 +415,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/04/JavaScript参考网站/" data-id="cjn5yaaaf0006j4rz7lgyappd" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/04/JavaScript参考网站/" data-id="cjneufa9n000awgrz2a1v8spb" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JavaScript/">JavaScript</a></li></ul>
@@ -391,7 +457,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/04/CSS参考网站/" data-id="cjn5yaa9r0001j4rz74gwp3iu" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/04/CSS参考网站/" data-id="cjneufa8a0000wgrzr5dculhw" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CSS/">CSS</a></li></ul>
@@ -433,7 +499,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/04/HTML5参考网站/" data-id="cjn5yaaa40004j4rz5i07fzq4" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/04/HTML5参考网站/" data-id="cjneufa950005wgrz4vqhh5jt" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/HTML5/">HTML5</a></li></ul>
@@ -475,7 +541,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/04/JVM参考网站/" data-id="cjn5yaaar000aj4rzj7u7w3l4" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/04/JVM参考网站/" data-id="cjneufa9a0006wgrzwwoto5go" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JVM/">JVM</a></li></ul>
@@ -517,7 +583,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/04/Docker参考网站/" data-id="cjn5yaa9i0000j4rzclmeupyh" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/04/Docker参考网站/" data-id="cjneufa8l0001wgrzaibdecmv" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Docker/">Docker</a></li></ul>
@@ -559,52 +625,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/04/Linux操作系统参考网站/" data-id="cjn5yaabt000lj4rzv8kmadxg" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/04/Linux操作系统参考网站/" data-id="cjneufaab000iwgrzu0szx738" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-Oracle参考网站" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2018/10/04/Oracle参考网站/" class="article-date">
-  <time datetime="2018-10-04T03:42:00.000Z" itemprop="datePublished">2018-10-04</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/学习心得/">学习心得</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/10/04/Oracle参考网站/">Oracle参考网站</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/04/Oracle参考网站/" data-id="cjn5yaac3000oj4rz6ao76h05" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Oracle/">Oracle</a></li></ul>
 
     </footer>
   </div>
@@ -670,6 +694,10 @@
       <ul>
         
           <li>
+            <a href="/2018/10/14/泛型/">泛型</a>
+          </li>
+        
+          <li>
             <a href="/2018/10/12/类型信息/">类型信息</a>
           </li>
         
@@ -683,10 +711,6 @@
         
           <li>
             <a href="/2018/10/10/持有对象/">持有对象</a>
-          </li>
-        
-          <li>
-            <a href="/2018/10/10/内部类/">内部类</a>
           </li>
         
       </ul>

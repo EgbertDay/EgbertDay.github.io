@@ -7,18 +7,18 @@
   
   <title>类型信息 | 代海峰</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="eating my owner dog food">
+  <meta name="description" content="前言运行时类型信息（runtime Type information）使得你可以在程序运行时发现和使用类型信息它使你从只能在编译期执行面向类型的操作的禁锢中解脱出来java是如何让我们在运行时识别对象和类的信息的，主要有两种方式，一种是“传统的”RTTI，它假定我么不能在编译时已经知道了所有的类型，另一种是“反射”机制，它允许我们在运行时发现和使用类的信息   为什么需要RTTI我们看一下多态的例">
 <meta name="keywords" content="Java">
 <meta property="og:type" content="article">
 <meta property="og:title" content="类型信息">
 <meta property="og:url" content="http://yoursite.com/2018/10/12/类型信息/index.html">
 <meta property="og:site_name" content="代海峰">
-<meta property="og:description" content="eating my owner dog food">
+<meta property="og:description" content="前言运行时类型信息（runtime Type information）使得你可以在程序运行时发现和使用类型信息它使你从只能在编译期执行面向类型的操作的禁锢中解脱出来java是如何让我们在运行时识别对象和类的信息的，主要有两种方式，一种是“传统的”RTTI，它假定我么不能在编译时已经知道了所有的类型，另一种是“反射”机制，它允许我们在运行时发现和使用类的信息   为什么需要RTTI我们看一下多态的例">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-10-12T05:21:23.254Z">
+<meta property="og:updated_time" content="2018-10-12T17:52:21.559Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="类型信息">
-<meta name="twitter:description" content="eating my owner dog food">
+<meta name="twitter:description" content="前言运行时类型信息（runtime Type information）使得你可以在程序运行时发现和使用类型信息它使你从只能在编译期执行面向类型的操作的禁锢中解脱出来java是如何让我们在运行时识别对象和类的信息的，主要有两种方式，一种是“传统的”RTTI，它假定我么不能在编译时已经知道了所有的类型，另一种是“反射”机制，它允许我们在运行时发现和使用类的信息   为什么需要RTTI我们看一下多态的例">
   
     <link rel="alternate" href="/atom.xml" title="代海峰" type="application/atom+xml">
   
@@ -95,11 +95,26 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>运行时类型信息（runtime Type information）使得你可以在程序运行时发现和使用类型信息<br>它使你从只能在编译期执行面向类型的操作的禁锢中解脱出来<br>java是如何让我们在运行时识别对象和类的信息的，主要有两种方式，一种是“传统的”RTTI，它假定我么不能在编译时已经知道了所有的类型，另一种是“反射”机制，它允许我们在运行时发现和使用类的信息  </p>
+<h2 id="为什么需要RTTI"><a href="#为什么需要RTTI" class="headerlink" title="为什么需要RTTI"></a>为什么需要RTTI</h2><p>我们看一下多态的例子<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Shape</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">draw</span><span class="params">()</span></span>&#123; System.out.print(<span class="keyword">this</span>+<span class="string">".draw()"</span>);&#125;</span><br><span class="line">    <span class="function"><span class="keyword">abstract</span> <span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Cricle</span> <span class="keyword">extends</span> <span class="title">Shape</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span></span>&#123;<span class="keyword">return</span> <span class="string">"Cricle"</span>;&#125;;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Square</span> <span class="keyword">extends</span> <span class="title">Shape</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span></span>&#123;<span class="keyword">return</span> <span class="string">"Square"</span>;&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Shapes</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">        List&lt;Shape&gt; shapeList= Arrays.asList(<span class="keyword">new</span> Cricle(),<span class="keyword">new</span> Square());</span><br><span class="line">        <span class="keyword">for</span>(Shape shape:shapeList)&#123;</span><br><span class="line">            shape.draw();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在这个例子中，当把Shape对象放在List<shape>列表时会向上转型，但向上转型为Shape的时候，也丢失了Shape对象的具体的类型，对于列表而言，它们只是Shape类型的对象（我们这样思考一个问题，为什么我们在编程的时候，没有使用具有的引用类型，而是向上转型为更加通用的类型引用，诚然，我们可以使用更具体的类型来表示对象类型，拥有更多的方法可以操作这个类型，但是我们却没有办法写更适用的代码，每一个代码片段都与特定类型相关联，耦合度太高，我们要将类型向上转型为它的基类，这样拥有同样的接口，但是却丢失了关于这个对象具体类型的信息，<strong>注意，我们说的丢失了具体类型的信息指的是在编译期，在编译期，我们会将它的对象类型当作基类看待，实际上，对象本身的类型信息并没有丢失，我们可以在程序运行的时候重新拿到本来属于它的身份（类型信息）</strong>，这就是运行时类型信息的全部解释）<br>当从列表中取出元素时，这种容器——实际上将它所有的事物都当成Object持有——会自动将结果转型回Shape的，在java中所有的类型转换都是在运行是进行正确的检查，这也是RTTI名字的含义，在这个例子中，RTTI类型转换的并不彻底，Object被转型为Shape，而不是转换成Cricle，Square这种更具体的类型，这是因为我们只知道这个List<shape>保存的是Shape，将由容器和Java泛型机制保证这一点，而在运行时，由类型转换确保这一点</shape></shape></p>
+<h2 id="Class对象"><a href="#Class对象" class="headerlink" title="Class对象"></a>Class对象</h2><p>要理解RTTI在java中的工作原理，首先必须知道类型信息在运行时是如何表示的，这项工作是被称为Class对象的特殊对象完成的，它包含了与类相关的信息， Class对象就是用来创建类的所有“常规”对象的，java使用Class对象来执行其RTTI，即使你正在执行类型转换这样的工作<br>类是程序的一部分，每个类都是一个Class对象，换言之，每当编写并且编译一个新类，就会产生一个Class对象（更恰当的说，是保存在一个同名的.class文件中，这个.class文件保存在关于这个类的一切信息，我们可以将这个.class文件看作对象，这和类加载之后在内存中创建的Class对象没有太大的分别，最大的区别也许就是存储位置的不同）为了生成这个类的对象，运行这个程序的Java虚拟机（JVM)将使用被称为“类加载器”的子系统<br>所有的类都是在第一次被使用时，动态加载到JVM中的，当程序创建第一个对类的静态成员的引用时，就会加载这个类，这额证明了构造器也是静态方法，虽然在它之前没有static关键字，因此，java程序在它开始之前并非完全加载，其各个部分都是在必需时才加载的，如果尚未加载，默认的类加载器就会根据类名查找.class文件，而这个类的字节码文件就被加载，它会接受验证，以确保其没有被破坏，并且不包含不良的Java代码<br>（从我的理解来看，程序是对象与对象之间通讯，而Class掌握着生成这些对象和怎样通讯的所有知识，我们编写程序就是编写这些类，类由虚拟机加载，并且通过虚拟机创建对象，互相在对象之间传递消息，那么虚拟机是什么？虚拟机是程序，是代码运行的平台，我们编写的类都是程序的构件，以供虚拟机使用）<br>一旦某个类的Class对象被载入内存，它就被用来创建这个类的所有对象</p>
+<pre><code>Class Class.forName(String className);
+</code></pre><p>上面的方法是Class类的一个静态方法，返回一个Class对象的引用，如果你有某个对象的引用，也可以使用Object的getClass()方法，得到一个Class对象的引用，对forName()的调用就是为了产生副作用，其实更准确的说，forName()方法的调用是为了加载某个类，所有，如果这个类还没有被加载，那么就加载它，在加载的过程中，类的static子句开始执行<br>记住，所有的Class对象都是Class类，这听起来感觉很奇怪，我们知道类的所有信息都是在.class文件保存着，类加载器子系统通过这些文件会在内存空间创建相应的Class对象，其实这些对象和普通的对象的共同点就是对象，只不过这个Class对象拥有着这个类型信息，而其他对象拥有着属性数据，那么这些Class对象之间肯定有着某种共性，而这种共性就是它们都是Class类型<br>我们得到了Class对象的引用，就可以操作它以获得它的数据（类型信息）<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">getName()</span><br><span class="line">getSimpleName()</span><br><span class="line">getCanonicalName()</span><br><span class="line">getInterfaces()</span><br><span class="line">isInterface()</span><br><span class="line">getSuperClass()</span><br><span class="line">newInstance()</span><br></pre></td></tr></table></figure></p>
+<p>Class对象的newInstance()方法是实现“虚拟构造器”的一种途径，虚拟构造器允许你声明“我不知道你的确切类型”，但是啊无论如何要正确地创建你自己，<strong>比如up是一个Class引用，在编译期不具备任何更进一步的类型信息，当你创建新实例时，会得到一个Object对象</strong>，但是这个引用指向一个确切的类型，当然你可以发送Object能够接受的信息之外的任何消息之前，你必须更多的了解它，并进行某种转型，另外，使用newInstance()必须带有默认的构造器  </p>
+<h3 id="类字面常量"><a href="#类字面常量" class="headerlink" title="类字面常量"></a>类字面常量</h3><p>java提供了另一种方法来生成对Class对象的引用，即使用类字面量常量 例如<br>    FancyToy.class<br>这样做不仅更简单，而且也更安全，因为它在编译时就会受到检查（因此不需要置于try语句块中），并且它根除了forName()方法的调用，所有也更高效<br>建议使用“.class”的形式，以保持与普通类的一致性<br>注意，有一点很有趣，使用“.class”来创建对Class对象的引用时，不会自动地初始化Class对象，为了使用类而做的准备工作实际上包含三个步骤</p>
+<ol>
+<li>加载：这是类加载器执行的，该步骤将查找字节码，并从这些字节码中创建一个Class对象</li>
+<li>链接：在链接阶段将验证类中的字节码，为静态域分配存储空间，并且如果必需的话，将解析这个类对其他类的所有引用</li>
+<li>初始化：如果该类具有超类，则对其初始化，执行静态初始化器和静态初始化块<br>初始化被延迟到了对静态方法（构造器隐式地是静态的）或非常数静态方法进行首次引用是才执行<br>初始化有效地实现了尽可能的“惰性”，仅使用.class语法来获得对类的引用不会引发初始化，和是和forName()不同的  <h3 id="泛化的Class引用"><a href="#泛化的Class引用" class="headerlink" title="泛化的Class引用"></a>泛化的Class引用</h3>Class引用总是指向某一个Class对象，它可以制造类的实例，并包含可作用与这些实例的所有方法代码，它还包括了该类的静态成员。因此。Class引用表示的就是指向它所指对象的确切类型，而该对象表示Class类的一个对象<br>如何将它的类型变得更具体，而<strong>这是通过允许你对Class引用所指向的Class对象的类型进行限定而实现的</strong>，这里使用了泛型语法，比如<br> Class<integer> classRef=int.class;<br>你也许会认为，下面的代码也是正确的<br> Class<number> classRef=int.class;<br>但是它是无法工作的，虽然Number是Integer的基类，但是Integer的Class对象不是Number的Class对象的子类，这个例子的正确做法是<br> Class&lt;? extends Number&gt; classRef=int.class;<br>当你使用泛型语法的时候将会发生一件有趣的事情，newInstance()将会返回该对象的确切的类型，而不是基本的Object,如下：<h3 id="新的转型语法"><a href="#新的转型语法" class="headerlink" title="新的转型语法"></a>新的转型语法</h3>Class引用的转型语法 cast()  不过我们很少使用<h2 id="类型转换前先做检查"><a href="#类型转换前先做检查" class="headerlink" title="类型转换前先做检查"></a>类型转换前先做检查</h2>目前我们已知的RTTI形式包括</number></integer></li>
+<li>传统的类型转换 如“(Shape)” 由RTTI确保类型转换的正确性，如果执行了一个错误的转换，就会抛出一个ClassCastException</li>
+<li>代表对象的类型的Class对象，通过查询Class对象可以获取运行时所需的信息</li>
+</ol>
+
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/12/类型信息/" data-id="cjn5yaafi0020j4rza7j7czck" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/12/类型信息/" data-id="cjneufadk001vwgrz1q8ycycl" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
@@ -109,6 +124,15 @@
   
     
 <nav id="article-nav">
+  
+    <a href="/2018/10/14/泛型/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          泛型
+        
+      </div>
+    </a>
   
   
     <a href="/2018/10/11/字符串/" id="article-nav-older" class="article-nav-link-wrap">
@@ -171,6 +195,10 @@
       <ul>
         
           <li>
+            <a href="/2018/10/14/泛型/">泛型</a>
+          </li>
+        
+          <li>
             <a href="/2018/10/12/类型信息/">类型信息</a>
           </li>
         
@@ -184,10 +212,6 @@
         
           <li>
             <a href="/2018/10/10/持有对象/">持有对象</a>
-          </li>
-        
-          <li>
-            <a href="/2018/10/10/内部类/">内部类</a>
           </li>
         
       </ul>
