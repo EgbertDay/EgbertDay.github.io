@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>数组 | 代海峰</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="数组为什么特殊java中有大量的方式可以持有对象，那么，到底是什么使数组变的与众不同？数组与其他种类容器之间的主要区别有三个方面：效率，类型和保存基本类型的能力效率：数组是一种效率最高的存储和随机访问对象引用序列的方式，数组就是一个线性序列，这使得元素访问非常快速，但是为了这种速度所付出的代价就是数组对象的大小被固定，这是一种典型的以空间换时间的取舍，数组的创建使得数组对象本身的存储空间被固定下来">
+<meta name="keywords" content="Java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数组">
+<meta property="og:url" content="http://yoursite.com/2018/10/19/数组/index.html">
+<meta property="og:site_name" content="代海峰">
+<meta property="og:description" content="数组为什么特殊java中有大量的方式可以持有对象，那么，到底是什么使数组变的与众不同？数组与其他种类容器之间的主要区别有三个方面：效率，类型和保存基本类型的能力效率：数组是一种效率最高的存储和随机访问对象引用序列的方式，数组就是一个线性序列，这使得元素访问非常快速，但是为了这种速度所付出的代价就是数组对象的大小被固定，这是一种典型的以空间换时间的取舍，数组的创建使得数组对象本身的存储空间被固定下来">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-10-19T14:00:01.932Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="数组">
+<meta name="twitter:description" content="数组为什么特殊java中有大量的方式可以持有对象，那么，到底是什么使数组变的与众不同？数组与其他种类容器之间的主要区别有三个方面：效率，类型和保存基本类型的能力效率：数组是一种效率最高的存储和随机访问对象引用序列的方式，数组就是一个线性序列，这使得元素访问非常快速，但是为了这种速度所付出的代价就是数组对象的大小被固定，这是一种典型的以空间换时间的取舍，数组的创建使得数组对象本身的存储空间被固定下来">
+  
+    <link rel="alternate" href="/atom.xml" title="代海峰" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">代海峰</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">个人博客</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-数组" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/10/19/数组/" class="article-date">
+  <time datetime="2018-10-18T17:15:45.000Z" itemprop="datePublished">2018-10-19</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/学习心得/">学习心得</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      数组
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="数组为什么特殊"><a href="#数组为什么特殊" class="headerlink" title="数组为什么特殊"></a>数组为什么特殊</h2><p>java中有大量的方式可以持有对象，那么，到底是什么使数组变的与众不同？<br><strong>数组与其他种类容器之间的主要区别有三个方面：效率，类型和保存基本类型的能力</strong><br>效率：数组是一种效率最高的存储和随机访问对象引用序列的方式，数组就是一个线性序列，这使得元素访问非常快速，但是为了这种速度所付出的代价就是数组对象的大小被固定，这是一种典型的以空间换时间的取舍，数组的创建使得数组对象本身的存储空间被固定下来，因此，数组不能扩容，但是带来的好处确实，我们随机访问一个元素时非常快，因为虚拟机很容易就能定位到元素的内存地址<br>类型：在泛型之前，其他的容器类在处理对象时，都将它们视为没有具体类型，也就是说，它们将这些对象都当作Java中所有类的根类处理，这种做法在泛型之前是没有问题的，因为我们不应该将一个容器类指定为只能保存特定类型，如果如此的话，我们要创建大量的容器类，还有我们没有预见的容器类，这是不可能的，也是不现实的，因此将所有对象视为Object是合理的，但是这样的处理方式使得我们没有办法在编译期保证类型的正确性，只有在从容器中取出对象时才可能发现插入类型的不正确，泛型容器的出现，使得我们能够将类型检查放在编译期，从而解决了这个问题，数组对象本身对象的结构性天然的使得它具有只能持有类型正确对象的特性，也就是可以实现编译期的类型检查<br>持有基本类型：容器没有办法持有基本类型，这也很容易理解，因为一般基本类型对象的创建是在栈中，除非基本类型作为对象的属性存储在对象的内存空间内，容器类和数组存储结构最大的不同是在于，容器持有的对象并不在容器对象的内存空间中，它必须通过容器对象保存的元素的引用来访问元素对象，这些元素对象必须要被存储在堆中，所有造成了，容器不能持有（管理）基本类型，如果容器要想具有持有基本类型的能力必须通过包装器这种方式，而数组不同，数组的元素就存储在数组内存空间之中，这种特性很容易使得数组具有持有基本类型的能力<br>因为泛型和自动包箱和拆箱的出现，容器可以很容易的持有基本类型了，数组仅存的优点就是效率，可是使用数值又会受到太多的限制，所以一般情况下我们会选择使用容器而不是数组</p>
+<h2 id="数组是第一级对象"><a href="#数组是第一级对象" class="headerlink" title="数组是第一级对象"></a>数组是第一级对象</h2><p>无论使用哪种类型的数组，数组标识符其实只是一个引用，指向堆中创建的一个真实对象，这个（数组）对象用以保存指向其他对象的引用（这里指的是引用数组），如果是基本类型数组，数组对象保存的是基本类型的值<br>只读成员length是数组对象的一部分（事实上，这是唯一yield可以访问的字段或方法），表示此数组对象可以存储多少元素，“[]”语法是访问数组对象元素的唯一方式<br>创建数组方式：</p>
+<ol>
+<li>作为数组初始化语法的一部分隐式创建，如 <code>String[] strs={&quot;hello&quot;,&quot;world&quot;}</code></li>
+<li>使用new关键字显式地创建，如 <code>String[] strs = new String[2]</code>或者<code>String strs=new String[]{&quot;hello&quot;,&quot;world&quot;}</code></li>
+</ol>
+<p>有几个需要注意的地方：</p>
+<ol>
+<li>length只表示数组能够容纳多少个元素，也就是说length是数组大小（主要是用来做下标检查，并且不可变），而不是实际保存的元素的个数</li>
+<li>数组创建时就已经完成了初始化，未被显式赋值的引用被初始化为null,基本类型被初始化为“零值<h2 id="多维数组"><a href="#多维数组" class="headerlink" title="多维数组"></a>多维数组</h2><strong>创建多维数组很方便，对于基本类型的多维数组，可以通过使用花括号将每个向量分隔开</strong>，实际上多维数组中是通过每一维数组保存下一维数组对象的引用实现的<br>数组中的每个向量可以具有任意长度（这被称为粗糙数组）<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RaggedArray</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args&#123;</span></span></span><br><span class="line"><span class="function"><span class="params">        Random rand=new Random(<span class="number">47</span>)</span></span>;</span><br><span class="line">        <span class="keyword">int</span>[][][] a=<span class="keyword">new</span> <span class="keyword">int</span>[rand.nextInt(<span class="number">7</span>)][][];<span class="comment">//创建数组时，第一维下标必须要被初始化，</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;a.length;i++)&#123;</span><br><span class="line">            a[i]=a[rand.nextInt(<span class="number">5</span>)];</span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> j=<span class="number">0</span>;j&lt;a[i].length;j++)&#123;</span><br><span class="line">                a[i][j]=<span class="keyword">new</span> <span class="keyword">int</span>[rand.nextInt(<span class="number">5</span>)];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(Arrays.deepToString(a));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="数组与泛型"><a href="#数组与泛型" class="headerlink" title="数组与泛型"></a>数组与泛型</h2><p>通常数组和泛型不能很好地结合，你不能实例化具有参数化类型的数组<br>    Peel<banana>[] peels=new Peel<banana>[10]//illegal<br><strong>擦除会移除参数类型信息，而数组必须知道它们所持有的确切类型，以强制保证类型安全</strong><br>但是，你可以参数化数组本身的类型<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ClassParameter</span>&lt;<span class="title">T</span>&gt;</span>&#123;</span><br><span class="line">    <span class="keyword">public</span> T[] f(T[] arg)&#123; <span class="keyword">return</span>  arg;&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MethodParameter</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; T[] f(T[] arg)&#123;<span class="keyword">return</span> arg;&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ParameterizedArrayType</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">        Integer[] ints=&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>&#125;;</span><br><span class="line">        Double[] doubles=&#123;<span class="number">1.1</span>,<span class="number">2.2</span>,<span class="number">3.3</span>,<span class="number">4.4</span>,<span class="number">5.5</span>&#125;;</span><br><span class="line">        Integer[] ints2=<span class="keyword">new</span> ClassParameter&lt;Integer&gt;().f(ints);</span><br><span class="line">        Double[] doubles2=<span class="keyword">new</span> ClassParameter&lt;Double&gt;().f(doubles);</span><br><span class="line">        Integer[] ints3=MethodParameter.f(ints);</span><br><span class="line">        Double[] doubles3=MethodParameter.f(doubles);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></banana></banana></p>
+<p>注意，使用参数化方法而不使用参数化类的方便之处：你不必为需要应用的每种不同的类型都使用一个参数去实例化这个类，并且你可以将其定义为静态，当然，你不能总是选择使用参数方法而不是参数化类，但它应该成为首选<br>上面的例子证明了，不能创建泛型数组的这一说法并不准确，诚然，编译器确实不让你实例化泛型数组，但是，它允许你创建对这种数组的引用，例如<br>    List<string> list<br>这条语句可以顺利地通过编译器而不报任何错误，而且，尽管你不能创建实际的持有泛型的数组对象，但是你可以创建非泛型的数组，然后将其转型<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ArrayOfGenerics</span> </span>&#123;</span><br><span class="line">    <span class="meta">@SuppressWarnings</span>(<span class="string">"unchecked"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">        List&lt;String&gt;[] ls;</span><br><span class="line">        List[] la=<span class="keyword">new</span> List[<span class="number">10</span>];</span><br><span class="line">        ls=(List&lt;String&gt;[])la;<span class="comment">//"unchecked" warning</span></span><br><span class="line">        ls[<span class="number">0</span>]=<span class="keyword">new</span> ArrayList&lt;String&gt;();</span><br><span class="line">        <span class="comment">//ls[1]=new ArrayList&lt;Integer&gt;();compile-error checking produces an error</span></span><br><span class="line">        Object[] objects=ls;</span><br><span class="line">        <span class="comment">//compiles and runs without complaint</span></span><br><span class="line">        objects[<span class="number">1</span>]=<span class="keyword">new</span> ArrayList&lt;Integer&gt;();</span><br><span class="line">        <span class="comment">//howerve if your needs are straightforward it is</span></span><br><span class="line">        <span class="comment">//possible to create an array of generics,albeit("虽然")</span></span><br><span class="line">        <span class="comment">//with an "unchecked" warning</span></span><br><span class="line">        List&lt;BerylliumSphere&gt;[] spheres=(List&lt;BerylliumSphere&gt;[]) <span class="keyword">new</span> List[<span class="number">10</span>];</span><br><span class="line">				<span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;spheres.length;i++)&#123;</span><br><span class="line">				   spheres[i]=<span class="keyword">new</span> ArrayList&lt;BerylliumSphere&gt;();</span><br><span class="line">				&#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></string></p>
+<p>一旦拥有了对List<string>[]的引用，你就会看到你将得到某些编译器检查<br><strong>数组是协变类型的</strong>，因此向数组中添加元素，可以是数组声明类型的子类，这样在取出数组时，得到的是引用声明的类型，记住，<strong>引用类型主要是给编译器提供类型信息</strong><br>如果你知道将来不会向上转型，并且需求也相对简单，那么你仍旧可以创建泛型数组，它可以提供基本的编译期类型检查，但是，<strong>事实上，泛型容器总是比泛型数据更好的选择</strong><br>一般而言你会发现泛型在类或者方法的边界很有效，而在类或方法的内部，擦除通常会是泛型变得不适用，例如你不能创建泛型数组，如<code>new T[]</code>是错误的，因为数组的创建一定要确切的类型<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ArrayOfGenericType</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">    T[] array;<span class="comment">//is ok</span></span><br><span class="line">    <span class="meta">@SuppressWarnings</span>(<span class="string">"unchecked"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ArrayOfGenericType</span><span class="params">(<span class="keyword">int</span> size)</span></span>&#123;</span><br><span class="line">        <span class="comment">//array=new T[size];  不可以创建泛型数组</span></span><br><span class="line">        <span class="comment">//所有对象的引用在堆中所占据的内存空间大小是一样的，所以我们先创建一个Object</span></span><br><span class="line">        <span class="comment">//的数组，给定size，数组在堆中分配的内存空间确定下来，我们将这个创建的数组</span></span><br><span class="line">        <span class="comment">//使用（T[]）进行转型，需要记住的这只是给了编译器一个转型提示，实际底层数组对象</span></span><br><span class="line">        <span class="comment">//头部保存的对象类型信息任何没有改变，它记录了自己保存的是Object类型的数据，</span></span><br><span class="line">        <span class="comment">//但是数组的引用类型指示了当向这个数组插入对象时进行类型检查需要的信息，以及在运行时</span></span><br><span class="line">        <span class="comment">//从数组中取出数据进行动态的类型转换</span></span><br><span class="line">        array=(T[])<span class="keyword">new</span> Object[size];<span class="comment">//unchecked warning </span></span><br><span class="line">        <span class="comment">//public &lt;U&gt; U[] makeArray()&#123; return; new U[10]&#125;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></string></p>
+<p>擦出再次成为了障碍——本例试图创建的类型以及被擦除了，因而是类型未知的数组，注意，你可以创建Obeject数组，然后将其转型，但是，如果没有@DSupressWarnings注解，你将在编译期得到一个“不受检查”的警告消息，因为这个组没有真正持有或动态检查类型T,也就是说，如果我创建了一个String[]，java在编译器和运行期都会强制我只能将String对象置于改数组中，如果创建的是Object数组，那么我可以将除基本类型之外的任何对象置于该数组</p>
+<h2 id="创建测试数据"><a href="#创建测试数据" class="headerlink" title="创建测试数据"></a>创建测试数据</h2><p>通常，在实验数组和程序时，能够很方便地生成填充了测试数据的数组，将会很有帮助，我们来看看如何利用工具将数值和对象填充进数组</p>
+<h3 id="Arrays-fill"><a href="#Arrays-fill" class="headerlink" title="Arrays.fill()"></a>Arrays.fill()</h3><p>java的标准类库Arrays有一个作用很有限的fill()方法，只能用一个填充各个位置，<strong>而针对对象而言，就是复制同一个引用来填充</strong>，可以填充整个数组，也可以填充数组的某个区域，但是由于只能使用单一的数值来调用Arrays.fill()，因此这个方法并没什么用</p>
+<h3 id="数据生成器"><a href="#数据生成器" class="headerlink" title="数据生成器"></a>数据生成器</h3><p>为了灵活的方式创建更有趣的数组，我们使用Gererator的概念，如果某个工具使用了Generator,那么你就可以通过选择Generator的类型来创建任何类型的数据（这是策略模式的一个实例——每个不同的Generator都表示一个不同的策略）<br>首先创建这些包装器类嵌套在CountingGenerator类中，注意这里的包装器类只是为了区别各种生成器取和java类库包装器相同的名字而已，它们是在CountingGenerator中，且在不同的命名空间下，所以不是同一类型，这点注意，实现Generator<t>接口的next方法就可以了，如下，省写<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CountingGenerator</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Boolean</span> <span class="keyword">implements</span> <span class="title">Generator</span>&lt;<span class="title">java</span>.<span class="title">lang</span>.<span class="title">Boolean</span>&gt;</span>&#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">boolean</span> value=<span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">public</span> java.lang.<span class="function">Boolean <span class="title">next</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> !value;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Byte</span> <span class="keyword">implements</span> <span class="title">Generator</span>&lt;<span class="title">java</span>.<span class="title">lang</span>.<span class="title">Byte</span>&gt;</span>&#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">byte</span> value=<span class="number">0</span>;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="keyword">public</span> java.lang.<span class="function">Byte <span class="title">next</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> value++;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">char</span>[] chars=<span class="string">"abcdefghijklmnopqrstuvwlyz"</span>.toCharArray();</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Character</span> <span class="keyword">implements</span> <span class="title">Generator</span>&lt;<span class="title">java</span>.<span class="title">lang</span>.<span class="title">Character</span>&gt;</span>&#123;</span><br><span class="line">       </span><br><span class="line">        <span class="keyword">static</span> <span class="keyword">int</span> index=<span class="number">0</span>;</span><br><span class="line">        <span class="keyword">public</span> java.lang.<span class="function">Character <span class="title">next</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> chars[(index++)%chars.length];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">String</span> <span class="keyword">implements</span>  <span class="title">Generator</span>&lt;<span class="title">java</span>.<span class="title">lang</span>.<span class="title">String</span>&gt;</span>&#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">int</span> length=<span class="number">7</span>;</span><br><span class="line">        Generator&lt;java.lang.Character&gt; generator=<span class="keyword">new</span> Character();</span><br><span class="line">        <span class="keyword">public</span> java.lang.<span class="function">String <span class="title">next</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">char</span>[] chars=<span class="keyword">new</span> <span class="keyword">char</span>[length];</span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;length;i++)&#123;</span><br><span class="line">                chars[i]=generator.next();</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> Arrays.toString(chars);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></t></p>
+<p>这些生成器大多都是这样的，实现generator接口的next()方法只是具体的实现不同而已</p>
+<h3 id="从Generator中创建数组"><a href="#从Generator中创建数组" class="headerlink" title="从Generator中创建数组 ###"></a>从Generator中创建数组 ###</h3><p>为了接收Generator并产生数组，我们需要两个转换工具，一个工具使用任意的Generator来产生Object子类型的数组，为了处理基本类型，第二个工具接收任意基本类型的包装器类型数组，并产生相应的基本类型数组<br>我们看下第一个工具的两种选择，第一个使用重载的array方法，该方法接受一个已有的数组，并使用某个Generator填充它，而第二个版本接受一个Class对象（类型标记）,一个Generator和所需的元素数量，然后创建一个新数组，并使用所接收的Generator来填充它，注意这个工具只能阐释Object子类型的数组，而不能产生基本类型数组<br>因为泛型不能用于基本类型，而我们确实需要一个生成器来填充基本类型数组，很简单，先使用生成器生成包装器类型数组，然后通过一个转换器生成基本类型数组，所以我们要创建一个转换器类，里面有重载的转换方法接受不同类型的包装器数组，然后在方法内部创建基本类型数组，依次取出包装器数组的数据赋值即可，很简单，不写了</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/10/19/数组/" data-id="cjng35ljr001m80rzq4otaq91" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2018/10/14/泛型/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">泛型</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/学习心得/">学习心得</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSS/">CSS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTML5/">HTML5</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Node-js/">Node.js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Oracle/">Oracle</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring-MVC/">Spring MVC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring-boot/">Spring boot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring-cloud/">Spring cloud</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/CSS/" style="font-size: 10px;">CSS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Git/" style="font-size: 10px;">Git</a> <a href="/tags/HTML5/" style="font-size: 10px;">HTML5</a> <a href="/tags/JVM/" style="font-size: 10px;">JVM</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/JavaScript/" style="font-size: 10px;">JavaScript</a> <a href="/tags/Linux/" style="font-size: 10px;">Linux</a> <a href="/tags/Maven/" style="font-size: 10px;">Maven</a> <a href="/tags/Node-js/" style="font-size: 10px;">Node.js</a> <a href="/tags/Oracle/" style="font-size: 10px;">Oracle</a> <a href="/tags/Spring/" style="font-size: 10px;">Spring</a> <a href="/tags/Spring-MVC/" style="font-size: 10px;">Spring MVC</a> <a href="/tags/Spring-boot/" style="font-size: 10px;">Spring boot</a> <a href="/tags/Spring-cloud/" style="font-size: 10px;">Spring cloud</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/10/19/数组/">数组</a>
+          </li>
+        
+          <li>
+            <a href="/2018/10/14/泛型/">泛型</a>
+          </li>
+        
+          <li>
+            <a href="/2018/10/12/类型信息/">类型信息</a>
+          </li>
+        
+          <li>
+            <a href="/2018/10/11/字符串/">字符串</a>
+          </li>
+        
+          <li>
+            <a href="/2018/10/11/通过异常处理错误/">通过异常处理错误</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 EgbertDay<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

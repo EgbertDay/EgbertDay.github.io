@@ -69,6 +69,91 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-访问权限控制" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/10/06/访问权限控制/" class="article-date">
+  <time datetime="2018-10-06T06:39:23.000Z" itemprop="datePublished">2018-10-06</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/学习心得/">学习心得</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/10/06/访问权限控制/">访问权限控制</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
+<p>访问控制（或隐藏具体实现）与“最初的实现并不恰当”有关  </p>
+</blockquote>
+<p>几乎所有的代码某些部分经过一段时间再回头看，可能会发现有更好的方式来去实现相同的功能，这正是重构的原动力之一，重构或者重写代码，以使得它更可读，更易理解，更具有可维护性<br>&emsp;&emsp;但是，在这种修改和完善代码的愿望下，也存在着巨大的压力，通常总会有一些消费者（客户端程序员）需要你的代码在某些方面不变，由此产生了面向对象设计中需要考虑的一个基本问题：“如何把变动的事物与保持不变的事物区分开来”<br>这一目标可以通过约定达成，例如，类库的开发者必须保证不得删除任何现有的方法，因为那样会破坏客户端程序员的代码，但是，与之相反的情况更加棘手，在域（数据成员）存在的情况下，类库开发者要怎么知道究竟都有哪些已经被客户端程序员所调用了呢？<br>&emsp;&emsp;为了解决这一问题，java提供了访问权限修饰符，以供类库开发人员指明了哪些是可用的，哪些是不可用的<br>&emsp;&emsp;不过，构件类库的概念已经对于谁有权取用该类库构件的控制问题还是不完善的，其中仍然存在着如何将构件捆绑到一个内聚的类库单元中的问题，对于这一点，java用关键字package加以控制，而访问权限修饰词会因类是存在于一个相同的包还是存在于一个单独的包而受到影响，所以要理解理解访问权限修饰符的全部含义，要先学习如何将类库构件置于包中  </p>
+<h2 id="包：库单元"><a href="#包：库单元" class="headerlink" title="包：库单元"></a>包：库单元</h2><p>&emsp;&emsp;由于名字之间的潜在冲突，在java中对名称空间进行完全控制并为每个类创建唯一的标识符组合就成为了非常重要的事情<br>&emsp;&emsp;当编写一个java源代码文件时，此文件通常被称为编译单元（有时也被称为转译单元），每个编译单元都必须要有一个后缀名.java，而在编译单元内则可以有一个public类，该类的名称必须要与源文件名称相同，否则编译器就不会接受，如果在编译单元之中还有额外的类的话，那么包之外的世界是无法看见这些类的，这是因为他们不是public类，而且他们主要是用来为主public类提供支持的  </p>
+<h3 id="代码组织"><a href="#代码组织" class="headerlink" title="代码组织"></a>代码组织</h3><p>&emsp;&emsp;当编译一个java文件时，在java文件中的每一个类都会有一个输出文件，而输出文件的名称与.java文件的名称相同，只是多了后缀名.class,因此少量的编译.java文件，就会得到大量的<code>.class</code>文件<br>&emsp;&emsp;java可运行程序时一组可以打包并压缩为一个java文档文件（Jar，使用java的jar文档生成器）的.class文件，java解释器负责这些文件的查找，装载和解释<br>&emsp;&emsp;类库实际上是一组类文件，其中每个文件都有一个public类，以及任意数量的非public类，因此每一个文件都有一个构件，如果希望这些构件（每一个都有它们自己的独立的<code>.java</code>和<code>.class</code>文件）从属同一个群组，就可以使用关键字package<br>    package access;<br>&emsp;&emsp;这表明你在声明该编译单元是名为access的类库的一部分，或者换种说法，你正在声明该编译单元中的public类名称位于access名称的保护伞下，任何想要使用该名称的人都必须使用该类库构件的全名或者使用import关键  </p>
+<h3 id="创建独一无二的包名"><a href="#创建独一无二的包名" class="headerlink" title="创建独一无二的包名"></a>创建独一无二的包名</h3><p>&emsp;&emsp;其实一个包从未真正将被打包的东西包装成一个单一的文件，并且一个包可以由许多.class文件构成，也就是说，我们只是定义了类是在哪个命名空间下，通过命名空间和类名唯一地标识这个类，那么情况有点复杂，当我们的程序在运行的时候，应该去哪里找到某个特定类的定义信息（就是<code>.class</code>文件）呢？<br>&emsp;&emsp;为了避免这种情况的发生，一种合乎逻辑的做法就是将特定包内的所有<code>.class</code>文件都置于一个目录下，也就是说，利用操作系统的层次化的文件结构来解决这个问题<br>&emsp;&emsp;将所有文件收入一个子目录还可以解决另外两个问题：创建独一无二的名称已经怎么查找有可能隐藏于目录结构中的某处的类<br>第一个问题是，通过域名反写的形式创建独一无二的类<br>第二个问题是：把package名称分解为你机器上的一个目录，所以java程序运行并需要加载<code>.class</code>文件的时候，它就可以确定<code>.class</code>文件在目录上所处的目录<br>&emsp;&emsp;java解释器的运行过程如下：首先，找到环境变量CLASSPATH，CLASSPATH包含一个或多个目录，用作查找<code>.class</code>文件的根目录，从根目录开始，解释器将包名解析成目录，得到的目录与CLASSPATH中的各个不同的项相连接，解释器就在这些目录下查找与你所要创建的类名称相关的<code>.class</code>文件，所要我们要想使用某个类库，一定要在将类库放在CLASSPATH变量中指定的目录的任意一个，或者也可以将类库的当前目录添加到CLASSPATH变量中，JAR文件有些许变化，必须要在类路径中将JAR文件的实际名称写清楚，而不仅仅只是指出它所在的目录  </p>
+<h2 id="java访问权限修饰符"><a href="#java访问权限修饰符" class="headerlink" title="java访问权限修饰符"></a>java访问权限修饰符</h2><table>
+<thead>
+<tr>
+<th>权限修饰词</th>
+<th>权限说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>public</td>
+<td>允许任意的类对其修饰的成员访问</td>
+</tr>
+<tr>
+<td>private</td>
+<td>只有包含该成员的类才能对其访问</td>
+</tr>
+<tr>
+<td>protected</td>
+<td>只有派生类和同包的类才能对其进行访问</td>
+</tr>
+<tr>
+<td>默认包访问权限</td>
+<td>只有同一个类库下的类才能对其访问  </td>
+</tr>
+</tbody>
+</table>
+<p>&emsp;&emsp;我想对访问权限多说一些，对于初学者对访问权限并不是很清楚，即使是工作多年的java工程师对访问权限控制也没有很清晰的认识，即使认知如此，好像也不太影响完成项目的任务，可是我还是想把这些事情讲清楚说明白些<br>&emsp;&emsp;我们都知道java是门面向对象的语言，以面向对象的思维编程很符合人类的思维习惯，可是我们应该清楚的是，java之所以有面向对象的特性,要感谢编译器，我们之前描述方法的执行往往是说发送消息给对象，这是面向对象的说法，真正的过程应该是对这个对象的数据执行方法定义的程序，具有过程，比较复杂，这里牵扯到cpu和内存，指令之间的关系，不过我们只需要知道对对象数据进行操作就足够理解权限控制的含义了，由此我们也知道，同一个类型的所有对象的方法代码只有一份，放在方法区，每个对象都有自己独有的数据放在堆中，方法代码和数据分离，理解下面四个问题，就能明白访问权限控制的全部含义</p>
+<ol>
+<li>什么是“权限”？ </li>
+<li>权限是限制谁的？   </li>
+<li>权限可以修饰哪些元素？</li>
+<li>访问权限修饰符是给谁用的<br>&emsp;&emsp;“权限”中文的含义很简单，就是权力的限制，直接讲就是可以做什么<br>&emsp;&emsp;权限是限制其他类的，对于被访问修饰符修饰的元素来说，其他的类对于它来讲，只有三个身份，分别是其他的类，同类库的类，派生的类，对于这三种身份，不同的权限修饰符给与他们的访问权限不同，举例来说，对于protected修饰的元素来说，其他类型的类不能对其访问，同类库和派生类可以对其访问<br>&emsp;&emsp;访问权限修饰符可以修饰哪些元素，类，域和方法<br>&emsp;&emsp;访问权限修饰符是给编译器使用的，编译过程保证了互相调用的正确性，访问权限会被编译器编译进类的字节码文件（<code>.class</code>文件）中，以供编译器编译新代码时作为权限检查的信息来使用<br>&emsp;&emsp;在讲一些小的细节吧，如果A能访问B,B能够访问C,但是A不能访问C,那么A可以“调用”C中的方法吗？答案是不可以，C中的方法能否被访问，要查看调用它的类对于它的权限，但是A却可以通过B来调用C,我喜欢称为委托，也就是说方法的调用是两个类之间的事情，有点绕，但是很有意思<h2 id="接口和实现"><a href="#接口和实现" class="headerlink" title="接口和实现"></a>接口和实现</h2>&emsp;&emsp;访问权限的控制常被称为具体实现的隐藏，把数据和方法包装进类中，以及具体实现的隐藏，常共同被称作时封装，其结果是一个同时用于特征和行为的数据类型<br>&emsp;&emsp;出于两个很重要的原因，访问权限控制的边界划在了数据类型的内部，第一个原因时要设定客户端程序员可以使用和不可以使用的界限，这个原因直接引出了第二个原因，实现接口和实现的分离  <h2 id="类的访问权限"><a href="#类的访问权限" class="headerlink" title="类的访问权限"></a>类的访问权限</h2>&emsp;&emsp;在java中，权限控制符也可以用于确定库中的哪些类对于库的使用者是可用的，如果希望某个客户端程序员能够使用这个类，就使用public来定义这个类，这样做甚至可以控制客户端程序员能否创建一个该类的对象<br>&emsp;&emsp;这里有一些限制  </li>
+<li>每个编译单元（<code>.java</code>文件）都只能有一个public类，这表示，每个编译单元只能有一个公共接口  </li>
+<li>public类必须完全与含有编译单元的文件名相匹配  </li>
+<li>虽然不是很常用，但编译单元内完全不带public类也是可能的，在这种情况下，可以随意对文件命名，但是不建议<br>&emsp;&emsp;还有需要注意的是：类的定义一定不能是private或者protected的，只能是public或者不加任何修饰符的包访问权限</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/10/06/访问权限控制/" data-id="cjng35lke002480rzm2f5hz00" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-初始化与清理" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2018/10/05/初始化与清理/" class="article-date">
@@ -123,7 +208,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/05/初始化与清理/" data-id="cjneufacc001bwgrzuud21lh6" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/05/初始化与清理/" data-id="cjng35ljb001880rz0gr42szo" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
@@ -266,7 +351,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/05/一切都是对象/" data-id="cjneufaby0015wgrzh7yq7jys" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/05/一切都是对象/" data-id="cjng35lj7001580rzmaf98qs8" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
@@ -331,7 +416,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/04/对象导论/" data-id="cjneufad2001mwgrz2orevkkp" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/04/对象导论/" data-id="cjng35ljw001q80rzah61i5ay" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
@@ -373,7 +458,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/04/Node-js参考网站/" data-id="cjneufaa4000fwgrzs9621jox" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/04/Node-js参考网站/" data-id="cjng35li3000i80rz07qq9pxj" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Node-js/">Node.js</a></li></ul>
@@ -415,7 +500,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/04/JavaScript参考网站/" data-id="cjneufa9n000awgrz2a1v8spb" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/04/JavaScript参考网站/" data-id="cjng35lhy000f80rz71d2xmj3" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JavaScript/">JavaScript</a></li></ul>
@@ -457,7 +542,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/04/CSS参考网站/" data-id="cjneufa8a0000wgrzr5dculhw" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/04/CSS参考网站/" data-id="cjng35lgv000080rzkl4kutzs" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CSS/">CSS</a></li></ul>
@@ -499,7 +584,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/04/HTML5参考网站/" data-id="cjneufa950005wgrz4vqhh5jt" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/04/HTML5参考网站/" data-id="cjng35lhe000580rz2rr39j5o" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/HTML5/">HTML5</a></li></ul>
@@ -541,7 +626,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/04/JVM参考网站/" data-id="cjneufa9a0006wgrzwwoto5go" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/04/JVM参考网站/" data-id="cjng35lhh000680rzlpdo9joy" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JVM/">JVM</a></li></ul>
@@ -583,52 +668,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/04/Docker参考网站/" data-id="cjneufa8l0001wgrzaibdecmv" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/04/Docker参考网站/" data-id="cjng35lh4000180rz3rw945gw" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Docker/">Docker</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-Linux操作系统参考网站" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2018/10/04/Linux操作系统参考网站/" class="article-date">
-  <time datetime="2018-10-04T03:42:24.000Z" itemprop="datePublished">2018-10-04</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/学习心得/">学习心得</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/10/04/Linux操作系统参考网站/">Linux操作系统参考网站</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/04/Linux操作系统参考网站/" data-id="cjneufaab000iwgrzu0szx738" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li></ul>
 
     </footer>
   </div>
@@ -694,6 +737,10 @@
       <ul>
         
           <li>
+            <a href="/2018/10/19/数组/">数组</a>
+          </li>
+        
+          <li>
             <a href="/2018/10/14/泛型/">泛型</a>
           </li>
         
@@ -707,10 +754,6 @@
         
           <li>
             <a href="/2018/10/11/通过异常处理错误/">通过异常处理错误</a>
-          </li>
-        
-          <li>
-            <a href="/2018/10/10/持有对象/">持有对象</a>
           </li>
         
       </ul>
