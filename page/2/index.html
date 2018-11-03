@@ -69,6 +69,553 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-类型信息" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/10/12/类型信息/" class="article-date">
+  <time datetime="2018-10-12T05:21:23.000Z" itemprop="datePublished">2018-10-12</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/学习心得/">学习心得</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/10/12/类型信息/">类型信息</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>运行时类型信息（runtime Type information）使得你可以在程序运行时发现和使用类型信息<br>它使你从只能在编译期执行面向类型的操作的禁锢中解脱出来<br>java是如何让我们在运行时识别对象和类的信息的，主要有两种方式，一种是“传统的”RTTI，它假定我么不能在编译时已经知道了所有的类型，另一种是“反射”机制，它允许我们在运行时发现和使用类的信息  </p>
+<h2 id="为什么需要RTTI"><a href="#为什么需要RTTI" class="headerlink" title="为什么需要RTTI"></a>为什么需要RTTI</h2><p>我们看一下多态的例子<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Shape</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">draw</span><span class="params">()</span></span>&#123; System.out.print(<span class="keyword">this</span>+<span class="string">".draw()"</span>);&#125;</span><br><span class="line">    <span class="function"><span class="keyword">abstract</span> <span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Cricle</span> <span class="keyword">extends</span> <span class="title">Shape</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span></span>&#123;<span class="keyword">return</span> <span class="string">"Cricle"</span>;&#125;;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Square</span> <span class="keyword">extends</span> <span class="title">Shape</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span></span>&#123;<span class="keyword">return</span> <span class="string">"Square"</span>;&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Shapes</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">        List&lt;Shape&gt; shapeList= Arrays.asList(<span class="keyword">new</span> Cricle(),<span class="keyword">new</span> Square());</span><br><span class="line">        <span class="keyword">for</span>(Shape shape:shapeList)&#123;</span><br><span class="line">            shape.draw();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在这个例子中，当把Shape对象放在List<shape>列表时会向上转型，但向上转型为Shape的时候，也丢失了Shape对象的具体的类型，对于列表而言，它们只是Shape类型的对象（我们这样思考一个问题，为什么我们在编程的时候，没有使用具有的引用类型，而是向上转型为更加通用的类型引用，诚然，我们可以使用更具体的类型来表示对象类型，拥有更多的方法可以操作这个类型，但是我们却没有办法写更适用的代码，每一个代码片段都与特定类型相关联，耦合度太高，我们要将类型向上转型为它的基类，这样拥有同样的接口，但是却丢失了关于这个对象具体类型的信息，<strong>注意，我们说的丢失了具体类型的信息指的是在编译期，在编译期，我们会将它的对象类型当作基类看待，实际上，对象本身的类型信息并没有丢失，我们可以在程序运行的时候重新拿到本来属于它的身份（类型信息）</strong>，这就是运行时类型信息的全部解释）<br>当从列表中取出元素时，这种容器——实际上将它所有的事物都当成Object持有——会自动将结果转型回Shape的，在java中所有的类型转换都是在运行是进行正确的检查，这也是RTTI名字的含义，在这个例子中，RTTI类型转换的并不彻底，Object被转型为Shape，而不是转换成Cricle，Square这种更具体的类型，这是因为我们只知道这个List<shape>保存的是Shape，将由容器和Java泛型机制保证这一点，而在运行时，由类型转换确保这一点</shape></shape></p>
+<h2 id="Class对象"><a href="#Class对象" class="headerlink" title="Class对象"></a>Class对象</h2><p>要理解RTTI在java中的工作原理，首先必须知道类型信息在运行时是如何表示的，这项工作是被称为Class对象的特殊对象完成的，它包含了与类相关的信息， Class对象就是用来创建类的所有“常规”对象的，java使用Class对象来执行其RTTI，即使你正在执行类型转换这样的工作<br>类是程序的一部分，每个类都是一个Class对象，换言之，每当编写并且编译一个新类，就会产生一个Class对象（更恰当的说，是保存在一个同名的.class文件中，这个.class文件保存在关于这个类的一切信息，我们可以将这个.class文件看作对象，这和类加载之后在内存中创建的Class对象没有太大的分别，最大的区别也许就是存储位置的不同）为了生成这个类的对象，运行这个程序的Java虚拟机（JVM)将使用被称为“类加载器”的子系统<br>所有的类都是在第一次被使用时，动态加载到JVM中的，当程序创建第一个对类的静态成员的引用时，就会加载这个类，这额证明了构造器也是静态方法，虽然在它之前没有static关键字，因此，java程序在它开始之前并非完全加载，其各个部分都是在必需时才加载的，如果尚未加载，默认的类加载器就会根据类名查找.class文件，而这个类的字节码文件就被加载，它会接受验证，以确保其没有被破坏，并且不包含不良的Java代码<br>（从我的理解来看，程序是对象与对象之间通讯，而Class掌握着生成这些对象和怎样通讯的所有知识，我们编写程序就是编写这些类，类由虚拟机加载，并且通过虚拟机创建对象，互相在对象之间传递消息，那么虚拟机是什么？虚拟机是程序，是代码运行的平台，我们编写的类都是程序的构件，以供虚拟机使用）<br>一旦某个类的Class对象被载入内存，它就被用来创建这个类的所有对象</p>
+<pre><code>Class Class.forName(String className);
+</code></pre><p>上面的方法是Class类的一个静态方法，返回一个Class对象的引用，如果你有某个对象的引用，也可以使用Object的getClass()方法，得到一个Class对象的引用，对forName()的调用就是为了产生副作用，其实更准确的说，forName()方法的调用是为了加载某个类，所有，如果这个类还没有被加载，那么就加载它，在加载的过程中，类的static子句开始执行<br>记住，所有的Class对象都是Class类，这听起来感觉很奇怪，我们知道类的所有信息都是在.class文件保存着，类加载器子系统通过这些文件会在内存空间创建相应的Class对象，其实这些对象和普通的对象的共同点就是对象，只不过这个Class对象拥有着这个类型信息，而其他对象拥有着属性数据，那么这些Class对象之间肯定有着某种共性，而这种共性就是它们都是Class类型<br>我们得到了Class对象的引用，就可以操作它以获得它的数据（类型信息）<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">getName()</span><br><span class="line">getSimpleName()</span><br><span class="line">getCanonicalName()</span><br><span class="line">getInterfaces()</span><br><span class="line">isInterface()</span><br><span class="line">getSuperClass()</span><br><span class="line">newInstance()</span><br></pre></td></tr></table></figure></p>
+<p>Class对象的newInstance()方法是实现“虚拟构造器”的一种途径，虚拟构造器允许你声明“我不知道你的确切类型”，但是啊无论如何要正确地创建你自己，<strong>比如up是一个Class引用，在编译期不具备任何更进一步的类型信息，当你创建新实例时，会得到一个Object对象</strong>，但是这个引用指向一个确切的类型，当然你可以发送Object能够接受的信息之外的任何消息之前，你必须更多的了解它，并进行某种转型，另外，使用newInstance()必须带有默认的构造器  </p>
+<h3 id="类字面常量"><a href="#类字面常量" class="headerlink" title="类字面常量"></a>类字面常量</h3><p>java提供了另一种方法来生成对Class对象的引用，即使用类字面量常量 例如<br>    FancyToy.class<br>这样做不仅更简单，而且也更安全，因为它在编译时就会受到检查（因此不需要置于try语句块中），并且它根除了forName()方法的调用，所有也更高效<br>建议使用“.class”的形式，以保持与普通类的一致性<br>注意，有一点很有趣，使用“.class”来创建对Class对象的引用时，不会自动地初始化Class对象，为了使用类而做的准备工作实际上包含三个步骤</p>
+<ol>
+<li>加载：这是类加载器执行的，该步骤将查找字节码，并从这些字节码中创建一个Class对象</li>
+<li>链接：在链接阶段将验证类中的字节码，为静态域分配存储空间，并且如果必需的话，将解析这个类对其他类的所有引用</li>
+<li>初始化：如果该类具有超类，则对其初始化，执行静态初始化器和静态初始化块<br>初始化被延迟到了对静态方法（构造器隐式地是静态的）或非常数静态方法进行首次引用是才执行<br>初始化有效地实现了尽可能的“惰性”，仅使用.class语法来获得对类的引用不会引发初始化，和是和forName()不同的  <h3 id="泛化的Class引用"><a href="#泛化的Class引用" class="headerlink" title="泛化的Class引用"></a>泛化的Class引用</h3>Class引用总是指向某一个Class对象，它可以制造类的实例，并包含可作用与这些实例的所有方法代码，它还包括了该类的静态成员。因此。Class引用表示的就是指向它所指对象的确切类型，而该对象表示Class类的一个对象<br>如何将它的类型变得更具体，而<strong>这是通过允许你对Class引用所指向的Class对象的类型进行限定而实现的</strong>，这里使用了泛型语法，比如<br> Class<integer> classRef=int.class;<br>你也许会认为，下面的代码也是正确的<br> Class<number> classRef=int.class;<br>但是它是无法工作的，虽然Number是Integer的基类，但是Integer的Class对象不是Number的Class对象的子类，这个例子的正确做法是<br> Class&lt;? extends Number&gt; classRef=int.class;<br>当你使用泛型语法的时候将会发生一件有趣的事情，newInstance()将会返回该对象的确切的类型，而不是基本的Object,如下：<h3 id="新的转型语法"><a href="#新的转型语法" class="headerlink" title="新的转型语法"></a>新的转型语法</h3>Class引用的转型语法 cast()  不过我们很少使用<h2 id="类型转换前先做检查"><a href="#类型转换前先做检查" class="headerlink" title="类型转换前先做检查"></a>类型转换前先做检查</h2>目前我们已知的RTTI形式包括</number></integer></li>
+<li>传统的类型转换 如“(Shape)” 由RTTI确保类型转换的正确性，如果执行了一个错误的转换，就会抛出一个ClassCastException</li>
+<li>代表对象的类型的Class对象，通过查询Class对象可以获取运行时所需的信息</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/10/12/类型信息/" data-id="cjo1m2qp5003tn8rzinhvkh4m" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-字符串" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/10/11/字符串/" class="article-date">
+  <time datetime="2018-10-11T11:14:03.000Z" itemprop="datePublished">2018-10-11</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/学习心得/">学习心得</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/10/11/字符串/">字符串</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="不可变String"><a href="#不可变String" class="headerlink" title="不可变String"></a>不可变String</h2><p>&emsp;&emsp;String对象是不可变的，查看JDK文档，会发现，String类中每一个看起来会修改String值的方法，实际上都是创建了一个全新的String对象，以包含修改后的字符串内容，而最初的String对象纹丝未动，当吧String对象作为方法的参数时，都会复制一份引用，而该引用所指的对象其实一直待在单一的物理位置上，从未动过<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Immutable</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">upcase</span><span class="params">(String s)</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> s.toUpperCase();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">        String q=<span class="string">"howdy"</span>;</span><br><span class="line">        System.out.print(q);<span class="comment">//howdy</span></span><br><span class="line">        String qq=upcase(q);</span><br><span class="line">        System.out.print(qq);<span class="comment">//HOWDY</span></span><br><span class="line">        System.out.print(q);<span class="comment">//howdy</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;上例upcase()返回的引用已经指向了一个新的对象了，而原本的q则还在原地<br>&emsp;&emsp;String的这种行为方式其实正是我们想要的，难道我们真的希望upcase()改变参数的行为吗？参数是为该方法提供信息的，而不是先让该方法改变自己的</p>
+<h2 id="重载“-”与StringBuilder"><a href="#重载“-”与StringBuilder" class="headerlink" title="重载“+”与StringBuilder"></a>重载“+”与StringBuilder</h2><p>&emsp;&emsp;String对象的不可变性带来了效率的问题，为String对象重载的“+”操作符就是一个例子，重载的意思是，一个操作符在应用于不同的类上，被赋予老特殊的含义<br>&emsp;&emsp;我们经常使用“+”操作进行字符串的拼接，可是由于String对象的不可变性，我们猜想每一次的连接操作都会产生一个新的String对象，若是进行多次的拼接操作，会有大量的中间String对象产生，会造成内存资源的浪费和垃圾回收器的负担，比如<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">String concatStr=<span class="string">"asdad"</span>+<span class="string">"asdas"</span>+<span class="string">"sfadfdf"</span>+<span class="string">"asdasd"</span></span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;但是当我们使用javap，对上述代码jinx反编译的时候，就会看到，在进行字符拼接的时候，编译器帮我们做了优化，首先new StringBuilder对象，通过append()方法拼接，使用toString()返回一个字符串对象，编译器以及帮我们的源码进行了优化，那么是否我们就确信编译器优化，而毫无考虑的就到处使用“+”操作符进行字符串的拼接操作呢？我们在看一个例子<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(String str:StringArr[])&#123;</span><br><span class="line">    s+=str;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">StringBuilder sb=<span class="keyword">new</span> StringBuilder();</span><br><span class="line"><span class="keyword">for</span>(String str:StringArr)&#123;</span><br><span class="line">   sb.append(str);</span><br><span class="line">&#125;</span><br><span class="line">sb.toString();</span><br></pre></td></tr></table></figure></p>
+<p>我们在进行javap进行反编译，可知在上面的第一个例子，每次循环内都要创建new StringBuilder(),而第二个例子只创建一次，那么这个例子就可以说明什么时候应该使用StringBuilder来对字符串进行拼接操作了<br>StringBuilder提供了丰富而全面的方法，包括insert(),replace(),subString()甚至reverse(),但是最常用的还是append()a,toString()，还有delete()<br>Stringbuilder是Java SE5引入的，在这之前java用的是StringBuffer,后者是线程安全的，因此开销也会大些  </p>
+<h2 id="无意识的递归"><a href="#无意识的递归" class="headerlink" title="无意识的递归"></a>无意识的递归</h2><p>我们一般经常都会调用一个对象的toString()方法，比如容器的打印，实际上也会调用每个元素的toString()方法，若我们想要打印对象的内存地址怎么办呢？下面是一个对象，重新定义了toString()方法，并且打印自己的内存地址<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">InfiniteRecursion</span></span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">toString</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">"asdasdas"</span>+<span class="keyword">this</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>上面的定义是对的吗？完全错误，如果我们调用这个对象的toString()方法就会导致递归，因为我们对this也执行了toString()调用，没完没了，正确的方法如下<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">return</span> <span class="string">"asdasdas"</span>+<span class="keyword">super</span>.toString();</span><br></pre></td></tr></table></figure></p>
+<p>因为这样会调用基类的toString方法，就避免了递归</p>
+<h2 id="String上的操作"><a href="#String上的操作" class="headerlink" title="String上的操作"></a>String上的操作</h2><p>下面是String对象具备的一些基本操作  </p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>参数，重载版本</th>
+<th>应用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>构造器</td>
+<td>重载版本：默认版本，String，StringBuilder<br>StringBuffer char数组，byte数组</td>
+<td>创建String对象</td>
+</tr>
+<tr>
+<td>length()</td>
+<td></td>
+<td>String中字符的个数</td>
+</tr>
+<tr>
+<td>charAt()</td>
+<td>int索引</td>
+<td>取得String中该索引位置上的char</td>
+</tr>
+<tr>
+<td>getChars(),getBytes()</td>
+<td>要复制部分的起点和终点的索引，<br>复制的目标数组，目标数组，目标数组的起始索引</td>
+<td>复制char或byte到一个目标数组中</td>
+</tr>
+<tr>
+<td>toCharArray()</td>
+<td></td>
+<td>生成一个char[]</td>
+</tr>
+<tr>
+<td>equals(),equalsIgnoreCase()</td>
+<td>与之进行比较的String</td>
+<td>比较两个String的内容是否相同</td>
+</tr>
+<tr>
+<td>compareTo()</td>
+<td>与之进行比较的String</td>
+<td>按词典顺序比较String的内容，比较结果为负数，零，正数，注意，大小写不等价</td>
+</tr>
+<tr>
+<td>contains()</td>
+<td>要搜索的CharSequence</td>
+<td>如果该String对象包含参数的内容，则返回true</td>
+</tr>
+<tr>
+<td>containEquals()</td>
+<td>与之进行比较的CharSequence或StringBuffer</td>
+<td>如果该String与参数的内容一致，则返回true</td>
+</tr>
+<tr>
+<td>equealsIgnoreCase()</td>
+<td>与之进行比较的String</td>
+<td>忽略大小写的比较相等性</td>
+</tr>
+<tr>
+<td>regionMatcher()</td>
+<td>该String的索引偏移量，另一个String及其索引偏移量，<br>要比较的长度，重载版本增加了“忽略大小写”功能</td>
+<td>返回boolean结果，已表明所比较区域是否相等</td>
+</tr>
+<tr>
+<td>StartsWith()</td>
+<td>可能的起始String，重载版本在参数中增加了偏移量</td>
+<td>返回值为boolean值</td>
+</tr>
+<tr>
+<td>endsWith()</td>
+<td>该String可能的后缀String</td>
+<td>返回boolean值</td>
+</tr>
+<tr>
+<td>indexOf(),lastIndexOf()</td>
+<td>重载版本包括：char，char与起始索引，<br>String，String与起始索引</td>
+<td>如果该String并不包含此参数，就返回-1<br>否则返回此参数在String中的起始索引，lastIndexOf()是从后向前搜索</td>
+</tr>
+<tr>
+<td>subString()(subSequence())</td>
+<td>重载版本：起始索引;起始索引+终点索引</td>
+<td>返回一个新的String，以包含参数指定的字符串</td>
+</tr>
+<tr>
+<td>concat()</td>
+<td>要连接的字符串</td>
+<td>返回一个新的String对象，内容为原始String连接上参数String</td>
+</tr>
+<tr>
+<td>replace()</td>
+<td>要替换掉的字符，用来进行替换的新字符。<br>也可以用一个CharSequence来替换另一个CharSequence</td>
+<td>返回替换字符后的新String对象<br>如果，没有替换发生，则返回原始的String对象</td>
+</tr>
+<tr>
+<td>toLowerCase(),toUpCase()</td>
+<td></td>
+<td>将字符的大小写改变，返回一个新的字符串</td>
+</tr>
+<tr>
+<td>trim()</td>
+<td></td>
+<td>将字符串两端的空白字符删除</td>
+</tr>
+<tr>
+<td>valueOf()</td>
+<td>重载版本：Object;char[];char[],偏移量，与字符个数；<br>boolean；char;int;lang;float;double</td>
+<td>返回一个表示参数内容的String</td>
+</tr>
+<tr>
+<td>intern()</td>
+<td></td>
+<td>为每个唯一的字符序列生成一个且仅生成一个String引用  </td>
+</tr>
+</tbody>
+</table>
+<h2 id="格式化输出"><a href="#格式化输出" class="headerlink" title="格式化输出"></a>格式化输出</h2><p>在长久的等待之后，java SE5终于推出了C语言中printf()风格的格式化输出</p>
+<h3 id="System-out-format"><a href="#System-out-format" class="headerlink" title="System.out.format"></a>System.out.format</h3><p>java SE5引入的format()方法可用于PrintStream或PrintWriter对象，format()方法模仿C语言的printf()，它只需要一个简单的格式化字符串和一串的参数就可，语法如下.以System.out为例<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">System.out.format(<span class="string">"Row 1:[%d %f]\n"</span>,x,y);</span><br></pre></td></tr></table></figure></p>
+<h3 id="Formatter类"><a href="#Formatter类" class="headerlink" title="Formatter类"></a>Formatter类</h3><p>在java中，所有新的格式化功能都由java.util.Formatter类处理,可以将Formatter看作一个翻译机，它将你的格式化字符串与数据翻译成需要的结果，当你创建一个Formatter对象的时候，可以向其构造器传递一些信息，告诉它最终的结果将向哪里输出  </p>
+<h3 id="格式化说明符"><a href="#格式化说明符" class="headerlink" title="格式化说明符"></a>格式化说明符</h3><p>在插入数据时，如果想要控制空格与对齐，你需要更精细复杂的格式修饰符，一下是其抽象的语法<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">%[argument_index$][flags][width].[precision]conversion</span><br></pre></td></tr></table></figure></p>
+<p>最常用的是width控制一个域的最小尺寸，数据是右对齐的，可以添加“-”标志来控制对其方向<br>不是所有类型的元素都能用precision，而且不同类型的元素使用precision代表的含义也不相同<br>Formatter转换（conversion）<br>下面包含了最常用的类型转换   </p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>：类型转换：</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>d</td>
+<td>整数型（十进制）</td>
+</tr>
+<tr>
+<td>c</td>
+<td>unicode字符</td>
+</tr>
+<tr>
+<td>b</td>
+<td>Boolean值</td>
+</tr>
+<tr>
+<td>s</td>
+<td>String</td>
+</tr>
+<tr>
+<td>f</td>
+<td>浮点数（十进制）</td>
+</tr>
+<tr>
+<td>e</td>
+<td>浮点数（科学计数）</td>
+</tr>
+<tr>
+<td>x</td>
+<td>整数（十六进制）</td>
+</tr>
+<tr>
+<td>h</td>
+<td>散列码</td>
+</tr>
+<tr>
+<td>%</td>
+<td>字符“%”</td>
+</tr>
+</tbody>
+</table>
+<h3 id="String-format"><a href="#String-format" class="headerlink" title="String.format()"></a>String.format()</h3><p>java SE5也参考了C的sprintf()的方法，以生成格式化的String对象，String.format()是一个static方法，它接受与Formatter.format()相同的参数，但返回一个String对象，当你只使用formatter()方法一次的时候，String.format()是个不错的选择，语法 类似如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">String result = String.format(<span class="string">"(t%d,q%d) %s"</span>,transcationID,queryID,message);</span><br></pre></td></tr></table></figure></p>
+<p>其实在String.format()内部，它是创建一个Formatter对象，然后将你的参数传递给它，不过与其自己做这些事情，不如使用便捷的String.format()代码更清晰易读</p>
+<h2 id="正则表达式"><a href="#正则表达式" class="headerlink" title="正则表达式"></a>正则表达式</h2><p>正则表达式是一种强大而灵活的文本处理工具，<strong>使用正则表达式，我们能够以编程的方式，构造复杂的文本，并对输入的字符串进行搜索，一旦找到匹配这些模式的部分，你就能够随心所欲地对它们进行处理</strong>，正则表达式提供了一种完全通用的方式，能够解决各种字符串处理相关的问题，匹配，选择，编辑以及验证</p>
+<h3 id="基础"><a href="#基础" class="headerlink" title="基础"></a>基础</h3><p>在其他的语言中,\\表示“我想要在表达式中插入一个普通的反斜线，请不要给他任何特殊的意义，而在java中，\\的意思是”我要插入正则表达式的反斜线，”，所以其后的字符具有一个特殊的意义，你想插入一个普通的反斜线，则应该这样\\\\”<br>应用正则表达式最简单的途径，就是利用String类内建的matches()方法<br>String还有一个非常有用的正则表达式工具——split()方法，其功能是“将字符串从正则表达式匹配的地方切开”，split()还有一个重载的版本，它允许你限制字符串分割的次数<br>如果只是需要使用一次正则表达式，那么上面的方法是很方便的吗，但是如果你想对一个正则表达式反复复用，那么非String类型的正则表达式具备更加的性能和功能</p>
+<h3 id="创建正则表达式"><a href="#创建正则表达式" class="headerlink" title="创建正则表达式"></a>创建正则表达式</h3><hr>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>字符</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B</td>
+<td>指定字符B</td>
+</tr>
+<tr>
+<td>\xhh</td>
+<td>十六进制值为0xhh的字符</td>
+</tr>
+<tr>
+<td>\uhhhh</td>
+<td>十六进制表示为oxhhhh的Unicode字符</td>
+</tr>
+<tr>
+<td>\n</td>
+<td>换行符</td>
+</tr>
+<tr>
+<td>\t</td>
+<td>制表符</td>
+</tr>
+<tr>
+<td>\r</td>
+<td>回车</td>
+</tr>
+<tr>
+<td>\f</td>
+<td>换页</td>
+</tr>
+<tr>
+<td>\e</td>
+<td>转义（Escape）</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>字符类</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>.</td>
+<td>任意字符</td>
+</tr>
+<tr>
+<td>[abc]</td>
+<td>包含a,b，c的任何字符（和a</td>
+<td>b</td>
+<td>c作用相同）</td>
+</tr>
+<tr>
+<td>[^abc]</td>
+<td>除了a,b,c之外的任意字符（否定）</td>
+</tr>
+<tr>
+<td>[a-zA-Z]</td>
+<td>从a到或从A到Z的任何一个字符</td>
+</tr>
+<tr>
+<td>[abc[hij]]</td>
+<td>任意a,b,c,h.i,j的字符（与a</td>
+<td>b</td>
+<td>c</td>
+<td>h</td>
+<td>i</td>
+<td>j的作用相同）</td>
+</tr>
+<tr>
+<td>[a-z&amp;&amp;[hij]]</td>
+<td>任意h,i,j（交集）</td>
+</tr>
+<tr>
+<td>\s</td>
+<td>空白符（空格，tab,换行，换页或回车）</td>
+</tr>
+<tr>
+<td>\S</td>
+<td>非空白符</td>
+</tr>
+<tr>
+<td>\d</td>
+<td>数字[0-9]</td>
+</tr>
+<tr>
+<td>\D</td>
+<td>非数字[^0-9]</td>
+</tr>
+<tr>
+<td>\w</td>
+<td>词字符[a-zA-Z0-9]</td>
+</tr>
+<tr>
+<td>\w</td>
+<td>非词字符[^\w]</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>逻辑操作符</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>XY</td>
+<td>Y紧跟在X后面</td>
+</tr>
+<tr>
+<td>X</td>
+<td>Y</td>
+<td>X或Y</td>
+</tr>
+<tr>
+<td>(X)</td>
+<td>捕获组（capturing group）可以在表达式中引用\i第一i个捕获组</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>边界匹配符</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>^</td>
+<td>一行的起始</td>
+</tr>
+<tr>
+<td>$</td>
+<td>一行的结束</td>
+</tr>
+<tr>
+<td>\b</td>
+<td>非词的边界</td>
+</tr>
+<tr>
+<td>\B</td>
+<td>词的边界</td>
+</tr>
+<tr>
+<td>\G</td>
+<td>前一个匹配的结束</td>
+</tr>
+</tbody>
+</table>
+<h3 id="量词"><a href="#量词" class="headerlink" title="量词"></a>量词</h3><p>量词描述了一个模式吸收输入文本的方式：</p>
+<ul>
+<li>贪婪型：量词总是贪婪的，除非有其他的选项被设置，贪婪表达式会为所有可能的模式发现尽可能多的匹配，导致此问题的一个典型理由就是假定我们的模式仅能匹配第一个可能的字符组，如果它是贪婪的，那么它就会继续往下匹配  </li>
+<li>勉强型：用问好来指定，这个量词匹配满足模式所需最少字符数，因此也称做懒惰的，最少匹配的，非贪婪的，或不贪婪的  </li>
+<li>占有型：目前，这种类型的量词只有java语言中才可用，并且也更高级，当正则表达式被应用于字符串时，它会产生相当多的状态，以便在匹配失败时可以回溯，而“占有的”量词并不保存这些中间状态，因此它们可以防止回溯，它们常常用于防止正则表达式失控，因此可以使正则表达式执行起来更有效  </li>
+</ul>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>贪婪型</th>
+<th>勉强型</th>
+<th>占有型</th>
+<th>如何匹配</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>X?</td>
+<td>X??</td>
+<td>x?+</td>
+<td>一个或零个X</td>
+</tr>
+<tr>
+<td>X*</td>
+<td>X*?</td>
+<td>X*+</td>
+<td>零个或者多个X</td>
+</tr>
+<tr>
+<td>X+</td>
+<td>X+?</td>
+<td>X++</td>
+<td>一个或者多个X</td>
+</tr>
+<tr>
+<td>X{n}</td>
+<td>X{n}?</td>
+<td>X{n}+</td>
+<td>恰好n次</td>
+</tr>
+<tr>
+<td>X{n,}</td>
+<td>X{n,}?</td>
+<td>X{n,}+</td>
+<td>至少n次</td>
+</tr>
+<tr>
+<td>X{n,m}</td>
+<td>X{n,m}?</td>
+<td>X{n,m}+</td>
+<td>X至少n次，最多m次</td>
+</tr>
+</tbody>
+</table>
+<p>要非常注意的是表达式X必须要用圆括号括起来，以便它能按照我们期望的效果去执行，例如 abc+和（abc）+,前面的表示表示匹配ab，后面跟随1个或者多个c，而(abc)+表示匹配一个或者多个abc<br>接口CharSequence从CharBuffer,String,StringBuffer,StringBuilder类之中抽象出了字符序列的一般化定义<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">CharSequenece</span></span>&#123;</span><br><span class="line">  charAt();</span><br><span class="line">  length();</span><br><span class="line">  subSequence(<span class="keyword">int</span> start,<span class="keyword">int</span> end);</span><br><span class="line">  toString();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>因此，这些类都实现了接口，多数正则表达式操作都接受CharSequence类型的参数  </p>
+<h3 id="Pattern和Matcher"><a href="#Pattern和Matcher" class="headerlink" title="Pattern和Matcher"></a>Pattern和Matcher</h3><p>比起功能有限的String，我们更愿意构造功能强大的正则表达式对象，只需要导入java.util.regex包，然后用static Pattern.compile()方法来编译你的正则表达式即可，它会根据你的String类型的正则表达式生成一个Pattern对象，接下来，把你想要检索的字符串传入Pattern对象的matcher()方法会生成一个Matcher对象，它有很多功能可用，例如它的replaceAll()方法能够将所有匹配的部分替换成你传入的参数</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestRegularExpression</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(args.length&lt;<span class="number">2</span>)&#123;</span><br><span class="line">            System.out.print(<span class="string">"args's count is not right"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (String arg:args)&#123;</span><br><span class="line">            Pattern p = Pattern.compile(arg);</span><br><span class="line">            Matcher m = p.matcher(<span class="string">"args[0]"</span>);</span><br><span class="line">            <span class="keyword">while</span>(m.find())&#123;</span><br><span class="line">                System.out.print(m.group()+m.start()+m.end());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Pattern变量表示编译后的正则表达式，我们可以使用编译后的Pattern对象的matcher()方法，加上一个输入字符串，从而共同构造一个Matcher对象，同时Pattern类还提供了一个静态方法<br>    static boolean matcher(String regex,CharSequence input)<br>编译后的Pattern对象还提供了split()方法，它从匹配的regex的地方分割字符串，返回分割后的字符串的一个String数组<br>通过调用Pattern.matcher()方法，我们得到一个Matcher对象，使用Matcher上的方法，我们能够判断各种不同类型的匹配是否成功<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">matches</span><span class="params">()</span></span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">lookingAt</span><span class="params">()</span></span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">find</span><span class="params">()</span></span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">find</span><span class="params">(<span class="keyword">int</span> start)</span></span></span><br></pre></td></tr></table></figure></p>
+<p>其中的matches()方法用来判断这个输入字符串是否匹配正则表达式，而lonkingAt()则用来判断该字符串（不必是整个字符串）的始部分是否匹配模式<br>find()像迭代器那样向前办理输入字符串，而第二个find(int start),该参数表示字符串中的字符位置，并以其作为搜索的起点</p>
+<h3 id="Group-组"><a href="#Group-组" class="headerlink" title="Group(组)"></a>Group(组)</h3><p>组是用括号划分的正则表达式，可以根据组的编号来引用某个组，组号0表示整个表达式，组号1表示被第一对括号括起来的组，依次类推<br>A(B(C))D,这里有三个组，组0是ABCD,组1是BC,组2是C<br>Matcher（匹配器）对象提供了一些列的方法，用来获取与组相关的信息<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">groupCount</span><span class="params">()</span><span class="comment">//返回该匹配器的模式中的分组数量，第0组不算</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">group</span><span class="params">()</span><span class="comment">//返回前一次操作（例如find()）的第0组</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">group</span><span class="params">(<span class="keyword">int</span> i)</span><span class="comment">//返回前一次匹配操作期间指定的组号，如果匹配成功，但是指定的组没有匹配任何输入字符串的任何部分，则会返回null  </span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">start</span><span class="params">(<span class="keyword">int</span> group)</span><span class="comment">//返回在前一次匹配操作中寻找到的组的起始索引</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">end</span><span class="params">(<span class="keyword">int</span> group)</span><span class="comment">//返回在前一次匹配操作中寻找到的组的最后一个字符索引加1的值</span></span></span><br></pre></td></tr></table></figure></p>
+<p>start()和end()会返回前一次匹配操作的第一个字符位置和最后一个字符位置+1，如果匹配失败（或先于一个正在进行的匹配操作去尝试）。调用start()或end()都会产生一个IllegalStatException异常<br>find()可以在输入的任意位置定位正则表达式，而lookingAt()和matches()只有在正则表达式与输入的最开始位置处开始匹配才会成功</p>
+<h3 id="Pattern标记"><a href="#Pattern标记" class="headerlink" title="Pattern标记"></a>Pattern标记</h3><p>Pattern的compile()还有另一个版本，它接受一个标记参数，以调整匹配的行为</p>
+<pre><code>Pattern.compile(String regex,int flag)
+</code></pre><p>其中的flag来自一下Pattern类中的常量  </p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>编译标记</th>
+<th>效果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pattern.CONON_EQ</td>
+<td>两个字符当且仅当它们的完全规范分解相匹配时</td>
+</tr>
+<tr>
+<td>Pattern.CASE.INSENSITIVE(?!)</td>
+<td>默认情况下，大小写不敏感的匹配假定只有US-ASCII字符集中的字符才能进行，这个标记允许模式匹配不必考虑大小写（大写或小写），通过指定UNICODE_CASE标记及结合此标记，基于Unicode的大小写不敏感的匹配就可以开启了</td>
+</tr>
+<tr>
+<td>Pattern.COMMENTS(?x)</td>
+<td>在这种模式下，空格符将被忽略，并且以“#”开始直到行尾的注释也会被忽略掉，通过嵌入的标记表达式也可以开启Unix的行模式</td>
+</tr>
+<tr>
+<td>Pattern.DOTALL(?s)</td>
+<td>在dotall模式中，表达式“.”匹配所有的字符，包括行终结符。默认情况下“.”表达式不匹配行终结符</td>
+</tr>
+<tr>
+<td>Pattern.MULTILINE</td>
+<td>在多行模式下，表达式^和$分别匹配一行的开始和结束，^还匹配输入字符串的开始，而$还匹配输入字符串的结尾，默认情况下，这些表达式仅匹配输入的完整的字符串的开始和结束</td>
+</tr>
+<tr>
+<td>Pattern.UNICODE_CASE(?u)</td>
+<td>当指定这个标记，并且开启CASE.INSENSITIVE时，大小写不敏感的匹配将按照与Unicode标准相一致的方式进行，默认情况下，大小写不敏感的匹配假定只能在US-ASCII字符集中的字符才能进行  </td>
+</tr>
+<tr>
+<td>Pattern.UNIX_LINES(?d)</td>
+<td>在这种模式下，^和$行为中，其识别行终结符\n  </td>
+</tr>
+</tbody>
+</table>
+<h3 id="替换操作"><a href="#替换操作" class="headerlink" title="替换操作"></a>替换操作</h3><p>正则表达式特别便于替换文本，它提供了许多方法，replaceFirst(String replaceStr)替换掉第一个匹配成功的部分,replaceAll(String replaceStr)替换掉所有匹配成功的部分。appendReplacement(StringBuffer sbuf,String replaceent)此方法重要，允许你调用其他的方法来生成或处理replacement(replaceFirst()和replaceAll()则只能使用一个固定的字符串)，使得你能够以编程的方式来将目标分割成组，从而具备更强大的替换功能，appendTail(StringBuffer sbuf)，在执行完appendReplacement()之后，调用此方法可以将输入字符串余下的部分复制到sbuf中  </p>
+<h3 id="reset"><a href="#reset" class="headerlink" title="reset()"></a>reset()</h3><p>通过reset()方法，可以将现有的Matcher对象应用于一个新的字符序列<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Resetting</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">        Matcher matcher = Pattern.compile(<span class="string">"[firb[aiu][gx]]"</span>).matcher(<span class="string">"fix the rug with bgs"</span>);</span><br><span class="line">        <span class="keyword">while</span>(matcher.find())&#123;</span><br><span class="line">            System.out.print(matcher.group());</span><br><span class="line">        &#125;</span><br><span class="line">        matcher.reset(<span class="string">"fix the rig rags"</span>);</span><br><span class="line">        <span class="keyword">while</span>(matcher.find())&#123;</span><br><span class="line">            System.out.print(matcher.group());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="正则表达式与I-O"><a href="#正则表达式与I-O" class="headerlink" title="正则表达式与I/O"></a>正则表达式与I/O</h3>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/10/11/字符串/" data-id="cjo1m2qmk001zn8rzv3z5orjd" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-通过异常处理错误" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2018/10/11/通过异常处理错误/" class="article-date">
@@ -120,7 +667,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/11/通过异常处理错误/" data-id="cjnzv2psn003bcorzyiumodbr" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/11/通过异常处理错误/" data-id="cjo1m2qpd003yn8rzwr0m8o1l" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
@@ -185,7 +732,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/10/持有对象/" data-id="cjnzv2pr4002kcorzebjhfd9b" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/10/持有对象/" data-id="cjo1m2qn7002gn8rz599vzg8t" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
@@ -284,7 +831,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/10/内部类/" data-id="cjnzv2poh001hcorzddtk6twm" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/10/内部类/" data-id="cjo1m2qm4001qn8rzkzxit0ec" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
@@ -353,7 +900,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/09/接口/" data-id="cjnzv2pr9002ncorzmix1nz36" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/09/接口/" data-id="cjo1m2qmr0022n8rzgbwvjyr3" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
@@ -411,7 +958,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/09/多态/" data-id="cjnzv2pqv002fcorzqwmu0no4" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/09/多态/" data-id="cjo1m2qmc001tn8rzc8tidhns" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
@@ -500,7 +1047,7 @@ public class SubType extends Type{
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/07/复用类/" data-id="cjnzv2pql002ccorz6wlld0kr" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/07/复用类/" data-id="cjo1m2qm4001on8rzyd6cz54a" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
@@ -585,7 +1132,7 @@ public class SubType extends Type{
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/06/访问权限控制/" data-id="cjnzv2psg0038corz1nedft25" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/06/访问权限控制/" data-id="cjo1m2qp5003un8rzws0lebkp" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
@@ -651,192 +1198,7 @@ public class SubType extends Type{
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/05/初始化与清理/" data-id="cjnzv2pon001kcorzsmtrjsmt" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-操作符" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2018/10/05/操作符/" class="article-date">
-  <time datetime="2018-10-05T12:24:07.000Z" itemprop="datePublished">2018-10-05</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/学习心得/">学习心得</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/10/05/操作符/">操作符</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/05/操作符/" data-id="cjnzv2prg002qcorzxngianzw" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-一切都是对象" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2018/10/05/一切都是对象/" class="article-date">
-  <time datetime="2018-10-05T02:40:48.000Z" itemprop="datePublished">2018-10-05</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/学习心得/">学习心得</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/10/05/一切都是对象/">一切都是对象</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="用引用操作对象"><a href="#用引用操作对象" class="headerlink" title="用引用操作对象"></a>用引用操作对象</h2><p>&emsp;&emsp;每种语言都有自己的操作内存元素的方式，有时候，程序员必须注意将要处理的数据类型是什么。你是直接操作元素，还是用某种基于特殊语法的间间接表示（例如C和C++里的指针）来操作对象<br>&emsp;&emsp;所有的一切在java这里得到了简化，一切都被视为对象，因此可采用单一固定的语法，尽管一切都看作对象，但操作的标识符实际上是对象的一个“引用”（reference）。</p>
-<h2 id="必须由你创建所有对象"><a href="#必须由你创建所有对象" class="headerlink" title="必须由你创建所有对象"></a>必须由你创建所有对象</h2><h3 id="存储到什么地方"><a href="#存储到什么地方" class="headerlink" title="存储到什么地方"></a>存储到什么地方</h3><p>程序运行的时候，对象是怎么进行放置安排的呢？特别是内存时怎样分配的呢？有五个不同的地方可以存储数据  </p>
-<ol>
-<li>寄存器。这是最快的存储区，因为它位于不同于其他存储区的地方——处理器内部，但是寄存器的数量有限，所以寄存器根据需求进行分配，你不能直接控制，也不能在程序中感觉到寄存器存在的任何迹象（一方面，C和C++允许你向编译器建议寄存器的分配方式）  </li>
-<li>堆栈：位于通用RAM(随机访问存储器)中，但通过堆栈指针可以从处理器那里获得直接支持，堆栈指针若向下移动，则分配新的内存，若向上移动，则释放那些内存，这是一种快速有效的分配存储方法，创建程序时，Java系统必须知道存储在堆栈内所有的确切生命周期，以便上下移动堆栈指针，这一约束限制了程序的灵活性，所以虽然某些java数据存储在堆栈中——特别是对象引用，但是java对象并不存储于其中  </li>
-<li>堆，一种通用的内存池（也位于RAM区），用于存放所有的java对象，堆不同于堆栈的好处是：编译器不需要知道存储的数据在堆中存活多少时间，因此，在堆中分配有很大的灵活性  </li>
-<li>常量存储：常量值通常直接存放在程序代码内部，这样做是安全的，因为它们永远不会被改变，有时，在嵌入式系统中，常量本身和其他部分分割离开，所以在这种情况下，可以选择将其存放在ROM（只读存储器）中  </li>
-<li>非RAM存储。如果数据完全存活于程序之外，那么它可以不受程序的任何控制，在程序没有运行时也可以存在，其中两个基本的例子时流对象和持久化对象  </li>
-</ol>
-<h3 id="特例：基本类型"><a href="#特例：基本类型" class="headerlink" title="特例：基本类型"></a>特例：基本类型</h3><p>&emsp;&emsp;在程序设计中经常用到一系列类型，它们需要特殊对待，可以把它们想象成“基本”类型<br>之所以特殊对待，是因为new将对象存储在“堆”里，故用new创建一个对象——特别是小的，简单的变量，往往不是很有效，因此，对于这些类型，java采取与C和C++相同的方法，也就是说，不用new来创建对象，而是创建一个并非是引用的“自动”变量，这个变量直接存储“值”，并置于堆栈中，因此更加高效<br>&emsp;&emsp;java要确定每种基本类型所占存储空间的大小，它们的大小并不像其他大多数语言那样随机器架构的变化而变化，所以java所编写的程序比其他语言更具有可移植性  </p>
-<h3 id="高精度数字"><a href="#高精度数字" class="headerlink" title="高精度数字"></a>高精度数字</h3><p>&emsp;&emsp;java提供了两个用于高精度计算的类：BigInteger和BigDecimal,可以将它们看成是包装器类，但是它们并没有相应的基本类型，它们都支持任意精度的数字，其实很好理解，因为它们的数据类型使得它们可以接受更多的位来表示数值  </p>
-<h3 id="java中的数组"><a href="#java中的数组" class="headerlink" title="java中的数组"></a>java中的数组</h3><p>&emsp;&emsp;几乎所有的程序设计语言都支持数组，在C和C++中使用数组时危险的，因为它们的数组就是内存块，如果一个程序要访问其自身内存块之外的数组，或在数组初始化前使用内存，将产生难以预料的后果<br>&emsp;&emsp;java的一个主要目标之一就是安全性，java确保数组会被初始化，而且不能在它的范围外被访问，这种范围检查，是以每个数组上少量的内存开销及运行时的范围检查为代价的，但由此换来的是安全性和效率的提高  </p>
-<h2 id="永远不需要销毁对象"><a href="#永远不需要销毁对象" class="headerlink" title="永远不需要销毁对象"></a>永远不需要销毁对象</h2><h3 id="作用域"><a href="#作用域" class="headerlink" title="作用域"></a>作用域</h3><p>&emsp;&emsp;大多数过程型语言都有作用域(scope)的概念,作用域决定了在其内定义的变量名的可见性和生命周期</p>
-<h3 id="对象的作用域"><a href="#对象的作用域" class="headerlink" title="对象的作用域"></a>对象的作用域</h3><p>&emsp;&emsp;java对象不具备和基本数据类型一样的生命周期，当new创建一个java对象时，它可以存活于作用域之外<br>&emsp;&emsp;如果java让对象一直存在，那么靠什么才能防止这些对象填满内存空间，进而阻塞你的程序呢？这正是C++里可能会发生的问题，这也是java的神奇之处，java有一个垃圾回收器，用来监视用new创建的所有对象，并辨别那些不会再被引用的对象。随后，释放这些对象的内存空间，以便供其他新的对象使用</p>
-<h2 id="创建新的数据类型：类"><a href="#创建新的数据类型：类" class="headerlink" title="创建新的数据类型：类"></a>创建新的数据类型：类</h2><p>&emsp;&emsp;如果一切都是对象，那么是什么决定了某一类对象的外观和行为呢？换句话说，是什么确定了对象的类型</p>
-<h3 id="字段和方法"><a href="#字段和方法" class="headerlink" title="字段和方法"></a>字段和方法</h3><p>&emsp;&emsp;一旦定义了一个类（在java中你所做的全部工作就是定义类，产生那些类的对象，以及发送消息给这些对象）就可以在类中设置两种类型的元素，字段（有时称做数据成员）和方法（有时称作函数成员）  </p>
-<h3 id="基本成员默认值"><a href="#基本成员默认值" class="headerlink" title="基本成员默认值"></a>基本成员默认值</h3><p><table><tr><th>基本类型</th><th>默认值</th></tr><tr><td>boolean</td><td>fasle</td></tr><tr><td>char</td><td>‘\u0000’(null)</td></tr><tr><td>byte</td><td>(byte)0</td></tr><tr><td>short</td><td>(short)0</td></tr><tr><td>int</td><td>0</td></tr><tr><td>long</td><td>0L</td></tr><tr><td>float</td><td>0.0f</td></tr><tr><td>double</td><td>0.0d</td></tr></table></p>
-<h2 id="方法，参数和返回值"><a href="#方法，参数和返回值" class="headerlink" title="方法，参数和返回值"></a>方法，参数和返回值</h2><p>&emsp;&emsp;返回类型描述的是在调用方法之后从方法返回的值，参数列表给出了要传递个方法的信息的类型和名称，方法名和参数列表（它们合起来被称为“方法签名”），唯一地标识出某个方法</p>
-<h2 id="java程序"><a href="#java程序" class="headerlink" title="java程序"></a>java程序</h2><h3 id="名字的可见性"><a href="#名字的可见性" class="headerlink" title="名字的可见性"></a>名字的可见性</h3><p>&emsp;&emsp;名字管理对任何程序设计语言都是一个重要的问题，如果在程序的某个模块里使用了一个名字，而其他人在这个程序的另一个模块里也使用了相同的名字，那么怎么区分这两个名字并防止二者互相冲突<br>&emsp;&emsp;java采用了一种全新的方法来避免上述的问题。为了给每一个类库生成不会与其他名字混淆的名字，java设计者希望程序员反过来使用自己的internet域名</p>
-<h3 id="运用其他构件"><a href="#运用其他构件" class="headerlink" title="运用其他构件"></a>运用其他构件</h3><p>&emsp;&emsp;如果想在自己的程序使用预先定义好的类，那么编译器就必须知道怎么定位它们，当然这个类可能就在发生调用的那个<strong>源文件</strong>中，在这种情况下，就可以直接使用这个类<br>&emsp;&emsp;如果那个类位于其他文件中呢？又会怎样？编译器没有那么聪明知道你要使用的类应该在哪里查找，所以你要明确地告诉编译器你想要的类是什么，import指示编译器导入一个包，也就是一个类库</p>
-<h3 id="static关键字"><a href="#static关键字" class="headerlink" title="static关键字"></a>static关键字</h3><p>&emsp;&emsp;通常来说，当创建类时，就是在描述那个类的对象的外观和行为，除非用new创建那个类的对象，否则，实际上并未获得任何对象，执行new来创建对象时，数据存储空间才被分配，其方法才供外部调用<br>&emsp;&emsp;有两种情况是上述方法无法解决的  </p>
-<ol>
-<li>只想为某特定域分配单一存储空间，而不去考虑究竟要创建多少对象吗，甚至根本就不创建对象</li>
-<li>希望某个方法不与包含它的类的任何对象关联在一起，也就是说，寄生不创建对象，也能调用这个方法<br>&emsp;&emsp;通过static关键字可以满足这两方面的要求，有些面向对象的语言采用类数据和类方法两个术语，代表那些数据和方法是作为整个类，而不是类的某个特定对象而存在的<br>&emsp;&emsp;尽管当static作用在某个字段时，肯定会改变数据创建的方式（因为一个static字段对每一个类来说都只是一份存储空间，而非static字段则是每个对象有一个存储空间），但是如果static作用于方法上，差别就没有那么大   <h3 id="编译和运行"><a href="#编译和运行" class="headerlink" title="编译和运行"></a>编译和运行</h3>&emsp;&emsp;要编译，运行一个程序，首先必须要有一个java开发环境，目前，有相当多的第三方厂商提供开发环境，我们当前使用的是SUN免费提供的JDK（java Developer’s Kit）开发环境为例<br>&emsp;&emsp;安装好JDK之后，还要设定好路径信息，以确保计算机能够找到javac和java这两个文件  </li>
-</ol>
-<h2 id="注释和嵌入式文档"><a href="#注释和嵌入式文档" class="headerlink" title="注释和嵌入式文档"></a>注释和嵌入式文档</h2><p>先来看一下注释，在java中有三种方式的注释  </p>
-<ol>
-<li>单行注释 //</li>
-<li>多行注释 /**/</li>
-<li>文档注释 /<strong>  </strong>/   <h3 id="注释文档"><a href="#注释文档" class="headerlink" title="注释文档"></a>注释文档</h3>&emsp;&emsp;文档撰写的最大问题，大概就是对文档的维护了，如果文档与代码是分离的，修改代码时，同时也要修改相应的文档，相当的麻烦啊，解决办法很简单，就是将代码和文档“链接”起来，为了达到这个目的，最简单的方法就是将所有的东西都放在同一个文件内，为了实现这个目的，就必须使用一种特使的注释语法来标记文档，此外还需要一个能够提取文档信息的工具<br>&emsp;&emsp;javadoc就是这样的一个工具，它是jdk安装的一部分，它采用了java编译器的某些技术，查找程序内特殊注释标签，它不仅解析由这些标签标记的信息，也将毗邻的类名或方法名提取出来，因此，我们可以用最少的工作量，生成相当好的程序文档，生成的文档是HTML格式<br>&emsp;&emsp;需要注意的是，能够生成文档的工具不止javadoc，使用时应该要遵守对应工具的语法规则，不过，如果没有什么特别的需求，javadoc已经很好了<h3 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h3>使用javadoc的方式有两种   </li>
-</ol>
-<ol>
-<li>一种是HTML,可在文档注释中直接写HTML，并没有什么特殊的，只是要注意不要在嵌入式HTML重使用标题标签，因为javadoc会插入自己的标题，而你的标题可能会同它们冲突  </li>
-<li>一种是使用注释标签下面是这些标签的一些示例</li>
-</ol>
-<table>
-<thead>
-<tr>
-<th>标签</th>
-<th>语法</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>@see</td>
-<td>@see classname<br>@see classname<br>@see fully-qualfied-classname#method-nam</td>
-<td>会在生成的文档中添加一个具有超链接的“see also”</td>
-</tr>
-<tr>
-<td>{@link package.class#member label}</td>
-<td></td>
-<td>该标签与@see及其类似，只是它用于行内，并且文档使用“label”作为超链接文本而不是“see also”</td>
-</tr>
-<tr>
-<td>{@docRoot}</td>
-<td></td>
-<td>该标签产生到文档根目录的相对路径，用于文档树页面的显式超链接</td>
-</tr>
-<tr>
-<td>{@inheritDoc}</td>
-<td></td>
-<td>该标签从当前这个类的最直接的基类中继承相关文档到当前的文档注释</td>
-</tr>
-<tr>
-<td>@version</td>
-<td>@version version-information</td>
-<td>版本信息</td>
-</tr>
-<tr>
-<td>@author</td>
-<td>@author author-information</td>
-<td>作者信息</td>
-</tr>
-<tr>
-<td>@since</td>
-<td></td>
-<td>允许你指定程序代码最早使用的版本，可以在HTML,java文档中看到它被用来指定所用的JDK版本的情况</td>
-</tr>
-<tr>
-<td>@param</td>
-<td>@param param-name discripton</td>
-<td>可以多次使用这个标签，大约每个参数都有一个这样的标签</td>
-</tr>
-<tr>
-<td>@return</td>
-<td>return description</td>
-<td>用来描述返回值的含义</td>
-</tr>
-<tr>
-<td>@throws</td>
-<td>@throws fully-qualified-class-name descripton</td>
-<td>可以多次使用，异常的全限定名和引发异常的原因</td>
-</tr>
-<tr>
-<td>@deprecated</td>
-<td></td>
-<td>该标签用于指出一些旧特性已由改进的新特性所取代，建议用户不要再使用这些旧特性</td>
-</tr>
-</tbody>
-</table>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/05/一切都是对象/" data-id="cjnzv2pol001jcorz670h0hee" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/05/初始化与清理/" data-id="cjo1m2qmk001wn8rzci14kio8" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
@@ -883,7 +1245,7 @@ public class SubType extends Type{
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/CSS/" style="font-size: 10px;">CSS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Git/" style="font-size: 10px;">Git</a> <a href="/tags/HTML5/" style="font-size: 10px;">HTML5</a> <a href="/tags/JVM/" style="font-size: 10px;">JVM</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/JavaScript/" style="font-size: 10px;">JavaScript</a> <a href="/tags/Linux/" style="font-size: 10px;">Linux</a> <a href="/tags/Maven/" style="font-size: 10px;">Maven</a> <a href="/tags/Node-js/" style="font-size: 10px;">Node.js</a> <a href="/tags/Oracle/" style="font-size: 10px;">Oracle</a> <a href="/tags/Servlet-JSP/" style="font-size: 10px;">Servlet&JSP</a> <a href="/tags/Spring/" style="font-size: 10px;">Spring</a> <a href="/tags/Spring-MVC/" style="font-size: 10px;">Spring MVC</a> <a href="/tags/Spring-boot/" style="font-size: 10px;">Spring boot</a> <a href="/tags/Spring-cloud/" style="font-size: 10px;">Spring cloud</a>
+      <a href="/tags/CSS/" style="font-size: 10px;">CSS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Git/" style="font-size: 10px;">Git</a> <a href="/tags/HTML5/" style="font-size: 10px;">HTML5</a> <a href="/tags/JVM/" style="font-size: 10px;">JVM</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/JavaScript/" style="font-size: 10px;">JavaScript</a> <a href="/tags/Linux/" style="font-size: 10px;">Linux</a> <a href="/tags/Maven/" style="font-size: 10px;">Maven</a> <a href="/tags/Node-js/" style="font-size: 10px;">Node.js</a> <a href="/tags/Oracle/" style="font-size: 10px;">Oracle</a> <a href="/tags/Servlet-JSP/" style="font-size: 15px;">Servlet&JSP</a> <a href="/tags/Spring/" style="font-size: 10px;">Spring</a> <a href="/tags/Spring-MVC/" style="font-size: 10px;">Spring MVC</a> <a href="/tags/Spring-boot/" style="font-size: 10px;">Spring boot</a> <a href="/tags/Spring-cloud/" style="font-size: 10px;">Spring cloud</a>
     </div>
   </div>
 
@@ -905,6 +1267,14 @@ public class SubType extends Type{
       <ul>
         
           <li>
+            <a href="/2018/11/03/JSP/">JSP</a>
+          </li>
+        
+          <li>
+            <a href="/2018/11/02/会话管理/">会话管理</a>
+          </li>
+        
+          <li>
             <a href="/2018/11/02/Servlets/">Servlets</a>
           </li>
         
@@ -914,14 +1284,6 @@ public class SubType extends Type{
         
           <li>
             <a href="/2018/10/19/注解/">注解</a>
-          </li>
-        
-          <li>
-            <a href="/2018/10/19/枚举类型/">枚举类型</a>
-          </li>
-        
-          <li>
-            <a href="/2018/10/19/Java-I-O系统/">Java I/O系统</a>
           </li>
         
       </ul>

@@ -2,6 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://yoursite.com/2018/11/03/JSP/</loc>
+    
+    <lastmod>2018-11-03T15:43:01.306Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://yoursite.com/2018/11/02/%E4%BC%9A%E8%AF%9D%E7%AE%A1%E7%90%86/</loc>
+    
+    <lastmod>2018-11-03T04:35:41.045Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://yoursite.com/2018/11/02/Servlets/</loc>
     
     <lastmod>2018-11-02T10:12:47.584Z</lastmod>

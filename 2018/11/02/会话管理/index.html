@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>会话管理 | 代海峰</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="由于HTTP的无状态性，使得会话管理会会话跟踪成为Web应用开发的一个无可避免的主题，默认下，一个web服务器无法区分一个HTTP请求是否为第一次访问我们将介绍4种不同的状态保持技术，URL重写，隐藏域，cookies和HttpSession对象 URL重写URL重写是一种会话跟踪技术，它是将一个或多个takon添加到URL的查询字符串中，每个token通常为key=value形式，如下url?k">
+<meta name="keywords" content="Servlet&amp;JSP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="会话管理">
+<meta property="og:url" content="http://yoursite.com/2018/11/02/会话管理/index.html">
+<meta property="og:site_name" content="代海峰">
+<meta property="og:description" content="由于HTTP的无状态性，使得会话管理会会话跟踪成为Web应用开发的一个无可避免的主题，默认下，一个web服务器无法区分一个HTTP请求是否为第一次访问我们将介绍4种不同的状态保持技术，URL重写，隐藏域，cookies和HttpSession对象 URL重写URL重写是一种会话跟踪技术，它是将一个或多个takon添加到URL的查询字符串中，每个token通常为key=value形式，如下url?k">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-11-03T04:35:41.045Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="会话管理">
+<meta name="twitter:description" content="由于HTTP的无状态性，使得会话管理会会话跟踪成为Web应用开发的一个无可避免的主题，默认下，一个web服务器无法区分一个HTTP请求是否为第一次访问我们将介绍4种不同的状态保持技术，URL重写，隐藏域，cookies和HttpSession对象 URL重写URL重写是一种会话跟踪技术，它是将一个或多个takon添加到URL的查询字符串中，每个token通常为key=value形式，如下url?k">
+  
+    <link rel="alternate" href="/atom.xml" title="代海峰" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">代海峰</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">个人博客</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-会话管理" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/11/02/会话管理/" class="article-date">
+  <time datetime="2018-11-02T10:16:59.000Z" itemprop="datePublished">2018-11-02</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/学习心得/">学习心得</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      会话管理
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>由于HTTP的无状态性，使得会话管理会会话跟踪成为Web应用开发的一个无可避免的主题，默认下，一个web服务器无法区分一个HTTP请求是否为第一次访问<br>我们将介绍4种不同的状态保持技术，URL重写，隐藏域，cookies和HttpSession对象</p>
+<h2 id="URL重写"><a href="#URL重写" class="headerlink" title="URL重写"></a>URL重写</h2><p>URL重写是一种会话跟踪技术，它是将一个或多个takon添加到URL的查询字符串中，每个token通常为key=value形式，如下<br>url?key1=value1&amp;key2=value2…&amp;keyn=valuen<br>URL重写适合于token无须在太多URL间传递的情况下，然而它有如下的限制</p>
+<ul>
+<li>URL在某些浏览器上最大长度为2000字符</li>
+<li>如要传递值到下一个资源，需要将值插入到链接，换句话说，静态页面很难传值</li>
+<li>URL重写需要在服务端完成，所有的链接都必须带值，因此当一个页面存在很多链接时，处理过程会是一个不小的挑战</li>
+<li>某些字符，例如空格，与和问号等必须使用base64编码</li>
+<li>所有的信息都是可见的，某些情况下不合适<h2 id="隐藏域"><a href="#隐藏域" class="headerlink" title="隐藏域"></a>隐藏域</h2>使用隐藏域来保持状态类似于URL重写技术，，但不是将值附加到URL上，而是放到HTML表单的隐藏域中，当表单提交时，隐藏域的值也同时提交到服务器端，隐藏域技术仅当网页有表单时有效，该技术相对于URL重写的优势在于，没有字符数限制，同时无须额外的源码，但该技术同URL重写一样，不适合跨越多个界面<h2 id="Cookies"><a href="#Cookies" class="headerlink" title="Cookies"></a>Cookies</h2>URL重写和隐藏域仅适合无须跨越太多页面的信息，如果需要在多个页面间传递信息，则以上两个技术实现成本太高，因为你不得不在每个网页都进行相应的处理，幸运的是，Cookie技术可以帮助我们<br>Cookie是一个很少的信息片段，可自动地在浏览器和Web服务器间交互，因此cookies可存储在多个页面传递的信息，Cookie作为HTTPheader的一部分，其传输由HTTP协议控制，此外，你可以控制cookie的有效时间，浏览器通常支持每个网站高达20个cookie<br>Cookies的问题在于用户可以通过改变其浏览器设置来拒绝接收cookies<br>要使用cookies，需要熟悉javax.servlet.http.Cookie类以及httpServletRequest和httpServletResponse两个接口<br>可以通过传递name和value两个参数给Cookie类的构造函数来创建一个Cookie<br>Cookie cookie=new Cookie(name,value);<br>创建完Cookie对象后，你可以设置domain,path,maxAge属性，其中maxAge属性决定cookie何时过期<br>要将cookie发送到浏览器，需要调用HttpServletResponse的add方法<br>  httpServletResponse.addCookie(cookie);<br>浏览器在访问同一个Web服务器时，会将之前收到的cookie一并发送<br>我们也可以通过HttpServletRequest来获取Cookie<br>  Cookie[] cookies=httpServletRequest.getCookies();</li>
+</ul>
+<h2 id="HttpSession对象"><a href="#HttpSession对象" class="headerlink" title="HttpSession对象"></a>HttpSession对象</h2><p>在所有的会话跟踪技术中，HttpSession是最强大和最通用的，一个用户可以有且最多只有一个HttpSession,并且不会被其他用户访问到<br>HttpSession对象在用户第一次访问网站的时候自动创建，你可以通过调用HttpServletRequest的getSession()方法来获取这个对象，getSession有两个重载方法<br>    HttpSession getSession()<br>    HttpSession getSession(boolean create)<br>没有参数的getSession方法返回当前的HttpSession,若当前没有，则创建一个返回，getSession(fasle)返回当前的HttpSession,若当前不存在，则返回null，getSession(true)和getSession()行为相同<br>可以通过HttpSession的setAttribute方法将值放入HttpSession,该方法签名如下：<br>    void setAttribute(String name,Object value);<br>注意，不同于URL重写，隐藏域或cookie,放入到HttpSession的值，是存储在内存中，因此，不要往HttpSession放太多对象或大对象，尽管现代的Servlet容器在内存不够用的时候会将保存在HttpSession的对象转储到二级存储，但这样有性能问题<br>此外，放到HttpSession的值不限于String类型，可以是任意实现了Serializable的java对象，因为Servlet容器认为有必要时会将这些对象放入文件或数据库中，尤其在内存不够用的时候，当然也可以将不支持序列化的对象放在HttpSession,只是这样，当Servlet容器试图序列化的时候会失败并报错<br>调用setAttribute方法时，若传入的参数此前以及使用过，则会用新值覆盖旧值<br>通过调用HttpSession的getAttribute方法可以取回之前放入的对象，该方法的签名如下：<br>    Object getAttribute(String name);<br>HttpSession还有一个非常有用的方法，名为getAttributeNames(),该方法会返回一个Enumeration对象来迭代访问保存在HttpSession中的所有值<br>Enumeration<string> getAttributeNames();<br>注意，所有保存在HttpSession的数据不会发送到客户端，不同于其他会话管理技术，Servlet容器为每一HttpSession生成唯一的标识，并将该标识发送给客户端，或创建一个名为JSESSIONID的cookie,或者在URL后附加一个名为jsessionid的参数，在后续的请求中，浏览器会将该变数提交给服务端，这样服务端就可以标识该请求是由哪个用户发起的，Servlet容器会自动选择一种方式床底会话标识，无须开放人员介入<br>可以通过调用HttpSession的getId()方法来读取该标识<br>    String getId();<br>此外，HttpSession还定义了一个名为invalidate的方法，该方法强制会话过期，并清空其保存的对象，默认情况下，HttpSession会在用户不活动一段时间后自动过期，该时间可以通过部署描述符的sesssion-timeout元素配置，若设置为30，则会话对象会在用户最后一次访问30分钟后过期，如果部署描述符没有配置吗，则该值取决于Servlet容器的设定<br>大部分情况下，你应该主动销毁无用的HttpSession,以便释放相应的内存<br>可以通过调用HttpSession的getMaxInactiveInterval方法来查看会话多久会过期，该方法返回一个数字类型，单位为秒，调用setMaxInactiveInterval方法来单独对某个HttpSession设定其超时时间<br>    void setMaxInactiveInterval(int seconds);<br>若设置为0，则该HttpSession永不过期，通常这不是一个好的设计，因此该HttpSession所占用的堆内存将永不释放，直到应用重加载或Servlet容器关闭</string></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/11/02/会话管理/" data-id="cjo1m2qlw001hn8rzfoa8m3b9" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Servlet-JSP/">Servlet&JSP</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/11/03/JSP/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          JSP
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/11/02/Servlets/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Servlets</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/学习心得/">学习心得</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSS/">CSS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTML5/">HTML5</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Node-js/">Node.js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Oracle/">Oracle</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Servlet-JSP/">Servlet&JSP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring-MVC/">Spring MVC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring-boot/">Spring boot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring-cloud/">Spring cloud</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/CSS/" style="font-size: 10px;">CSS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Git/" style="font-size: 10px;">Git</a> <a href="/tags/HTML5/" style="font-size: 10px;">HTML5</a> <a href="/tags/JVM/" style="font-size: 10px;">JVM</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/JavaScript/" style="font-size: 10px;">JavaScript</a> <a href="/tags/Linux/" style="font-size: 10px;">Linux</a> <a href="/tags/Maven/" style="font-size: 10px;">Maven</a> <a href="/tags/Node-js/" style="font-size: 10px;">Node.js</a> <a href="/tags/Oracle/" style="font-size: 10px;">Oracle</a> <a href="/tags/Servlet-JSP/" style="font-size: 15px;">Servlet&JSP</a> <a href="/tags/Spring/" style="font-size: 10px;">Spring</a> <a href="/tags/Spring-MVC/" style="font-size: 10px;">Spring MVC</a> <a href="/tags/Spring-boot/" style="font-size: 10px;">Spring boot</a> <a href="/tags/Spring-cloud/" style="font-size: 10px;">Spring cloud</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/11/03/JSP/">JSP</a>
+          </li>
+        
+          <li>
+            <a href="/2018/11/02/会话管理/">会话管理</a>
+          </li>
+        
+          <li>
+            <a href="/2018/11/02/Servlets/">Servlets</a>
+          </li>
+        
+          <li>
+            <a href="/2018/10/27/并发/">并发</a>
+          </li>
+        
+          <li>
+            <a href="/2018/10/19/注解/">注解</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 EgbertDay<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

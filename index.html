@@ -69,6 +69,274 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-JSP" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/11/03/JSP/" class="article-date">
+  <time datetime="2018-11-03T04:33:33.000Z" itemprop="datePublished">2018-11-03</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/学习心得/">学习心得</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/11/03/JSP/">JSP</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>servlet有三个缺点无法克服，首先，写在servlet的所有HTML的标签必须包含Java字符串，这使得处理HTTP响应报文的工作变得十分烦琐，第二，所有的文本和HTML标记都是硬编码，导致即使时表现层的微小变化，如改变颜色，也都需要重新编译，第三，可读性太差<br>JSP技术解决了上面的问题，同时，JSP不会取代Servlet,相反。它们时互补性的，现代的java Web 应用会同时应用Servlet和JSP页面技术</p>
+<h2 id="JSP概述"><a href="#JSP概述" class="headerlink" title="JSP概述"></a>JSP概述</h2><p><strong>JSP页面本质上是一个Servlet</strong>,然而，用JSP页面开发比使用Servlet更容易，主要有三个原因，首先，<strong>不必编译JSP页面</strong>，其次，JSP页面是一个以.jsp的文本文件，使用任何编辑器都可以开发，第三，使用JSP页面技术更接近页面的真实展示面貌，可读性更强<br><strong>JSP页面需要在一个JSP容器中运行</strong>，一般来说，一个Servlet容器通常也是一个JSP容器，例如，Tomcat也可以称为Servlet/JSP容器</p>
+<ul>
+<li><strong>转换JSP页面到JSP页面实现类，</strong>该实现类是一个实现javax.servlet.jsp.JspPag接口或子接口javax.servlet.jsp.HttpJspPage,Jsp是Servlet的子接口，而HttpJspPage也是JspPage的子接口**，因此，生成的实现类也是一个Servlet，我们看一下着两个接口,该实现类是由Servlet/JSP容器生成，如果出现转换错误，则相关错误信息会发送到客户端<br>JspPage接口<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> javax.servlet.jsp;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">JspPage</span> <span class="keyword">extends</span> <span class="title">javax</span>.<span class="title">servlet</span>.<span class="title">Servlet</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">jspInit</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">jspDestroy</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>HttpJspPage接口<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> javax.servlet.jsp;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">HttpJspPage</span> <span class="keyword">extends</span> <span class="title">javax</span>.<span class="title">servlet</span>.<span class="title">jsp</span>.<span class="title">JspPage</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">_jspService</span><span class="params">(javax.servlet.http.HttpServletRequest httpServletRequest, javax.servlet.http.HttpServletResponse httpServletResponse)</span> <span class="keyword">throws</span> javax.servlet.ServletException, java.io.IOException</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li><strong>如果转换成功，Servlet/JSP容器随后编译成Servlet类，并加载和实例化该类，像其他正常的servlet一样执行生命周期操作</strong></li>
+</ul>
+<p>对于同一个JSP页面的请求，Servlet/JSP容器首先会检查JSP页面是否被修改过，如果是，则该JSP页面会被重新编译，如果不是，则执行以及在内存中的JSP Servlet，这样一来，一个JSP页面的第一次调用的实际花费总比后来花费多，因为它涉及翻译和编译，为了解决这个问题，可以执行下面的动作之一</p>
+<ul>
+<li>配置应用程序，使所有的JSP页面在应用程序启动时被调用（实际上也可以视为翻译和编译），而不是第一次请求时调用</li>
+<li>预编译JSP页面，并将其部署为Servlet<br>JSP自带的API包含4个包：</li>
+<li>javax.servelt.jsp。包含用于Servlet/JSP容器将JSP页面翻译为Servlet的核心类和接口，其中两个重要的成员时JspPage和HttpJspPage接口，所有的JSP页面实现类必须实现JspPage和HttpJspPage接口，在HTTP环境下，实现HTTPJspPage是显而易见的</li>
+<li>javax.servlet.jsp.tagext。包含用于开发自定义标签的类型</li>
+<li>javax.el。提供了统一表达式语言的API</li>
+<li>javax.servlet.jsp.el。提供了一组必须由Servlet/JSP容器支持，以便在JSP页面中使用表达式语言的类</li>
+</ul>
+<p>除了javax.servlet.jsp.tagext。我们很少直接使用JSP API。事实上，编写JSP页面时，我们更关系Servlet API,而非JSP API。开发JSP容器和JSP编译器时，JSP API已被广泛使用</p>
+<p>JSP页面可以包含模版数据和语法元素，这里语法元素是一些有特殊意义的JSP转换符，比如&lt;% &lt;%!,除去语法元素之外的一切是模版数据，模版数据会原样的发送给客户端，例如，JSP页面中的HTML标记和文字都是模版数据</p>
+<p>OK 现在让我们看下，一个简单的welcome.jsp的JSP页面是如何被翻译成名为welcome_jsp的Servlet<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;&lt;title&gt;Welcome&lt;/title&gt;&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">welcome</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> javax.servlet.ServletException;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletRequest;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletResponse;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">welcome_jsp</span> <span class="keyword">extends</span> <span class="title">org</span>.<span class="title">apache</span>.<span class="title">jasper</span>.<span class="title">runtime</span>.<span class="title">HttpJspBase</span> <span class="keyword">implements</span> <span class="title">org</span>.<span class="title">apache</span>.<span class="title">jasper</span>.<span class="title">runtime</span>.<span class="title">JspSourceDependent</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> java.util.Map&lt;String,Long&gt; _jspx_dependants;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> javax.servlet.jsp.JspFactory _jspFactory=</span><br><span class="line">            javax.servlet.jsp.JspFactory.getDefaultFactory();</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Map&lt;String, Long&gt; <span class="title">getDependants</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> _jspx_dependants;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> javax.el.ExpressionFactory _el_expressionfactory;</span><br><span class="line">    <span class="keyword">private</span> org.apache.tomcat.InstanceManager _jsp_instanceManager;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">_jspInit</span><span class="params">()</span></span>&#123;</span><br><span class="line">        _el_expressionfactory=_jspFactory.getJspApplicationContext(</span><br><span class="line">                getServletConfig().getServletContext())</span><br><span class="line">                .getExpressionFactory();</span><br><span class="line">        _jsp_instanceManager=org.apache.jasper.runtime.InstanceManagerFactory.getInstanceManager(getServletConfig());</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">_jspService</span><span class="params">(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)</span> <span class="keyword">throws</span> ServletException, IOException </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> javax.servlet.jsp.PageContext pageContext;</span><br><span class="line">        javax.servlet.http.HttpSession session=<span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">final</span> javax.servlet.ServletContext application;</span><br><span class="line">        <span class="keyword">final</span> javax.servlet.ServletConfig config;</span><br><span class="line">        javax.servlet.jsp.JspWriter out=<span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">final</span> java.lang.Object page=<span class="keyword">this</span>;</span><br><span class="line">        javax.servlet.jsp.JspWriter _jsp_out=<span class="keyword">null</span>;</span><br><span class="line">        javax.servlet.jsp.PageContext _jspx_page_context=<span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span>&#123;</span><br><span class="line">           httpServletResponse.setContentType(<span class="string">"text/html"</span>);</span><br><span class="line">           pageContext=_jspFactory.getPageContext(<span class="keyword">this</span>,httpServletRequest,httpServletResponse,<span class="keyword">null</span>,<span class="keyword">true</span>,<span class="number">8192</span>,<span class="keyword">true</span>);</span><br><span class="line">           _jspx_page_context=pageContext;</span><br><span class="line">           application=pageContext.getServletContext();</span><br><span class="line">           config=pageContext.getServletConfig();</span><br><span class="line">           session=pageContext.getSession();</span><br><span class="line">           out=pageContext.getOut();</span><br><span class="line">           _jsp_out=out;</span><br><span class="line">           out.write(<span class="string">"&lt;html&gt;\n"</span>);</span><br><span class="line">           out.write(<span class="string">"&lt;head&gt;&lt;title&gt;Welcome&lt;/title&gt;&lt;/head&gt;\n"</span>);</span><br><span class="line">           out.write(<span class="string">"welcome\n"</span>);</span><br><span class="line">           out.write(<span class="string">"&lt;/body&gt;\n"</span>);</span><br><span class="line">           out.write(<span class="string">"&lt;/html&gt;"</span>);</span><br><span class="line">        &#125;<span class="keyword">catch</span>(java.lang.Throwable t)&#123;</span><br><span class="line">            <span class="keyword">if</span>(!(t <span class="keyword">instanceof</span>  javax.servlet.jsp.SkipPageException))&#123;</span><br><span class="line">                out=_jsp_out;</span><br><span class="line">                <span class="keyword">if</span>(out!=<span class="keyword">null</span>&amp;&amp;out.getBufferSize()!=<span class="number">0</span>)&#123;</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        out.clearBuffer();</span><br><span class="line">                    &#125;<span class="keyword">catch</span>(IOException e)&#123;</span><br><span class="line"></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span>(_jspx_page_context!=<span class="keyword">null</span>)&#123;</span><br><span class="line">                    _jspx_page_context.handlePageException(t);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;<span class="keyword">finally</span> &#123;</span><br><span class="line">            _jspFactory.releasePageContext(_jspx_page_context);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>正如我们所看到的，JSP的主体方法时_jspService()方法,这个方法被定义在HttpJspPage,并被HttpJspBase的service方法所调用，下面是来自HttpJspBase类<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">service</span><span class="params">(HttpServletRequest req,HttpServletResponse res)</span><span class="keyword">throws</span> ServletException,IOException</span>&#123;</span><br><span class="line">  _jspService(req,res);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>我们可知当Servlet容器调用JSP编译的实现类的时候，调用service(),在service()内部调用了_jspService()方法，所有_jspService方法才是整个JSP实现类的主体，我们再看看下有Servlet/JSP容器生成的这个实现类，能看出其继承了HttpJspBase,我们再来看下这个类是什么<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">  <span class="comment">// IntelliJ API Decompiler stub source generated from a class file</span></span><br><span class="line">  <span class="comment">// Implementation of methods is not available</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> org.apache.jasper.runtime;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">HttpJspBase</span> <span class="keyword">extends</span> <span class="title">javax</span>.<span class="title">servlet</span>.<span class="title">http</span>.<span class="title">HttpServlet</span> <span class="keyword">implements</span> <span class="title">javax</span>.<span class="title">servlet</span>.<span class="title">jsp</span>.<span class="title">HttpJspPage</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="title">HttpJspBase</span><span class="params">()</span> </span>&#123; <span class="comment">/* compiled code */</span> &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">(javax.servlet.ServletConfig config)</span> <span class="keyword">throws</span> javax.servlet.ServletException </span>&#123; <span class="comment">/* compiled code */</span> &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> java.lang.<span class="function">String <span class="title">getServletInfo</span><span class="params">()</span> </span>&#123; <span class="comment">/* compiled code */</span> &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">destroy</span><span class="params">()</span> </span>&#123; <span class="comment">/* compiled code */</span> &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">service</span><span class="params">(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response)</span> <span class="keyword">throws</span> javax.servlet.ServletException, java.io.IOException </span>&#123; <span class="comment">/* compiled code */</span> &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">jspInit</span><span class="params">()</span> </span>&#123; <span class="comment">/* compiled code */</span> &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">_jspInit</span><span class="params">()</span> </span>&#123; <span class="comment">/* compiled code */</span> &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">jspDestroy</span><span class="params">()</span> </span>&#123; <span class="comment">/* compiled code */</span> &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">_jspDestroy</span><span class="params">()</span> </span>&#123; <span class="comment">/* compiled code */</span> &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">_jspService</span><span class="params">(javax.servlet.http.HttpServletRequest httpServletRequest, javax.servlet.http.HttpServletResponse httpServletResponse)</span> <span class="keyword">throws</span> javax.servlet.ServletException, java.io.IOException</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>HtpJspBase继承了HttpServlet并实现了HttpJspPage,因此容器生成的JSP本质上也是一个Servlet<br>我们从_jspService()中也能得到隐式对象的概念，这些隐式对象也都是容器生成并在_jspService()中能够使用的<br>JSP页面和Servlet不同的另一方面是，前者不需要添加注解或者在部署描述符中配置映射URL，Servlet必须要通过在重启容器之后，通过容器的组件扫描完成映射，而JSP页面不需要，可以热部署，因为JSP页面的Servlet实现类是动态生成的，</p>
+<h2 id="注释"><a href="#注释" class="headerlink" title="注释"></a>注释</h2><p>JSP支持两种注释风格：</p>
+<ol>
+<li>JSP注释，该注释记录页面中做了什么<br>&lt;%–  –%&gt;</li>
+<li>HTML/XHTML注释，这些注释将会发送到浏览器<!--  -->
+<h2 id="隐式对象"><a href="#隐式对象" class="headerlink" title="隐式对象"></a>隐式对象</h2>Servlet容器会传递几个对象给它运行的Servlet对象，例如，可以通过Servlet的service()方法，拿到HttpServletRequest和HttpServletResponse对象，以及可以通过init方法访问到ServletConfig对象，此外，可以通过调用HttpServletRequest对象的getSession()方法拿到HttpSession对象<br>在JSP中，可以通过使用隐式对象来访问上述对象 下面是JSP的隐式对象</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>对象</th>
+<th>类型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>request</td>
+<td>javax.servlet.http.HttpServletRequest</td>
+</tr>
+<tr>
+<td>response</td>
+<td>javax.servlet.http.HttpServletResponse</td>
+</tr>
+<tr>
+<td>session</td>
+<td>javvax.servlet.http.HttpSession</td>
+</tr>
+<tr>
+<td>config</td>
+<td>javax.servlet.ServletConfig</td>
+</tr>
+<tr>
+<td>application</td>
+<td>javax.servlet.ServletContext</td>
+</tr>
+<tr>
+<td>pageContext</td>
+<td>javax.servlet.jsp.PageContext</td>
+</tr>
+<tr>
+<td>out</td>
+<td>javax.servlet.jsp.Writer</td>
+</tr>
+<tr>
+<td>page</td>
+<td>javax.servlet.jsp.HttpJspBase</td>
+</tr>
+<tr>
+<td>exception</td>
+<td>java.lang.Throwable</td>
+</tr>
+</tbody>
+</table>
+<p>pageContext同于javax.servlet.jsp.PagContext。它提供了非常有用的上下文信息，并通过其自身说明的方法来访问各种Servlet相关对象，如getRequest(),getResposne(),getServletConfig(),getServletContext()和getSession(),当然这些方法在脚本中并不是很有用，因为可以直接使用隐式对象来访问request，response,session,application等，<br><strong>另外PageContext中提供了另一组有趣的方法，用于获取和设置属性的方法，即getAttribute方法和setAttribute()方法，属性值可被存储在四个范围之一，页面，请求，会话和应用程序</strong>，页面范围是最小范围，这里存储的属性只在一同一个JSP页面可用，请求访问是指当前的ServletRequestz中，会话范围指的是当前的HttpSession,应用程序范围指应用的ServletContext中<br>PageContext的setAttribute的方法签名如下：<br>    public abstract void setAttribute(String name,Object value,int scope);<br>scope的取值范围为PageContext对象的最终静态int值:PAGE_SCOPE,REQUEST_SCOPE,RESPONSE_SCOPE,SESSION_SCOPE,APPLICATION_SCOPE<br>如要直接保存一个属性到页面范围，可直接使用setAttribute的重载方法<br>    public abstract void setAttribute(String name,Object value);<br>我们可以简单的来看一下PageContext<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">  <span class="comment">// IntelliJ API Decompiler stub source generated from a class file</span></span><br><span class="line">  <span class="comment">// Implementation of methods is not available</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> javax.servlet.jsp;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">PageContext</span> <span class="keyword">extends</span> <span class="title">javax</span>.<span class="title">servlet</span>.<span class="title">jsp</span>.<span class="title">JspContext</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> PAGE_SCOPE = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> REQUEST_SCOPE = <span class="number">2</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> SESSION_SCOPE = <span class="number">3</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> APPLICATION_SCOPE = <span class="number">4</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> java.lang.String PAGE = <span class="string">"javax.servlet.jsp.jspPage"</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> java.lang.String PAGECONTEXT = <span class="string">"javax.servlet.jsp.jspPageContext"</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> java.lang.String REQUEST = <span class="string">"javax.servlet.jsp.jspRequest"</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> java.lang.String RESPONSE = <span class="string">"javax.servlet.jsp.jspResponse"</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> java.lang.String CONFIG = <span class="string">"javax.servlet.jsp.jspConfig"</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> java.lang.String SESSION = <span class="string">"javax.servlet.jsp.jspSession"</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> java.lang.String OUT = <span class="string">"javax.servlet.jsp.jspOut"</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> java.lang.String APPLICATION = <span class="string">"javax.servlet.jsp.jspApplication"</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> java.lang.String EXCEPTION = <span class="string">"javax.servlet.jsp.jspException"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">PageContext</span><span class="params">()</span> </span>&#123; <span class="comment">/* compiled code */</span> &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">initialize</span><span class="params">(javax.servlet.Servlet servlet, javax.servlet.ServletRequest servletRequest, javax.servlet.ServletResponse servletResponse, java.lang.String s, <span class="keyword">boolean</span> b, <span class="keyword">int</span> i, <span class="keyword">boolean</span> b1)</span> <span class="keyword">throws</span> java.io.IOException, java.lang.IllegalStateException, java.lang.IllegalArgumentException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">release</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">abstract</span> javax.servlet.http.<span class="function">HttpSession <span class="title">getSession</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">abstract</span> java.lang.<span class="function">Object <span class="title">getPage</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">abstract</span> javax.servlet.<span class="function">ServletRequest <span class="title">getRequest</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">abstract</span> javax.servlet.<span class="function">ServletResponse <span class="title">getResponse</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">abstract</span> java.lang.<span class="function">Exception <span class="title">getException</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">abstract</span> javax.servlet.<span class="function">ServletConfig <span class="title">getServletConfig</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">abstract</span> javax.servlet.<span class="function">ServletContext <span class="title">getServletContext</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">forward</span><span class="params">(java.lang.String s)</span> <span class="keyword">throws</span> javax.servlet.ServletException, java.io.IOException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">include</span><span class="params">(java.lang.String s)</span> <span class="keyword">throws</span> javax.servlet.ServletException, java.io.IOException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">include</span><span class="params">(java.lang.String s, <span class="keyword">boolean</span> b)</span> <span class="keyword">throws</span> javax.servlet.ServletException, java.io.IOException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">handlePageException</span><span class="params">(java.lang.Exception e)</span> <span class="keyword">throws</span> javax.servlet.ServletException, java.io.IOException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">handlePageException</span><span class="params">(java.lang.Throwable throwable)</span> <span class="keyword">throws</span> javax.servlet.ServletException, java.io.IOException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> javax.servlet.jsp.tagext.<span class="function">BodyContent <span class="title">pushBody</span><span class="params">()</span> </span>&#123; <span class="comment">/* compiled code */</span> &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> javax.servlet.jsp.<span class="function">ErrorData <span class="title">getErrorData</span><span class="params">()</span> </span>&#123; <span class="comment">/* compiled code */</span> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>PageContext继承JspContext,我们再来简单的看一下JspContext<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">  <span class="comment">// IntelliJ API Decompiler stub source generated from a class file</span></span><br><span class="line">  <span class="comment">// Implementation of methods is not available</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> javax.servlet.jsp;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">JspContext</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">JspContext</span><span class="params">()</span> </span>&#123; <span class="comment">/* compiled code */</span> &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">setAttribute</span><span class="params">(java.lang.String s, java.lang.Object o)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">setAttribute</span><span class="params">(java.lang.String s, java.lang.Object o, <span class="keyword">int</span> i)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">abstract</span> java.lang.<span class="function">Object <span class="title">getAttribute</span><span class="params">(java.lang.String s)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">abstract</span> java.lang.<span class="function">Object <span class="title">getAttribute</span><span class="params">(java.lang.String s, <span class="keyword">int</span> i)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">abstract</span> java.lang.<span class="function">Object <span class="title">findAttribute</span><span class="params">(java.lang.String s)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">removeAttribute</span><span class="params">(java.lang.String s)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">removeAttribute</span><span class="params">(java.lang.String s, <span class="keyword">int</span> i)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">int</span> <span class="title">getAttributesScope</span><span class="params">(java.lang.String s)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">abstract</span> java.util.Enumeration&lt;java.lang.String&gt; getAttributeNamesInScope(<span class="keyword">int</span> i);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">abstract</span> javax.servlet.jsp.<span class="function">JspWriter <span class="title">getOut</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@deprecated</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">abstract</span> javax.servlet.jsp.el.<span class="function">ExpressionEvaluator <span class="title">getExpressionEvaluator</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">abstract</span> javax.el.<span class="function">ELContext <span class="title">getELContext</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@deprecated</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">abstract</span> javax.servlet.jsp.el.<span class="function">VariableResolver <span class="title">getVariableResolver</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> javax.servlet.jsp.<span class="function">JspWriter <span class="title">pushBody</span><span class="params">(java.io.Writer writer)</span> </span>&#123; <span class="comment">/* compiled code */</span> &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> javax.servlet.jsp.<span class="function">JspWriter <span class="title">popBody</span><span class="params">()</span> </span>&#123; <span class="comment">/* compiled code */</span> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>隐式对象out引用一个javax.servlet.jsp.Writer对象，这类似与调用HttpServletResponse的getWrite()方法得到的java.io.PrintWriter，可以通过调用它的print方法将消息发送到浏览器，例如<br>    out.println(“welcome”);</p>
+<p>简单看一下JspWriter的代码<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">  <span class="comment">// IntelliJ API Decompiler stub source generated from a class file</span></span><br><span class="line">  <span class="comment">// Implementation of methods is not available</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> javax.servlet.jsp;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">JspWriter</span> <span class="keyword">extends</span> <span class="title">java</span>.<span class="title">io</span>.<span class="title">Writer</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> NO_BUFFER = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> DEFAULT_BUFFER = -<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> UNBOUNDED_BUFFER = -<span class="number">2</span>;</span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">int</span> bufferSize;</span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">boolean</span> autoFlush;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="title">JspWriter</span><span class="params">(<span class="keyword">int</span> bufferSize, <span class="keyword">boolean</span> autoFlush)</span> </span>&#123; <span class="comment">/* compiled code */</span> &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">newLine</span><span class="params">()</span> <span class="keyword">throws</span> java.io.IOException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">print</span><span class="params">(<span class="keyword">boolean</span> b)</span> <span class="keyword">throws</span> java.io.IOException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">print</span><span class="params">(<span class="keyword">char</span> c)</span> <span class="keyword">throws</span> java.io.IOException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">print</span><span class="params">(<span class="keyword">int</span> i)</span> <span class="keyword">throws</span> java.io.IOException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">print</span><span class="params">(<span class="keyword">long</span> l)</span> <span class="keyword">throws</span> java.io.IOException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">print</span><span class="params">(<span class="keyword">float</span> v)</span> <span class="keyword">throws</span> java.io.IOException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">print</span><span class="params">(<span class="keyword">double</span> v)</span> <span class="keyword">throws</span> java.io.IOException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">print</span><span class="params">(<span class="keyword">char</span>[] chars)</span> <span class="keyword">throws</span> java.io.IOException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">print</span><span class="params">(java.lang.String s)</span> <span class="keyword">throws</span> java.io.IOException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">print</span><span class="params">(java.lang.Object o)</span> <span class="keyword">throws</span> java.io.IOException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">println</span><span class="params">()</span> <span class="keyword">throws</span> java.io.IOException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">println</span><span class="params">(<span class="keyword">boolean</span> b)</span> <span class="keyword">throws</span> java.io.IOException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">println</span><span class="params">(<span class="keyword">char</span> c)</span> <span class="keyword">throws</span> java.io.IOException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">println</span><span class="params">(<span class="keyword">int</span> i)</span> <span class="keyword">throws</span> java.io.IOException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">println</span><span class="params">(<span class="keyword">long</span> l)</span> <span class="keyword">throws</span> java.io.IOException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">println</span><span class="params">(<span class="keyword">float</span> v)</span> <span class="keyword">throws</span> java.io.IOException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">println</span><span class="params">(<span class="keyword">double</span> v)</span> <span class="keyword">throws</span> java.io.IOException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">println</span><span class="params">(<span class="keyword">char</span>[] chars)</span> <span class="keyword">throws</span> java.io.IOException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">println</span><span class="params">(java.lang.String s)</span> <span class="keyword">throws</span> java.io.IOException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">println</span><span class="params">(java.lang.Object o)</span> <span class="keyword">throws</span> java.io.IOException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">clear</span><span class="params">()</span> <span class="keyword">throws</span> java.io.IOException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">clearBuffer</span><span class="params">()</span> <span class="keyword">throws</span> java.io.IOException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">flush</span><span class="params">()</span> <span class="keyword">throws</span> java.io.IOException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> <span class="keyword">throws</span> java.io.IOException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getBufferSize</span><span class="params">()</span> </span>&#123; <span class="comment">/* compiled code */</span> &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">int</span> <span class="title">getRemaining</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isAutoFlush</span><span class="params">()</span> </span>&#123; <span class="comment">/* compiled code */</span> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>默认情况下，JSP编译器会将JSP页面的内容类型设为text/html,如果要使用不同的类型，则需要通过调用response.setContentType()或者使用页面指令<br>需要注意的是page隐式对象时表示当前JSP页面，jSP页面的设计者一般不需要考虑它</p>
+<h2 id="指令"><a href="#指令" class="headerlink" title="指令"></a>指令</h2><p>指令是JSP语法元素的第一种类型，它们指示JSP转换器如何编译JSP页面为Servlet，我们首先先来看下两个比较重要的指令，page和include</p>
+<h3 id="page指令"><a href="#page指令" class="headerlink" title="page指令"></a>page指令</h3><p>可以是page指令来控制JSP转换当前JSP页面的某些方面，例如，可以告诉JSP用于转换隐式对象out的缓冲器的大小，内容类型，已经需要导入的java类型等等<br>page指令的语法<br>&lt;%@ page attribute1=value1 attribute2=value2…%&gt;<br>我们看下page指令的属性列表</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>属性</th>
+<th>值和功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>import</td>
+<td>定义一个或者多个本页面中将被导入和使用的java类型，或者使用通配符导入类包，也可以在导入多种类型，之间用“，”分隔，Jsp默认导入的包java.lang,java.servlet,java.servlet.http,java.servlet.jsp</td>
+</tr>
+<tr>
+<td>session</td>
+<td>值为True,本页面加入会话管理，值为False则想法，默认为True,访问该页面时，若当前不存在javax.servlet.httpSession实例，则创建一个</td>
+</tr>
+<tr>
+<td>buffer</td>
+<td>以KB为单位，定义隐式对象out的缓冲大小。必须以KB为后缀结尾，默认大小为8KB或者更大（取决于容器），该值为nano，这意味着没有缓冲，数据直接写入PrintWriter</td>
+</tr>
+<tr>
+<td>autoFlush</td>
+<td>默认为True，若值为True,则当输出缓冲满时会自写入输出流，而值为False,则仅当调用隐式对象的flush()方法时，才会写入输出流，因此，如缓冲溢出，则会抛出异常</td>
+</tr>
+<tr>
+<td>isThreadSafe</td>
+<td>定义该页面的线程安全级别，不推荐使用JSP参数，因为使用该参数后，会生成一些Servlet容器已过期的代码</td>
+</tr>
+<tr>
+<td>info</td>
+<td>返回调用容器生成的Servlet类的getServletInfo方法的结果</td>
+</tr>
+<tr>
+<td>errorPage</td>
+<td>定义到出错是用来处理错误的页面</td>
+</tr>
+<tr>
+<td>isErrorPage</td>
+<td>标识本页是一个错误处理页面</td>
+</tr>
+<tr>
+<td>contentType</td>
+<td>定义本页隐式对象response的内容类型，默认是“text/html”</td>
+</tr>
+<tr>
+<td>PpageEncoding</td>
+<td>定义本页的字符编码，默认是IOS-8859-9</td>
+</tr>
+<tr>
+<td>isELIgnored</td>
+<td>配置是否忽略EL表达式，EL是expression Language的缩写</td>
+</tr>
+<tr>
+<td>language</td>
+<td>定义本页面的脚本语言类型，默认是java,这在JSP2.2中是唯一的合法值（未来也不太可能添加其他的合法值了，因为推荐使用EL替代脚本）</td>
+</tr>
+<tr>
+<td>extends</td>
+<td>定义JSP实现类要继承的父类，这个属性的使用场景非常罕见，尽在特殊理由下使用</td>
+</tr>
+<tr>
+<td>deferredSyntaxAllowdedAsLiteral</td>
+<td>定义是否解析字符串中出现“{#”字符，默认是False,{#是一个表达式语言的起始符号</td>
+</tr>
+<tr>
+<td>trimDirectiveWhitespace</td>
+<td>定义是否不输出多余的空格/空行。默认是False</td>
+</tr>
+</tbody>
+</table>
+<p>大部分page指令可以出现在页面的任何位置，但当page指令包含contentType或pageEncoding属性时，其必须出现在java代码发送任何内容之前，因为内容类型和字符编码必须在发送任何内容前设定<br>page指令也可以出现多次，但是出现多次的page指令的属性值必须具有相同的值，不过import属性除外，多个包含import属性的page指令的结果是累加的，<br>&lt;%@ page import=”java.util.ArrayList”%&gt;<br>&lt;%@ page import=”java.util.Date”%&gt;<br>和下面的写法等效<br>&lt;%@ page import=”java.util.ArrayList,java.util.Date”%&gt;<br>一个page指令可以拥有多个属性<br>&lt;%@ page session=”false” buffer=”16kb”%&gt;</p>
+<h3 id="include指令"><a href="#include指令" class="headerlink" title="include指令"></a>include指令</h3><p>可以使用include指令将其他文件的内容包含到当前JSP页面，一个页面中可以有多个include指令，若存在一个内容会在不同的页面中使用或一个页面不同位置使用的场景，则将该内容模块化到一个include文件非常有用<br>&lt;%@ include file=”url”%&gt;<br>url可以使用相对路径，也可以使用该文件在服务器上的绝对路径<br><strong>JSP转换器处理include指令时，将指令替换为指令所包含文件的内容</strong><br>include动作和include指令是有差别的，我们之后再讲</p>
+<h2 id="脚本元素"><a href="#脚本元素" class="headerlink" title="脚本元素"></a>脚本元素</h2><p>一个脚本元素是java代码块，以&lt;%符号开始，以%&gt;符号结束</p>
+<h3 id="表达式"><a href="#表达式" class="headerlink" title="表达式"></a>表达式</h3><p>每一个表达式都会被JSP容器执行，并使用隐式对象out的打印方法输出结果，表达式以&lt;%= %&gt;<br>Today is &lt;%=java.util.Calendar.getInstance().getTime()%&gt;<br>注意，表达式无须分号结尾</p>
+<h3 id="声明"><a href="#声明" class="headerlink" title="声明"></a>声明</h3><p>可以声明能在JSP页面中使用的变量和方法，声明以“&lt;%!”开始，以“%&gt;”结束<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;%!</span><br><span class="line">  <span class="function"><span class="keyword">public</span> String <span class="title">getTodayDate</span><span class="params">()</span></span>&#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">new</span> java.util.Date().toString();</span><br><span class="line">  &#125;</span><br><span class="line">%&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;title&gt;Title&lt;/title&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">Today is &lt;%=getTodayDate()%&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure></p>
+<p>在JSP页面中，一个声明可以出现在任何地方，并且一个页面可以有多个声明<br>可以使用声明来重写JSP页面，实现类的init和destory方法，<strong>通过声明jspInit方法来重写init方法，通过重写jspDestory方法来重写destory方法</strong></p>
+<h3 id="禁用脚本元素"><a href="#禁用脚本元素" class="headerlink" title="禁用脚本元素"></a>禁用脚本元素</h3><p>随着JSP2.0对表达式语言的加强，推荐的实践是：在JSP页面中用EL访问服务端对象而不写java代码，因此从JSP2.0之后，可以通过在部署描述符中的<jsp-property-group>定义一个scripting-invalid元素来禁用脚本元素<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">jsp-property-group</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">scripting-invalid</span>&gt;</span>true<span class="tag">&lt;/<span class="name">scripting-invalid</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">jsp-property-group</span>&gt;</span></span><br></pre></td></tr></table></figure></jsp-property-group></p>
+<h2 id="动作"><a href="#动作" class="headerlink" title="动作"></a>动作</h2><p>动作是第三类型的语法元素，它们被转换成java代码来执行操作，如访问一个java对象或调用方法，下面仅讨论JSP容器支持的标准动作，除标准动作之外，还可以创建自定义标准动作来执行某些操作</p>
+<h3 id="useBean"><a href="#useBean" class="headerlink" title="useBean"></a>useBean</h3><p>useBean将创建一个关联java对象的脚本变量，这是早期分离的表示层和业务逻辑的手段，随着其他技术的发展，如自定义标签和表达式语言，现在很少使用useBean方式<br>下面的代码示例，它创建一个java.util.Date实例，并赋值给名为today的脚本变量<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;title&gt;useBean&lt;/title&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">&lt;jsp:useBean id=<span class="string">"today"</span> <span class="class"><span class="keyword">class</span></span>=<span class="string">"java.util.Date"</span></span><br><span class="line">&lt;%=today%&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure></p>
+<p>在Tomcat中，上述代码会被转换为如下的代码<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">java.util.Date today=<span class="keyword">null</span>;</span><br><span class="line">     today=(java.util.Date)_jspx_page_context.getAttribute(<span class="string">"today"</span>, PageContext.REQUEST_SCOPE);</span><br><span class="line">     <span class="keyword">if</span>(today==<span class="keyword">null</span>)&#123;</span><br><span class="line">         today=<span class="keyword">new</span> java.util.Date();</span><br><span class="line">         _jspx_page_context.setAttribute(<span class="string">"today"</span>, PageContext.REQUEST_SCOPE);</span><br><span class="line">     &#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="setProperty和getProperty"><a href="#setProperty和getProperty" class="headerlink" title="setProperty和getProperty"></a>setProperty和getProperty</h3><p>setProperty动作可对一个java对象设置属性，而getProperty动作则会输出java对象的一个属性<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Employee</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> id;</span><br><span class="line">    <span class="keyword">private</span> String firstName;</span><br><span class="line">    <span class="keyword">private</span> String lastName;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getId</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> id;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setId</span><span class="params">(<span class="keyword">int</span> id)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.id = id;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getFirstName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> firstName;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setFirstName</span><span class="params">(String firstName)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.firstName = firstName;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getLastName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> lastName;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setLastName</span><span class="params">(String lastName)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.lastName = lastName;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>getSetPropertyTest.jsp页面<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;title&gt;getProperty and setProperty&lt;/title&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">&lt;jsp:useBean id=<span class="string">"employee"</span> <span class="class"><span class="keyword">class</span></span>=<span class="string">"Employee"</span>&gt;</span><br><span class="line">&lt;jsp:setProperty name=<span class="string">"employee"</span> property=<span class="string">"firstName"</span> value=<span class="string">"Abigail"</span>/&gt;</span><br><span class="line">First Name:&lt;jsp:getProperty name=<span class="string">"employee"</span> property=<span class="string">"firstName"</span>/&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure></p>
+<h3 id="include"><a href="#include" class="headerlink" title="include"></a>include</h3><p>include动作用来动态地引入另一个资源，可以引入另一个JSP页面，也可以引入一个Servlet或一个静态的HTML页面<br>jspIncludeTest.jsp<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;title&gt;Include action&lt;/title&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">&lt;jsp:include page=<span class="string">"jspf/menu.jsp"</span>&gt;</span><br><span class="line">    &lt;jsp:param name=<span class="string">"text"</span> value=<span class="string">"How are you"</span>/&gt;</span><br><span class="line">&lt;/jsp:include&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure></p>
+<p>理解include指令和include动作非常重要，对于include指令，资源的引入发生在页面转换时，即当JSP容器将页面转换为生成的Servlet时，而对于include动作，资源引入发生在请求页面时，因此，使用include动作可以传递参数的，而include指令不支持<br>第二个不同是。include指令对引入的文件扩展名不做特殊要求，但对于include动作，如引入的文件需要以JSP页面处理，则文件扩展名必须是JSP，若使用.jspf为扩展名，则该页面被当作静态文件<br>两者还有一个最大的不同，include指令被引入的文件一旦被编译进JSP生成的Servlet类时，被引入的页面在做修改也不会对Servlet实现类有影响，但是对于使用include动作，因为被引入的JSP页面是在请求是被间接调用_jspService()方法，所以它的变动是动态影响着生成的Servlet实现类的</p>
+<h3 id="forward"><a href="#forward" class="headerlink" title="forward"></a>forward</h3><p>forword将当前页面转向到其他资源，下面代码将当前页面转向到login.js页面<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;jsp:forward page=<span class="string">"jspf/menu.jsp"</span>&gt;</span><br><span class="line">    &lt;jsp:param name=<span class="string">"text"</span> value=<span class="string">"Please Login"</span>/&gt;</span><br><span class="line">&lt;/jsp:forward&gt;</span><br></pre></td></tr></table></figure></p>
+<h2 id="错误处理"><a href="#错误处理" class="headerlink" title="错误处理"></a>错误处理</h2><p>JSP提供了很好的错误处理能力，除了在java代码中可以使用try语句，还可以指定一个特殊页面，当应用遇到未捕获的异常时，用户将会看到一个精心设计的页面解释发生了什么，而不是一个用户无法理解的错误信息<br>使用page指令的isErrorPage属性（属性值必须为True）来标识一个JSP页面是错误页面<br>下面展示了一个错误处理程序<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ page isErrorPage=<span class="string">"true"</span> %&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;title&gt;Error&lt;/title&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">An error occurred.&lt;br&gt;</span><br><span class="line">Error Message:</span><br><span class="line">&lt;%=exception.getMessage()%&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure></p>
+<p>其他需要放置未捕获的异常的页面使用page指令的errorPage属性来指向错误处理页面，如下：<br>    &lt;%@ page errorPage=”errorHandler.jsp” %&gt;<br>如果运行页面的Servlet实现类抛出一个未未被捕获的异常，那么这个异常将会向上抛给容器，容器通过页面声明的错误处理页面将异常传递给它使用这个错误处理页面来处理异常，其实主要是给用户更加好的使用体验而已</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/11/03/JSP/" data-id="cjo1m2qkl000on8rzofdku5k9" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Servlet-JSP/">Servlet&JSP</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-会话管理" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/11/02/会话管理/" class="article-date">
+  <time datetime="2018-11-02T10:16:59.000Z" itemprop="datePublished">2018-11-02</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/学习心得/">学习心得</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/11/02/会话管理/">会话管理</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>由于HTTP的无状态性，使得会话管理会会话跟踪成为Web应用开发的一个无可避免的主题，默认下，一个web服务器无法区分一个HTTP请求是否为第一次访问<br>我们将介绍4种不同的状态保持技术，URL重写，隐藏域，cookies和HttpSession对象</p>
+<h2 id="URL重写"><a href="#URL重写" class="headerlink" title="URL重写"></a>URL重写</h2><p>URL重写是一种会话跟踪技术，它是将一个或多个takon添加到URL的查询字符串中，每个token通常为key=value形式，如下<br>url?key1=value1&amp;key2=value2…&amp;keyn=valuen<br>URL重写适合于token无须在太多URL间传递的情况下，然而它有如下的限制</p>
+<ul>
+<li>URL在某些浏览器上最大长度为2000字符</li>
+<li>如要传递值到下一个资源，需要将值插入到链接，换句话说，静态页面很难传值</li>
+<li>URL重写需要在服务端完成，所有的链接都必须带值，因此当一个页面存在很多链接时，处理过程会是一个不小的挑战</li>
+<li>某些字符，例如空格，与和问号等必须使用base64编码</li>
+<li>所有的信息都是可见的，某些情况下不合适<h2 id="隐藏域"><a href="#隐藏域" class="headerlink" title="隐藏域"></a>隐藏域</h2>使用隐藏域来保持状态类似于URL重写技术，，但不是将值附加到URL上，而是放到HTML表单的隐藏域中，当表单提交时，隐藏域的值也同时提交到服务器端，隐藏域技术仅当网页有表单时有效，该技术相对于URL重写的优势在于，没有字符数限制，同时无须额外的源码，但该技术同URL重写一样，不适合跨越多个界面<h2 id="Cookies"><a href="#Cookies" class="headerlink" title="Cookies"></a>Cookies</h2>URL重写和隐藏域仅适合无须跨越太多页面的信息，如果需要在多个页面间传递信息，则以上两个技术实现成本太高，因为你不得不在每个网页都进行相应的处理，幸运的是，Cookie技术可以帮助我们<br>Cookie是一个很少的信息片段，可自动地在浏览器和Web服务器间交互，因此cookies可存储在多个页面传递的信息，Cookie作为HTTPheader的一部分，其传输由HTTP协议控制，此外，你可以控制cookie的有效时间，浏览器通常支持每个网站高达20个cookie<br>Cookies的问题在于用户可以通过改变其浏览器设置来拒绝接收cookies<br>要使用cookies，需要熟悉javax.servlet.http.Cookie类以及httpServletRequest和httpServletResponse两个接口<br>可以通过传递name和value两个参数给Cookie类的构造函数来创建一个Cookie<br>Cookie cookie=new Cookie(name,value);<br>创建完Cookie对象后，你可以设置domain,path,maxAge属性，其中maxAge属性决定cookie何时过期<br>要将cookie发送到浏览器，需要调用HttpServletResponse的add方法<br>  httpServletResponse.addCookie(cookie);<br>浏览器在访问同一个Web服务器时，会将之前收到的cookie一并发送<br>我们也可以通过HttpServletRequest来获取Cookie<br>  Cookie[] cookies=httpServletRequest.getCookies();</li>
+</ul>
+<h2 id="HttpSession对象"><a href="#HttpSession对象" class="headerlink" title="HttpSession对象"></a>HttpSession对象</h2><p>在所有的会话跟踪技术中，HttpSession是最强大和最通用的，一个用户可以有且最多只有一个HttpSession,并且不会被其他用户访问到<br>HttpSession对象在用户第一次访问网站的时候自动创建，你可以通过调用HttpServletRequest的getSession()方法来获取这个对象，getSession有两个重载方法<br>    HttpSession getSession()<br>    HttpSession getSession(boolean create)<br>没有参数的getSession方法返回当前的HttpSession,若当前没有，则创建一个返回，getSession(fasle)返回当前的HttpSession,若当前不存在，则返回null，getSession(true)和getSession()行为相同<br>可以通过HttpSession的setAttribute方法将值放入HttpSession,该方法签名如下：<br>    void setAttribute(String name,Object value);<br>注意，不同于URL重写，隐藏域或cookie,放入到HttpSession的值，是存储在内存中，因此，不要往HttpSession放太多对象或大对象，尽管现代的Servlet容器在内存不够用的时候会将保存在HttpSession的对象转储到二级存储，但这样有性能问题<br>此外，放到HttpSession的值不限于String类型，可以是任意实现了Serializable的java对象，因为Servlet容器认为有必要时会将这些对象放入文件或数据库中，尤其在内存不够用的时候，当然也可以将不支持序列化的对象放在HttpSession,只是这样，当Servlet容器试图序列化的时候会失败并报错<br>调用setAttribute方法时，若传入的参数此前以及使用过，则会用新值覆盖旧值<br>通过调用HttpSession的getAttribute方法可以取回之前放入的对象，该方法的签名如下：<br>    Object getAttribute(String name);<br>HttpSession还有一个非常有用的方法，名为getAttributeNames(),该方法会返回一个Enumeration对象来迭代访问保存在HttpSession中的所有值<br>Enumeration<string> getAttributeNames();<br>注意，所有保存在HttpSession的数据不会发送到客户端，不同于其他会话管理技术，Servlet容器为每一HttpSession生成唯一的标识，并将该标识发送给客户端，或创建一个名为JSESSIONID的cookie,或者在URL后附加一个名为jsessionid的参数，在后续的请求中，浏览器会将该变数提交给服务端，这样服务端就可以标识该请求是由哪个用户发起的，Servlet容器会自动选择一种方式床底会话标识，无须开放人员介入<br>可以通过调用HttpSession的getId()方法来读取该标识<br>    String getId();<br>此外，HttpSession还定义了一个名为invalidate的方法，该方法强制会话过期，并清空其保存的对象，默认情况下，HttpSession会在用户不活动一段时间后自动过期，该时间可以通过部署描述符的sesssion-timeout元素配置，若设置为30，则会话对象会在用户最后一次访问30分钟后过期，如果部署描述符没有配置吗，则该值取决于Servlet容器的设定<br>大部分情况下，你应该主动销毁无用的HttpSession,以便释放相应的内存<br>可以通过调用HttpSession的getMaxInactiveInterval方法来查看会话多久会过期，该方法返回一个数字类型，单位为秒，调用setMaxInactiveInterval方法来单独对某个HttpSession设定其超时时间<br>    void setMaxInactiveInterval(int seconds);<br>若设置为0，则该HttpSession永不过期，通常这不是一个好的设计，因此该HttpSession所占用的堆内存将永不释放，直到应用重加载或Servlet容器关闭</string></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/11/02/会话管理/" data-id="cjo1m2qlw001hn8rzfoa8m3b9" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Servlet-JSP/">Servlet&JSP</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-Servlets" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2018/11/02/Servlets/" class="article-date">
@@ -308,7 +576,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/11/02/Servlets/" data-id="cjnzv2pnd000rcorz8m7o82aj" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/11/02/Servlets/" data-id="cjo1m2qlw001kn8rzma8fpz7d" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Servlet-JSP/">Servlet&JSP</a></li></ul>
@@ -489,7 +757,7 @@ while(someCondition){//没有将someCondition同步
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/27/并发/" data-id="cjnzv2pu4003rcorzpnyz5dqu" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/27/并发/" data-id="cjo1m2qq10048n8rzn8gcgb6f" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
@@ -531,7 +799,7 @@ while(someCondition){//没有将someCondition同步
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/19/注解/" data-id="cjnzv2pru002zcorz5ktryfn3" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/19/注解/" data-id="cjo1m2qn7002en8rzvegswccx" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
@@ -608,7 +876,7 @@ while(someCondition){//没有将someCondition同步
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/19/枚举类型/" data-id="cjnzv2prp002wcorzbxripi7u" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/19/枚举类型/" data-id="cjo1m2qnf002mn8rzoroivxba" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
@@ -1076,7 +1344,7 @@ while(someCondition){//没有将someCondition同步
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/19/Java-I-O系统/" data-id="cjnzv2psx003hcorzm29tvxfl" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/19/Java-I-O系统/" data-id="cjo1m2qpd003wn8rzw3tntuvj" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
@@ -1406,7 +1674,7 @@ while(someCondition){//没有将someCondition同步
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/19/容器深入研究/" data-id="cjnzv2pqz002hcorzedmampfa" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/19/容器深入研究/" data-id="cjo1m2qmz002an8rz5cnrwvp3" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
@@ -1469,7 +1737,7 @@ while(someCondition){//没有将someCondition同步
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/19/数组/" data-id="cjnzv2prk002tcorzjj3hze4p" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/19/数组/" data-id="cjo1m2qnn002qn8rzfonbzql9" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
@@ -1636,554 +1904,7 @@ while(someCondition){//没有将someCondition同步
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/14/泛型/" data-id="cjnzv2pti003ocorz24gut4zf" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-类型信息" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2018/10/12/类型信息/" class="article-date">
-  <time datetime="2018-10-12T05:21:23.000Z" itemprop="datePublished">2018-10-12</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/学习心得/">学习心得</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/10/12/类型信息/">类型信息</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>运行时类型信息（runtime Type information）使得你可以在程序运行时发现和使用类型信息<br>它使你从只能在编译期执行面向类型的操作的禁锢中解脱出来<br>java是如何让我们在运行时识别对象和类的信息的，主要有两种方式，一种是“传统的”RTTI，它假定我么不能在编译时已经知道了所有的类型，另一种是“反射”机制，它允许我们在运行时发现和使用类的信息  </p>
-<h2 id="为什么需要RTTI"><a href="#为什么需要RTTI" class="headerlink" title="为什么需要RTTI"></a>为什么需要RTTI</h2><p>我们看一下多态的例子<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Shape</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">draw</span><span class="params">()</span></span>&#123; System.out.print(<span class="keyword">this</span>+<span class="string">".draw()"</span>);&#125;</span><br><span class="line">    <span class="function"><span class="keyword">abstract</span> <span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Cricle</span> <span class="keyword">extends</span> <span class="title">Shape</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span></span>&#123;<span class="keyword">return</span> <span class="string">"Cricle"</span>;&#125;;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Square</span> <span class="keyword">extends</span> <span class="title">Shape</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span></span>&#123;<span class="keyword">return</span> <span class="string">"Square"</span>;&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Shapes</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">        List&lt;Shape&gt; shapeList= Arrays.asList(<span class="keyword">new</span> Cricle(),<span class="keyword">new</span> Square());</span><br><span class="line">        <span class="keyword">for</span>(Shape shape:shapeList)&#123;</span><br><span class="line">            shape.draw();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>在这个例子中，当把Shape对象放在List<shape>列表时会向上转型，但向上转型为Shape的时候，也丢失了Shape对象的具体的类型，对于列表而言，它们只是Shape类型的对象（我们这样思考一个问题，为什么我们在编程的时候，没有使用具有的引用类型，而是向上转型为更加通用的类型引用，诚然，我们可以使用更具体的类型来表示对象类型，拥有更多的方法可以操作这个类型，但是我们却没有办法写更适用的代码，每一个代码片段都与特定类型相关联，耦合度太高，我们要将类型向上转型为它的基类，这样拥有同样的接口，但是却丢失了关于这个对象具体类型的信息，<strong>注意，我们说的丢失了具体类型的信息指的是在编译期，在编译期，我们会将它的对象类型当作基类看待，实际上，对象本身的类型信息并没有丢失，我们可以在程序运行的时候重新拿到本来属于它的身份（类型信息）</strong>，这就是运行时类型信息的全部解释）<br>当从列表中取出元素时，这种容器——实际上将它所有的事物都当成Object持有——会自动将结果转型回Shape的，在java中所有的类型转换都是在运行是进行正确的检查，这也是RTTI名字的含义，在这个例子中，RTTI类型转换的并不彻底，Object被转型为Shape，而不是转换成Cricle，Square这种更具体的类型，这是因为我们只知道这个List<shape>保存的是Shape，将由容器和Java泛型机制保证这一点，而在运行时，由类型转换确保这一点</shape></shape></p>
-<h2 id="Class对象"><a href="#Class对象" class="headerlink" title="Class对象"></a>Class对象</h2><p>要理解RTTI在java中的工作原理，首先必须知道类型信息在运行时是如何表示的，这项工作是被称为Class对象的特殊对象完成的，它包含了与类相关的信息， Class对象就是用来创建类的所有“常规”对象的，java使用Class对象来执行其RTTI，即使你正在执行类型转换这样的工作<br>类是程序的一部分，每个类都是一个Class对象，换言之，每当编写并且编译一个新类，就会产生一个Class对象（更恰当的说，是保存在一个同名的.class文件中，这个.class文件保存在关于这个类的一切信息，我们可以将这个.class文件看作对象，这和类加载之后在内存中创建的Class对象没有太大的分别，最大的区别也许就是存储位置的不同）为了生成这个类的对象，运行这个程序的Java虚拟机（JVM)将使用被称为“类加载器”的子系统<br>所有的类都是在第一次被使用时，动态加载到JVM中的，当程序创建第一个对类的静态成员的引用时，就会加载这个类，这额证明了构造器也是静态方法，虽然在它之前没有static关键字，因此，java程序在它开始之前并非完全加载，其各个部分都是在必需时才加载的，如果尚未加载，默认的类加载器就会根据类名查找.class文件，而这个类的字节码文件就被加载，它会接受验证，以确保其没有被破坏，并且不包含不良的Java代码<br>（从我的理解来看，程序是对象与对象之间通讯，而Class掌握着生成这些对象和怎样通讯的所有知识，我们编写程序就是编写这些类，类由虚拟机加载，并且通过虚拟机创建对象，互相在对象之间传递消息，那么虚拟机是什么？虚拟机是程序，是代码运行的平台，我们编写的类都是程序的构件，以供虚拟机使用）<br>一旦某个类的Class对象被载入内存，它就被用来创建这个类的所有对象</p>
-<pre><code>Class Class.forName(String className);
-</code></pre><p>上面的方法是Class类的一个静态方法，返回一个Class对象的引用，如果你有某个对象的引用，也可以使用Object的getClass()方法，得到一个Class对象的引用，对forName()的调用就是为了产生副作用，其实更准确的说，forName()方法的调用是为了加载某个类，所有，如果这个类还没有被加载，那么就加载它，在加载的过程中，类的static子句开始执行<br>记住，所有的Class对象都是Class类，这听起来感觉很奇怪，我们知道类的所有信息都是在.class文件保存着，类加载器子系统通过这些文件会在内存空间创建相应的Class对象，其实这些对象和普通的对象的共同点就是对象，只不过这个Class对象拥有着这个类型信息，而其他对象拥有着属性数据，那么这些Class对象之间肯定有着某种共性，而这种共性就是它们都是Class类型<br>我们得到了Class对象的引用，就可以操作它以获得它的数据（类型信息）<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">getName()</span><br><span class="line">getSimpleName()</span><br><span class="line">getCanonicalName()</span><br><span class="line">getInterfaces()</span><br><span class="line">isInterface()</span><br><span class="line">getSuperClass()</span><br><span class="line">newInstance()</span><br></pre></td></tr></table></figure></p>
-<p>Class对象的newInstance()方法是实现“虚拟构造器”的一种途径，虚拟构造器允许你声明“我不知道你的确切类型”，但是啊无论如何要正确地创建你自己，<strong>比如up是一个Class引用，在编译期不具备任何更进一步的类型信息，当你创建新实例时，会得到一个Object对象</strong>，但是这个引用指向一个确切的类型，当然你可以发送Object能够接受的信息之外的任何消息之前，你必须更多的了解它，并进行某种转型，另外，使用newInstance()必须带有默认的构造器  </p>
-<h3 id="类字面常量"><a href="#类字面常量" class="headerlink" title="类字面常量"></a>类字面常量</h3><p>java提供了另一种方法来生成对Class对象的引用，即使用类字面量常量 例如<br>    FancyToy.class<br>这样做不仅更简单，而且也更安全，因为它在编译时就会受到检查（因此不需要置于try语句块中），并且它根除了forName()方法的调用，所有也更高效<br>建议使用“.class”的形式，以保持与普通类的一致性<br>注意，有一点很有趣，使用“.class”来创建对Class对象的引用时，不会自动地初始化Class对象，为了使用类而做的准备工作实际上包含三个步骤</p>
-<ol>
-<li>加载：这是类加载器执行的，该步骤将查找字节码，并从这些字节码中创建一个Class对象</li>
-<li>链接：在链接阶段将验证类中的字节码，为静态域分配存储空间，并且如果必需的话，将解析这个类对其他类的所有引用</li>
-<li>初始化：如果该类具有超类，则对其初始化，执行静态初始化器和静态初始化块<br>初始化被延迟到了对静态方法（构造器隐式地是静态的）或非常数静态方法进行首次引用是才执行<br>初始化有效地实现了尽可能的“惰性”，仅使用.class语法来获得对类的引用不会引发初始化，和是和forName()不同的  <h3 id="泛化的Class引用"><a href="#泛化的Class引用" class="headerlink" title="泛化的Class引用"></a>泛化的Class引用</h3>Class引用总是指向某一个Class对象，它可以制造类的实例，并包含可作用与这些实例的所有方法代码，它还包括了该类的静态成员。因此。Class引用表示的就是指向它所指对象的确切类型，而该对象表示Class类的一个对象<br>如何将它的类型变得更具体，而<strong>这是通过允许你对Class引用所指向的Class对象的类型进行限定而实现的</strong>，这里使用了泛型语法，比如<br> Class<integer> classRef=int.class;<br>你也许会认为，下面的代码也是正确的<br> Class<number> classRef=int.class;<br>但是它是无法工作的，虽然Number是Integer的基类，但是Integer的Class对象不是Number的Class对象的子类，这个例子的正确做法是<br> Class&lt;? extends Number&gt; classRef=int.class;<br>当你使用泛型语法的时候将会发生一件有趣的事情，newInstance()将会返回该对象的确切的类型，而不是基本的Object,如下：<h3 id="新的转型语法"><a href="#新的转型语法" class="headerlink" title="新的转型语法"></a>新的转型语法</h3>Class引用的转型语法 cast()  不过我们很少使用<h2 id="类型转换前先做检查"><a href="#类型转换前先做检查" class="headerlink" title="类型转换前先做检查"></a>类型转换前先做检查</h2>目前我们已知的RTTI形式包括</number></integer></li>
-<li>传统的类型转换 如“(Shape)” 由RTTI确保类型转换的正确性，如果执行了一个错误的转换，就会抛出一个ClassCastException</li>
-<li>代表对象的类型的Class对象，通过查询Class对象可以获取运行时所需的信息</li>
-</ol>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/12/类型信息/" data-id="cjnzv2ps80035corzl91owmpz" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-字符串" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2018/10/11/字符串/" class="article-date">
-  <time datetime="2018-10-11T11:14:03.000Z" itemprop="datePublished">2018-10-11</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/学习心得/">学习心得</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/10/11/字符串/">字符串</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="不可变String"><a href="#不可变String" class="headerlink" title="不可变String"></a>不可变String</h2><p>&emsp;&emsp;String对象是不可变的，查看JDK文档，会发现，String类中每一个看起来会修改String值的方法，实际上都是创建了一个全新的String对象，以包含修改后的字符串内容，而最初的String对象纹丝未动，当吧String对象作为方法的参数时，都会复制一份引用，而该引用所指的对象其实一直待在单一的物理位置上，从未动过<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Immutable</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">upcase</span><span class="params">(String s)</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> s.toUpperCase();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">        String q=<span class="string">"howdy"</span>;</span><br><span class="line">        System.out.print(q);<span class="comment">//howdy</span></span><br><span class="line">        String qq=upcase(q);</span><br><span class="line">        System.out.print(qq);<span class="comment">//HOWDY</span></span><br><span class="line">        System.out.print(q);<span class="comment">//howdy</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>&emsp;&emsp;上例upcase()返回的引用已经指向了一个新的对象了，而原本的q则还在原地<br>&emsp;&emsp;String的这种行为方式其实正是我们想要的，难道我们真的希望upcase()改变参数的行为吗？参数是为该方法提供信息的，而不是先让该方法改变自己的</p>
-<h2 id="重载“-”与StringBuilder"><a href="#重载“-”与StringBuilder" class="headerlink" title="重载“+”与StringBuilder"></a>重载“+”与StringBuilder</h2><p>&emsp;&emsp;String对象的不可变性带来了效率的问题，为String对象重载的“+”操作符就是一个例子，重载的意思是，一个操作符在应用于不同的类上，被赋予老特殊的含义<br>&emsp;&emsp;我们经常使用“+”操作进行字符串的拼接，可是由于String对象的不可变性，我们猜想每一次的连接操作都会产生一个新的String对象，若是进行多次的拼接操作，会有大量的中间String对象产生，会造成内存资源的浪费和垃圾回收器的负担，比如<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">String concatStr=<span class="string">"asdad"</span>+<span class="string">"asdas"</span>+<span class="string">"sfadfdf"</span>+<span class="string">"asdasd"</span></span><br></pre></td></tr></table></figure></p>
-<p>&emsp;&emsp;但是当我们使用javap，对上述代码jinx反编译的时候，就会看到，在进行字符拼接的时候，编译器帮我们做了优化，首先new StringBuilder对象，通过append()方法拼接，使用toString()返回一个字符串对象，编译器以及帮我们的源码进行了优化，那么是否我们就确信编译器优化，而毫无考虑的就到处使用“+”操作符进行字符串的拼接操作呢？我们在看一个例子<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(String str:StringArr[])&#123;</span><br><span class="line">    s+=str;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">StringBuilder sb=<span class="keyword">new</span> StringBuilder();</span><br><span class="line"><span class="keyword">for</span>(String str:StringArr)&#123;</span><br><span class="line">   sb.append(str);</span><br><span class="line">&#125;</span><br><span class="line">sb.toString();</span><br></pre></td></tr></table></figure></p>
-<p>我们在进行javap进行反编译，可知在上面的第一个例子，每次循环内都要创建new StringBuilder(),而第二个例子只创建一次，那么这个例子就可以说明什么时候应该使用StringBuilder来对字符串进行拼接操作了<br>StringBuilder提供了丰富而全面的方法，包括insert(),replace(),subString()甚至reverse(),但是最常用的还是append()a,toString()，还有delete()<br>Stringbuilder是Java SE5引入的，在这之前java用的是StringBuffer,后者是线程安全的，因此开销也会大些  </p>
-<h2 id="无意识的递归"><a href="#无意识的递归" class="headerlink" title="无意识的递归"></a>无意识的递归</h2><p>我们一般经常都会调用一个对象的toString()方法，比如容器的打印，实际上也会调用每个元素的toString()方法，若我们想要打印对象的内存地址怎么办呢？下面是一个对象，重新定义了toString()方法，并且打印自己的内存地址<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">InfiniteRecursion</span></span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">toString</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">"asdasdas"</span>+<span class="keyword">this</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>上面的定义是对的吗？完全错误，如果我们调用这个对象的toString()方法就会导致递归，因为我们对this也执行了toString()调用，没完没了，正确的方法如下<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">return</span> <span class="string">"asdasdas"</span>+<span class="keyword">super</span>.toString();</span><br></pre></td></tr></table></figure></p>
-<p>因为这样会调用基类的toString方法，就避免了递归</p>
-<h2 id="String上的操作"><a href="#String上的操作" class="headerlink" title="String上的操作"></a>String上的操作</h2><p>下面是String对象具备的一些基本操作  </p>
-<table>
-<thead>
-<tr>
-<th>方法</th>
-<th>参数，重载版本</th>
-<th>应用</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>构造器</td>
-<td>重载版本：默认版本，String，StringBuilder<br>StringBuffer char数组，byte数组</td>
-<td>创建String对象</td>
-</tr>
-<tr>
-<td>length()</td>
-<td></td>
-<td>String中字符的个数</td>
-</tr>
-<tr>
-<td>charAt()</td>
-<td>int索引</td>
-<td>取得String中该索引位置上的char</td>
-</tr>
-<tr>
-<td>getChars(),getBytes()</td>
-<td>要复制部分的起点和终点的索引，<br>复制的目标数组，目标数组，目标数组的起始索引</td>
-<td>复制char或byte到一个目标数组中</td>
-</tr>
-<tr>
-<td>toCharArray()</td>
-<td></td>
-<td>生成一个char[]</td>
-</tr>
-<tr>
-<td>equals(),equalsIgnoreCase()</td>
-<td>与之进行比较的String</td>
-<td>比较两个String的内容是否相同</td>
-</tr>
-<tr>
-<td>compareTo()</td>
-<td>与之进行比较的String</td>
-<td>按词典顺序比较String的内容，比较结果为负数，零，正数，注意，大小写不等价</td>
-</tr>
-<tr>
-<td>contains()</td>
-<td>要搜索的CharSequence</td>
-<td>如果该String对象包含参数的内容，则返回true</td>
-</tr>
-<tr>
-<td>containEquals()</td>
-<td>与之进行比较的CharSequence或StringBuffer</td>
-<td>如果该String与参数的内容一致，则返回true</td>
-</tr>
-<tr>
-<td>equealsIgnoreCase()</td>
-<td>与之进行比较的String</td>
-<td>忽略大小写的比较相等性</td>
-</tr>
-<tr>
-<td>regionMatcher()</td>
-<td>该String的索引偏移量，另一个String及其索引偏移量，<br>要比较的长度，重载版本增加了“忽略大小写”功能</td>
-<td>返回boolean结果，已表明所比较区域是否相等</td>
-</tr>
-<tr>
-<td>StartsWith()</td>
-<td>可能的起始String，重载版本在参数中增加了偏移量</td>
-<td>返回值为boolean值</td>
-</tr>
-<tr>
-<td>endsWith()</td>
-<td>该String可能的后缀String</td>
-<td>返回boolean值</td>
-</tr>
-<tr>
-<td>indexOf(),lastIndexOf()</td>
-<td>重载版本包括：char，char与起始索引，<br>String，String与起始索引</td>
-<td>如果该String并不包含此参数，就返回-1<br>否则返回此参数在String中的起始索引，lastIndexOf()是从后向前搜索</td>
-</tr>
-<tr>
-<td>subString()(subSequence())</td>
-<td>重载版本：起始索引;起始索引+终点索引</td>
-<td>返回一个新的String，以包含参数指定的字符串</td>
-</tr>
-<tr>
-<td>concat()</td>
-<td>要连接的字符串</td>
-<td>返回一个新的String对象，内容为原始String连接上参数String</td>
-</tr>
-<tr>
-<td>replace()</td>
-<td>要替换掉的字符，用来进行替换的新字符。<br>也可以用一个CharSequence来替换另一个CharSequence</td>
-<td>返回替换字符后的新String对象<br>如果，没有替换发生，则返回原始的String对象</td>
-</tr>
-<tr>
-<td>toLowerCase(),toUpCase()</td>
-<td></td>
-<td>将字符的大小写改变，返回一个新的字符串</td>
-</tr>
-<tr>
-<td>trim()</td>
-<td></td>
-<td>将字符串两端的空白字符删除</td>
-</tr>
-<tr>
-<td>valueOf()</td>
-<td>重载版本：Object;char[];char[],偏移量，与字符个数；<br>boolean；char;int;lang;float;double</td>
-<td>返回一个表示参数内容的String</td>
-</tr>
-<tr>
-<td>intern()</td>
-<td></td>
-<td>为每个唯一的字符序列生成一个且仅生成一个String引用  </td>
-</tr>
-</tbody>
-</table>
-<h2 id="格式化输出"><a href="#格式化输出" class="headerlink" title="格式化输出"></a>格式化输出</h2><p>在长久的等待之后，java SE5终于推出了C语言中printf()风格的格式化输出</p>
-<h3 id="System-out-format"><a href="#System-out-format" class="headerlink" title="System.out.format"></a>System.out.format</h3><p>java SE5引入的format()方法可用于PrintStream或PrintWriter对象，format()方法模仿C语言的printf()，它只需要一个简单的格式化字符串和一串的参数就可，语法如下.以System.out为例<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">System.out.format(<span class="string">"Row 1:[%d %f]\n"</span>,x,y);</span><br></pre></td></tr></table></figure></p>
-<h3 id="Formatter类"><a href="#Formatter类" class="headerlink" title="Formatter类"></a>Formatter类</h3><p>在java中，所有新的格式化功能都由java.util.Formatter类处理,可以将Formatter看作一个翻译机，它将你的格式化字符串与数据翻译成需要的结果，当你创建一个Formatter对象的时候，可以向其构造器传递一些信息，告诉它最终的结果将向哪里输出  </p>
-<h3 id="格式化说明符"><a href="#格式化说明符" class="headerlink" title="格式化说明符"></a>格式化说明符</h3><p>在插入数据时，如果想要控制空格与对齐，你需要更精细复杂的格式修饰符，一下是其抽象的语法<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">%[argument_index$][flags][width].[precision]conversion</span><br></pre></td></tr></table></figure></p>
-<p>最常用的是width控制一个域的最小尺寸，数据是右对齐的，可以添加“-”标志来控制对其方向<br>不是所有类型的元素都能用precision，而且不同类型的元素使用precision代表的含义也不相同<br>Formatter转换（conversion）<br>下面包含了最常用的类型转换   </p>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>：类型转换：</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>d</td>
-<td>整数型（十进制）</td>
-</tr>
-<tr>
-<td>c</td>
-<td>unicode字符</td>
-</tr>
-<tr>
-<td>b</td>
-<td>Boolean值</td>
-</tr>
-<tr>
-<td>s</td>
-<td>String</td>
-</tr>
-<tr>
-<td>f</td>
-<td>浮点数（十进制）</td>
-</tr>
-<tr>
-<td>e</td>
-<td>浮点数（科学计数）</td>
-</tr>
-<tr>
-<td>x</td>
-<td>整数（十六进制）</td>
-</tr>
-<tr>
-<td>h</td>
-<td>散列码</td>
-</tr>
-<tr>
-<td>%</td>
-<td>字符“%”</td>
-</tr>
-</tbody>
-</table>
-<h3 id="String-format"><a href="#String-format" class="headerlink" title="String.format()"></a>String.format()</h3><p>java SE5也参考了C的sprintf()的方法，以生成格式化的String对象，String.format()是一个static方法，它接受与Formatter.format()相同的参数，但返回一个String对象，当你只使用formatter()方法一次的时候，String.format()是个不错的选择，语法 类似如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">String result = String.format(<span class="string">"(t%d,q%d) %s"</span>,transcationID,queryID,message);</span><br></pre></td></tr></table></figure></p>
-<p>其实在String.format()内部，它是创建一个Formatter对象，然后将你的参数传递给它，不过与其自己做这些事情，不如使用便捷的String.format()代码更清晰易读</p>
-<h2 id="正则表达式"><a href="#正则表达式" class="headerlink" title="正则表达式"></a>正则表达式</h2><p>正则表达式是一种强大而灵活的文本处理工具，<strong>使用正则表达式，我们能够以编程的方式，构造复杂的文本，并对输入的字符串进行搜索，一旦找到匹配这些模式的部分，你就能够随心所欲地对它们进行处理</strong>，正则表达式提供了一种完全通用的方式，能够解决各种字符串处理相关的问题，匹配，选择，编辑以及验证</p>
-<h3 id="基础"><a href="#基础" class="headerlink" title="基础"></a>基础</h3><p>在其他的语言中,\\表示“我想要在表达式中插入一个普通的反斜线，请不要给他任何特殊的意义，而在java中，\\的意思是”我要插入正则表达式的反斜线，”，所以其后的字符具有一个特殊的意义，你想插入一个普通的反斜线，则应该这样\\\\”<br>应用正则表达式最简单的途径，就是利用String类内建的matches()方法<br>String还有一个非常有用的正则表达式工具——split()方法，其功能是“将字符串从正则表达式匹配的地方切开”，split()还有一个重载的版本，它允许你限制字符串分割的次数<br>如果只是需要使用一次正则表达式，那么上面的方法是很方便的吗，但是如果你想对一个正则表达式反复复用，那么非String类型的正则表达式具备更加的性能和功能</p>
-<h3 id="创建正则表达式"><a href="#创建正则表达式" class="headerlink" title="创建正则表达式"></a>创建正则表达式</h3><hr>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>字符</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>B</td>
-<td>指定字符B</td>
-</tr>
-<tr>
-<td>\xhh</td>
-<td>十六进制值为0xhh的字符</td>
-</tr>
-<tr>
-<td>\uhhhh</td>
-<td>十六进制表示为oxhhhh的Unicode字符</td>
-</tr>
-<tr>
-<td>\n</td>
-<td>换行符</td>
-</tr>
-<tr>
-<td>\t</td>
-<td>制表符</td>
-</tr>
-<tr>
-<td>\r</td>
-<td>回车</td>
-</tr>
-<tr>
-<td>\f</td>
-<td>换页</td>
-</tr>
-<tr>
-<td>\e</td>
-<td>转义（Escape）</td>
-</tr>
-</tbody>
-</table>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>字符类</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>.</td>
-<td>任意字符</td>
-</tr>
-<tr>
-<td>[abc]</td>
-<td>包含a,b，c的任何字符（和a</td>
-<td>b</td>
-<td>c作用相同）</td>
-</tr>
-<tr>
-<td>[^abc]</td>
-<td>除了a,b,c之外的任意字符（否定）</td>
-</tr>
-<tr>
-<td>[a-zA-Z]</td>
-<td>从a到或从A到Z的任何一个字符</td>
-</tr>
-<tr>
-<td>[abc[hij]]</td>
-<td>任意a,b,c,h.i,j的字符（与a</td>
-<td>b</td>
-<td>c</td>
-<td>h</td>
-<td>i</td>
-<td>j的作用相同）</td>
-</tr>
-<tr>
-<td>[a-z&amp;&amp;[hij]]</td>
-<td>任意h,i,j（交集）</td>
-</tr>
-<tr>
-<td>\s</td>
-<td>空白符（空格，tab,换行，换页或回车）</td>
-</tr>
-<tr>
-<td>\S</td>
-<td>非空白符</td>
-</tr>
-<tr>
-<td>\d</td>
-<td>数字[0-9]</td>
-</tr>
-<tr>
-<td>\D</td>
-<td>非数字[^0-9]</td>
-</tr>
-<tr>
-<td>\w</td>
-<td>词字符[a-zA-Z0-9]</td>
-</tr>
-<tr>
-<td>\w</td>
-<td>非词字符[^\w]</td>
-</tr>
-</tbody>
-</table>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>逻辑操作符</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>XY</td>
-<td>Y紧跟在X后面</td>
-</tr>
-<tr>
-<td>X</td>
-<td>Y</td>
-<td>X或Y</td>
-</tr>
-<tr>
-<td>(X)</td>
-<td>捕获组（capturing group）可以在表达式中引用\i第一i个捕获组</td>
-</tr>
-</tbody>
-</table>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>边界匹配符</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>^</td>
-<td>一行的起始</td>
-</tr>
-<tr>
-<td>$</td>
-<td>一行的结束</td>
-</tr>
-<tr>
-<td>\b</td>
-<td>非词的边界</td>
-</tr>
-<tr>
-<td>\B</td>
-<td>词的边界</td>
-</tr>
-<tr>
-<td>\G</td>
-<td>前一个匹配的结束</td>
-</tr>
-</tbody>
-</table>
-<h3 id="量词"><a href="#量词" class="headerlink" title="量词"></a>量词</h3><p>量词描述了一个模式吸收输入文本的方式：</p>
-<ul>
-<li>贪婪型：量词总是贪婪的，除非有其他的选项被设置，贪婪表达式会为所有可能的模式发现尽可能多的匹配，导致此问题的一个典型理由就是假定我们的模式仅能匹配第一个可能的字符组，如果它是贪婪的，那么它就会继续往下匹配  </li>
-<li>勉强型：用问好来指定，这个量词匹配满足模式所需最少字符数，因此也称做懒惰的，最少匹配的，非贪婪的，或不贪婪的  </li>
-<li>占有型：目前，这种类型的量词只有java语言中才可用，并且也更高级，当正则表达式被应用于字符串时，它会产生相当多的状态，以便在匹配失败时可以回溯，而“占有的”量词并不保存这些中间状态，因此它们可以防止回溯，它们常常用于防止正则表达式失控，因此可以使正则表达式执行起来更有效  </li>
-</ul>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>贪婪型</th>
-<th>勉强型</th>
-<th>占有型</th>
-<th>如何匹配</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>X?</td>
-<td>X??</td>
-<td>x?+</td>
-<td>一个或零个X</td>
-</tr>
-<tr>
-<td>X*</td>
-<td>X*?</td>
-<td>X*+</td>
-<td>零个或者多个X</td>
-</tr>
-<tr>
-<td>X+</td>
-<td>X+?</td>
-<td>X++</td>
-<td>一个或者多个X</td>
-</tr>
-<tr>
-<td>X{n}</td>
-<td>X{n}?</td>
-<td>X{n}+</td>
-<td>恰好n次</td>
-</tr>
-<tr>
-<td>X{n,}</td>
-<td>X{n,}?</td>
-<td>X{n,}+</td>
-<td>至少n次</td>
-</tr>
-<tr>
-<td>X{n,m}</td>
-<td>X{n,m}?</td>
-<td>X{n,m}+</td>
-<td>X至少n次，最多m次</td>
-</tr>
-</tbody>
-</table>
-<p>要非常注意的是表达式X必须要用圆括号括起来，以便它能按照我们期望的效果去执行，例如 abc+和（abc）+,前面的表示表示匹配ab，后面跟随1个或者多个c，而(abc)+表示匹配一个或者多个abc<br>接口CharSequence从CharBuffer,String,StringBuffer,StringBuilder类之中抽象出了字符序列的一般化定义<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">CharSequenece</span></span>&#123;</span><br><span class="line">  charAt();</span><br><span class="line">  length();</span><br><span class="line">  subSequence(<span class="keyword">int</span> start,<span class="keyword">int</span> end);</span><br><span class="line">  toString();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>因此，这些类都实现了接口，多数正则表达式操作都接受CharSequence类型的参数  </p>
-<h3 id="Pattern和Matcher"><a href="#Pattern和Matcher" class="headerlink" title="Pattern和Matcher"></a>Pattern和Matcher</h3><p>比起功能有限的String，我们更愿意构造功能强大的正则表达式对象，只需要导入java.util.regex包，然后用static Pattern.compile()方法来编译你的正则表达式即可，它会根据你的String类型的正则表达式生成一个Pattern对象，接下来，把你想要检索的字符串传入Pattern对象的matcher()方法会生成一个Matcher对象，它有很多功能可用，例如它的replaceAll()方法能够将所有匹配的部分替换成你传入的参数</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestRegularExpression</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(args.length&lt;<span class="number">2</span>)&#123;</span><br><span class="line">            System.out.print(<span class="string">"args's count is not right"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (String arg:args)&#123;</span><br><span class="line">            Pattern p = Pattern.compile(arg);</span><br><span class="line">            Matcher m = p.matcher(<span class="string">"args[0]"</span>);</span><br><span class="line">            <span class="keyword">while</span>(m.find())&#123;</span><br><span class="line">                System.out.print(m.group()+m.start()+m.end());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>Pattern变量表示编译后的正则表达式，我们可以使用编译后的Pattern对象的matcher()方法，加上一个输入字符串，从而共同构造一个Matcher对象，同时Pattern类还提供了一个静态方法<br>    static boolean matcher(String regex,CharSequence input)<br>编译后的Pattern对象还提供了split()方法，它从匹配的regex的地方分割字符串，返回分割后的字符串的一个String数组<br>通过调用Pattern.matcher()方法，我们得到一个Matcher对象，使用Matcher上的方法，我们能够判断各种不同类型的匹配是否成功<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">matches</span><span class="params">()</span></span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">lookingAt</span><span class="params">()</span></span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">find</span><span class="params">()</span></span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">find</span><span class="params">(<span class="keyword">int</span> start)</span></span></span><br></pre></td></tr></table></figure></p>
-<p>其中的matches()方法用来判断这个输入字符串是否匹配正则表达式，而lonkingAt()则用来判断该字符串（不必是整个字符串）的始部分是否匹配模式<br>find()像迭代器那样向前办理输入字符串，而第二个find(int start),该参数表示字符串中的字符位置，并以其作为搜索的起点</p>
-<h3 id="Group-组"><a href="#Group-组" class="headerlink" title="Group(组)"></a>Group(组)</h3><p>组是用括号划分的正则表达式，可以根据组的编号来引用某个组，组号0表示整个表达式，组号1表示被第一对括号括起来的组，依次类推<br>A(B(C))D,这里有三个组，组0是ABCD,组1是BC,组2是C<br>Matcher（匹配器）对象提供了一些列的方法，用来获取与组相关的信息<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">groupCount</span><span class="params">()</span><span class="comment">//返回该匹配器的模式中的分组数量，第0组不算</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">group</span><span class="params">()</span><span class="comment">//返回前一次操作（例如find()）的第0组</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">group</span><span class="params">(<span class="keyword">int</span> i)</span><span class="comment">//返回前一次匹配操作期间指定的组号，如果匹配成功，但是指定的组没有匹配任何输入字符串的任何部分，则会返回null  </span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">start</span><span class="params">(<span class="keyword">int</span> group)</span><span class="comment">//返回在前一次匹配操作中寻找到的组的起始索引</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">end</span><span class="params">(<span class="keyword">int</span> group)</span><span class="comment">//返回在前一次匹配操作中寻找到的组的最后一个字符索引加1的值</span></span></span><br></pre></td></tr></table></figure></p>
-<p>start()和end()会返回前一次匹配操作的第一个字符位置和最后一个字符位置+1，如果匹配失败（或先于一个正在进行的匹配操作去尝试）。调用start()或end()都会产生一个IllegalStatException异常<br>find()可以在输入的任意位置定位正则表达式，而lookingAt()和matches()只有在正则表达式与输入的最开始位置处开始匹配才会成功</p>
-<h3 id="Pattern标记"><a href="#Pattern标记" class="headerlink" title="Pattern标记"></a>Pattern标记</h3><p>Pattern的compile()还有另一个版本，它接受一个标记参数，以调整匹配的行为</p>
-<pre><code>Pattern.compile(String regex,int flag)
-</code></pre><p>其中的flag来自一下Pattern类中的常量  </p>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>编译标记</th>
-<th>效果</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Pattern.CONON_EQ</td>
-<td>两个字符当且仅当它们的完全规范分解相匹配时</td>
-</tr>
-<tr>
-<td>Pattern.CASE.INSENSITIVE(?!)</td>
-<td>默认情况下，大小写不敏感的匹配假定只有US-ASCII字符集中的字符才能进行，这个标记允许模式匹配不必考虑大小写（大写或小写），通过指定UNICODE_CASE标记及结合此标记，基于Unicode的大小写不敏感的匹配就可以开启了</td>
-</tr>
-<tr>
-<td>Pattern.COMMENTS(?x)</td>
-<td>在这种模式下，空格符将被忽略，并且以“#”开始直到行尾的注释也会被忽略掉，通过嵌入的标记表达式也可以开启Unix的行模式</td>
-</tr>
-<tr>
-<td>Pattern.DOTALL(?s)</td>
-<td>在dotall模式中，表达式“.”匹配所有的字符，包括行终结符。默认情况下“.”表达式不匹配行终结符</td>
-</tr>
-<tr>
-<td>Pattern.MULTILINE</td>
-<td>在多行模式下，表达式^和$分别匹配一行的开始和结束，^还匹配输入字符串的开始，而$还匹配输入字符串的结尾，默认情况下，这些表达式仅匹配输入的完整的字符串的开始和结束</td>
-</tr>
-<tr>
-<td>Pattern.UNICODE_CASE(?u)</td>
-<td>当指定这个标记，并且开启CASE.INSENSITIVE时，大小写不敏感的匹配将按照与Unicode标准相一致的方式进行，默认情况下，大小写不敏感的匹配假定只能在US-ASCII字符集中的字符才能进行  </td>
-</tr>
-<tr>
-<td>Pattern.UNIX_LINES(?d)</td>
-<td>在这种模式下，^和$行为中，其识别行终结符\n  </td>
-</tr>
-</tbody>
-</table>
-<h3 id="替换操作"><a href="#替换操作" class="headerlink" title="替换操作"></a>替换操作</h3><p>正则表达式特别便于替换文本，它提供了许多方法，replaceFirst(String replaceStr)替换掉第一个匹配成功的部分,replaceAll(String replaceStr)替换掉所有匹配成功的部分。appendReplacement(StringBuffer sbuf,String replaceent)此方法重要，允许你调用其他的方法来生成或处理replacement(replaceFirst()和replaceAll()则只能使用一个固定的字符串)，使得你能够以编程的方式来将目标分割成组，从而具备更强大的替换功能，appendTail(StringBuffer sbuf)，在执行完appendReplacement()之后，调用此方法可以将输入字符串余下的部分复制到sbuf中  </p>
-<h3 id="reset"><a href="#reset" class="headerlink" title="reset()"></a>reset()</h3><p>通过reset()方法，可以将现有的Matcher对象应用于一个新的字符序列<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Resetting</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">        Matcher matcher = Pattern.compile(<span class="string">"[firb[aiu][gx]]"</span>).matcher(<span class="string">"fix the rug with bgs"</span>);</span><br><span class="line">        <span class="keyword">while</span>(matcher.find())&#123;</span><br><span class="line">            System.out.print(matcher.group());</span><br><span class="line">        &#125;</span><br><span class="line">        matcher.reset(<span class="string">"fix the rig rags"</span>);</span><br><span class="line">        <span class="keyword">while</span>(matcher.find())&#123;</span><br><span class="line">            System.out.print(matcher.group());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h3 id="正则表达式与I-O"><a href="#正则表达式与I-O" class="headerlink" title="正则表达式与I/O"></a>正则表达式与I/O</h3>
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/11/字符串/" data-id="cjnzv2pqq002dcorzz5pwyyp5" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/14/泛型/" data-id="cjo1m2qpl0041n8rzyq5q2o4u" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
@@ -2230,7 +1951,7 @@ while(someCondition){//没有将someCondition同步
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/CSS/" style="font-size: 10px;">CSS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Git/" style="font-size: 10px;">Git</a> <a href="/tags/HTML5/" style="font-size: 10px;">HTML5</a> <a href="/tags/JVM/" style="font-size: 10px;">JVM</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/JavaScript/" style="font-size: 10px;">JavaScript</a> <a href="/tags/Linux/" style="font-size: 10px;">Linux</a> <a href="/tags/Maven/" style="font-size: 10px;">Maven</a> <a href="/tags/Node-js/" style="font-size: 10px;">Node.js</a> <a href="/tags/Oracle/" style="font-size: 10px;">Oracle</a> <a href="/tags/Servlet-JSP/" style="font-size: 10px;">Servlet&JSP</a> <a href="/tags/Spring/" style="font-size: 10px;">Spring</a> <a href="/tags/Spring-MVC/" style="font-size: 10px;">Spring MVC</a> <a href="/tags/Spring-boot/" style="font-size: 10px;">Spring boot</a> <a href="/tags/Spring-cloud/" style="font-size: 10px;">Spring cloud</a>
+      <a href="/tags/CSS/" style="font-size: 10px;">CSS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Git/" style="font-size: 10px;">Git</a> <a href="/tags/HTML5/" style="font-size: 10px;">HTML5</a> <a href="/tags/JVM/" style="font-size: 10px;">JVM</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/JavaScript/" style="font-size: 10px;">JavaScript</a> <a href="/tags/Linux/" style="font-size: 10px;">Linux</a> <a href="/tags/Maven/" style="font-size: 10px;">Maven</a> <a href="/tags/Node-js/" style="font-size: 10px;">Node.js</a> <a href="/tags/Oracle/" style="font-size: 10px;">Oracle</a> <a href="/tags/Servlet-JSP/" style="font-size: 15px;">Servlet&JSP</a> <a href="/tags/Spring/" style="font-size: 10px;">Spring</a> <a href="/tags/Spring-MVC/" style="font-size: 10px;">Spring MVC</a> <a href="/tags/Spring-boot/" style="font-size: 10px;">Spring boot</a> <a href="/tags/Spring-cloud/" style="font-size: 10px;">Spring cloud</a>
     </div>
   </div>
 
@@ -2252,6 +1973,14 @@ while(someCondition){//没有将someCondition同步
       <ul>
         
           <li>
+            <a href="/2018/11/03/JSP/">JSP</a>
+          </li>
+        
+          <li>
+            <a href="/2018/11/02/会话管理/">会话管理</a>
+          </li>
+        
+          <li>
             <a href="/2018/11/02/Servlets/">Servlets</a>
           </li>
         
@@ -2261,14 +1990,6 @@ while(someCondition){//没有将someCondition同步
         
           <li>
             <a href="/2018/10/19/注解/">注解</a>
-          </li>
-        
-          <li>
-            <a href="/2018/10/19/枚举类型/">枚举类型</a>
-          </li>
-        
-          <li>
-            <a href="/2018/10/19/Java-I-O系统/">Java I/O系统</a>
           </li>
         
       </ul>
